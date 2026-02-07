@@ -32,6 +32,13 @@ class Prediction extends Model
         'features_used',
     ];
 
+    protected $appends = [
+        'risk_percentage',
+        'risk_color',
+        'risk_text',
+        'hasil_klasifikasi',
+    ];
+
     protected $casts = [
         'probability_angina' => 'float',
         'features_used' => 'array',
@@ -49,7 +56,7 @@ class Prediction extends Model
 
     public function getRiskColorAttribute(): string
     {
-        return match($this->risk_level) {
+        return match ($this->risk_level) {
             'HIGH' => 'red',
             'MODERATE' => 'yellow',
             'LOW' => 'green',
@@ -64,7 +71,7 @@ class Prediction extends Model
 
     public function getRiskTextAttribute(): string
     {
-        return match($this->risk_level) {
+        return match ($this->risk_level) {
             'HIGH' => 'Tinggi',
             'MODERATE' => 'Sedang',
             'LOW' => 'Rendah',
@@ -74,8 +81,8 @@ class Prediction extends Model
 
     public function getHasilKlasifikasiAttribute(): string
     {
-        return $this->prediction_result === 'Angina Pektoris' 
-            ? 'Angina Pektoris' 
+        return $this->prediction_result === 'Angina Pektoris'
+            ? 'Angina Pektoris'
             : 'Bukan Angina';
     }
 }

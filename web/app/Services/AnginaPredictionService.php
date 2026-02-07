@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Log;
 class AnginaPredictionService
 {
     protected string $baseUrl;
+
     protected int $timeout;
 
     public function __construct()
@@ -23,21 +24,21 @@ class AnginaPredictionService
     {
         try {
             $response = Http::timeout(5)->get("{$this->baseUrl}/health");
-            
+
             if ($response->successful()) {
                 return [
                     'status' => 'healthy',
                     'data' => $response->json(),
                 ];
             }
-            
+
             return [
                 'status' => 'unhealthy',
                 'error' => 'ML API returned error status',
             ];
         } catch (\Exception $e) {
-            Log::error('ML API health check failed: ' . $e->getMessage());
-            
+            Log::error('ML API health check failed: '.$e->getMessage());
+
             return [
                 'status' => 'unreachable',
                 'error' => $e->getMessage(),
@@ -52,16 +53,16 @@ class AnginaPredictionService
     {
         try {
             $formattedData = $this->formatData($data);
-            
+
             Log::info('Sending prediction request to ML API', $formattedData);
-            
+
             $response = Http::timeout($this->timeout)
                 ->post("{$this->baseUrl}/predict", $formattedData);
 
             if ($response->successful()) {
                 $responseData = $response->json();
                 Log::info('ML API prediction successful', $responseData);
-                
+
                 return [
                     'success' => true,
                     'data' => $responseData,
@@ -79,7 +80,7 @@ class AnginaPredictionService
                 'details' => $response->json(),
             ];
         } catch (\Exception $e) {
-            Log::error('ML API request failed: ' . $e->getMessage());
+            Log::error('ML API request failed: '.$e->getMessage());
 
             return [
                 'success' => false,
@@ -101,7 +102,7 @@ class AnginaPredictionService
             'riwayat_DM' => $data['riwayat_dm'],
             'HT' => $data['hipertensi'],
             'riwayat_PJK_terdahulu' => $data['riwayat_pjk'],
-            'nyeri_dada' => $data['nyeri_dada'] ?? 'Tidak',
+            'nyeri_dada_menjalar_ke_lengan' => $data['nyeri_dada'] ?? 'Tidak',
             'durasi_nyeri' => $data['durasi_nyeri'],
             'sesak_napas' => $data['sesak_napas'],
             'mual' => $data['mual'],
@@ -117,21 +118,39 @@ class AnginaPredictionService
     {
         // Simple mock logic based on risk factors
         $riskScore = 0;
-        
-        if ($data['nyeri_dada'] === 'Ya') $riskScore += 30;
-        if ($data['sesak_napas'] === 'Ya') $riskScore += 20;
-        if ($data['keringat_dingin'] === 'Ya') $riskScore += 15;
-        if ($data['mual'] === 'Ya') $riskScore += 10;
-        if ($data['muntah'] === 'Ya') $riskScore += 10;
-        if ($data['hipertensi'] === 'Ya') $riskScore += 10;
-        if ($data['riwayat_dm'] === 'Ya') $riskScore += 10;
-        if ($data['riwayat_pjk'] === 'Ya') $riskScore += 20;
-        if ((int)$data['umur'] > 60) $riskScore += 10;
-        
+
+        if ($data['nyeri_dada'] === 'Ya') {
+            $riskScore += 30;
+        }
+        if ($data['sesak_napas'] === 'Ya') {
+            $riskScore += 20;
+        }
+        if ($data['keringat_dingin'] === 'Ya') {
+            $riskScore += 15;
+        }
+        if ($data['mual'] === 'Ya') {
+            $riskScore += 10;
+        }
+        if ($data['muntah'] === 'Ya') {
+            $riskScore += 10;
+        }
+        if ($data['hipertensi'] === 'Ya') {
+            $riskScore += 10;
+        }
+        if ($data['riwayat_dm'] === 'Ya') {
+            $riskScore += 10;
+        }
+        if ($data['riwayat_pjk'] === 'Ya') {
+            $riskScore += 20;
+        }
+        if ((int) $data['umur'] > 60) {
+            $riskScore += 10;
+        }
+
         $probability = min($riskScore / 100, 0.95);
-        
+
         $prediction = $probability > 0.5 ? 'Angina Pektoris' : 'Bukan Angina Pektoris';
-        
+
         if ($probability > 0.7) {
             $riskLevel = 'HIGH';
             $confidence = 'Tinggi';
@@ -142,7 +161,7 @@ class AnginaPredictionService
             $riskLevel = 'LOW';
             $confidence = 'Rendah';
         }
-        
+
         return [
             'success' => true,
             'data' => [

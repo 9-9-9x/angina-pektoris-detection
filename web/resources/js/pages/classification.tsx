@@ -1,22 +1,11 @@
 import { Head, useForm } from '@inertiajs/react';
-import { useState } from 'react';
 import { Calendar, ChevronDown } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 
-interface PredictionResult {
-    prediction: string;
-    probability_angina: number;
-    risk_level: string;
-    risk_percentage: number;
-}
-
 export default function Classification() {
-    const [showResult, setShowResult] = useState(false);
-    const [result, setResult] = useState<PredictionResult | null>(null);
-    
     const { data, setData, post, processing, errors, reset } = useForm({
         // Patient data
         nama: '',
@@ -39,18 +28,11 @@ export default function Classification() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        post('/classify', {
-            onSuccess: (response) => {
-                setResult(response.props.result as PredictionResult);
-                setShowResult(true);
-            }
-        });
+        post('/classify');
     };
 
     const handleReset = () => {
         reset();
-        setShowResult(false);
-        setResult(null);
     };
 
     const RadioGroup = ({ 
@@ -153,7 +135,13 @@ export default function Classification() {
                                 <RadioGroup
                                     name="nyeri_dada"
                                     value={data.nyeri_dada}
-                                    onChange={(val) => setData('nyeri_dada', val)}
+                                    onChange={(val) => {
+                                        setData((prev) => ({
+                                            ...prev,
+                                            nyeri_dada: val,
+                                            ...(val === 'Tidak' ? { durasi_nyeri: '0', durasi_unit: 'Menit' } : {}),
+                                        }));
+                                    }}
                                     options={[
                                         { value: 'Ya', label: 'Ya' },
                                         { value: 'Tidak', label: 'Tidak' },
@@ -162,33 +150,35 @@ export default function Classification() {
                             </div>
                         </div>
 
-                        {/* Durasi Nyeri */}
-                        <div className="py-4 border-b border-slate-300">
-                            <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Durasi Nyeri</Label>
-                                <div className="flex items-center gap-4 flex-1">
-                                    <div className="relative w-32">
-                                        <Input
-                                            type="number"
-                                            value={data.durasi_nyeri}
-                                            onChange={(e) => setData('durasi_nyeri', e.target.value)}
-                                            className="bg-white border-slate-300 h-11 pr-8"
+                        {/* Durasi Nyeri - only shown when nyeri_dada is Ya */}
+                        {data.nyeri_dada === 'Ya' && (
+                            <div className="py-4 border-b border-slate-300">
+                                <div className="flex items-center gap-4">
+                                    <Label className="text-slate-700 w-32">Durasi Nyeri</Label>
+                                    <div className="flex items-center gap-4 flex-1">
+                                        <div className="relative w-32">
+                                            <Input
+                                                type="number"
+                                                value={data.durasi_nyeri}
+                                                onChange={(e) => setData('durasi_nyeri', e.target.value)}
+                                                className="bg-white border-slate-300 h-11 pr-8"
+                                            />
+                                            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                        </div>
+                                        <RadioGroup
+                                            name="durasi_unit"
+                                            value={data.durasi_unit}
+                                            onChange={(val) => setData('durasi_unit', val)}
+                                            options={[
+                                                { value: 'Menit', label: 'Menit' },
+                                                { value: 'Jam', label: 'Jam' },
+                                                { value: 'Hari', label: 'Hari' },
+                                            ]}
                                         />
-                                        <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                                     </div>
-                                    <RadioGroup
-                                        name="durasi_unit"
-                                        value={data.durasi_unit}
-                                        onChange={(val) => setData('durasi_unit', val)}
-                                        options={[
-                                            { value: 'Menit', label: 'Menit' },
-                                            { value: 'Jam', label: 'Jam' },
-                                            { value: 'Hari', label: 'Hari' },
-                                        ]}
-                                    />
                                 </div>
                             </div>
-                        </div>
+                        )}
 
                         {/* Sesak Napas */}
                         <div className="py-4 border-b border-slate-300">
@@ -264,7 +254,7 @@ export default function Classification() {
                                         value={data.tekanan_darah}
                                         onChange={(e) => setData('tekanan_darah', e.target.value)}
                                         className="bg-white border-slate-300 h-11 w-32 text-center"
-                                        placeholder="120/80"
+                                        placeholder="120"
                                     />
                                     <span className="text-slate-600">mmHg</span>
                                 </div>
@@ -338,35 +328,6 @@ export default function Classification() {
                             </Button>
                         </div>
                     </form>
-
-                    {/* Result Section */}
-                    {showResult && result && (
-                        <div className="mt-8 p-6 bg-white rounded-xl shadow-md">
-                            <h2 className="text-xl font-bold text-slate-700 mb-4">Hasil Klasifikasi</h2>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <p className="text-slate-600">Prediksi</p>
-                                    <p className="text-lg font-semibold text-slate-800">{result.prediction}</p>
-                                </div>
-                                <div>
-                                    <p className="text-slate-600">Tingkat Risiko</p>
-                                    <p className={`text-lg font-semibold ${
-                                        result.risk_level === 'HIGH' ? 'text-red-600' :
-                                        result.risk_level === 'MODERATE' ? 'text-yellow-600' :
-                                        'text-green-600'
-                                    }`}>
-                                        {result.risk_level}
-                                    </p>
-                                </div>
-                                <div>
-                                    <p className="text-slate-600">Probabilitas Angina</p>
-                                    <p className="text-lg font-semibold text-slate-800">
-                                        {result.risk_percentage}%
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
 
                 {/* Footer */}

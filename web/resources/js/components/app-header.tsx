@@ -29,8 +29,8 @@ export function AppHeader() {
                         <Home className="w-5 h-5" />
                         <span>Home</span>
                     </Link>
-                    <Link 
-                        href="#about" 
+                    <Link
+                        href="/about"
                         className="flex items-center gap-2 text-slate-600 hover:text-slate-900 transition-colors"
                     >
                         <Info className="w-5 h-5" />

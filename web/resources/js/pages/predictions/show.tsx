@@ -4,7 +4,6 @@ import predictionsRoute from '@/routes/predictions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
 import { ArrowLeft, Activity, AlertTriangle, CheckCircle, User, Calendar, Printer } from 'lucide-react';
 
@@ -29,7 +28,7 @@ interface Prediction {
   riwayat_dm: string;
   hipertensi: string;
   riwayat_pjk: string;
-  nyeri_menjalar: string;
+  nyeri_dada: string;
   durasi_nyeri: string;
   sesak_napas: string;
   mual: string;
@@ -146,15 +145,19 @@ export default function PredictionsShow({ prediction }: Props) {
         </Card>
 
         {/* Disclaimer */}
-        <Alert variant="destructive">
-          <AlertTriangle className="h-4 w-4" />
-          <AlertTitle>Penting: Bukan Diagnosis Medis</AlertTitle>
-          <AlertDescription>
-            Hasil ini dihasilkan oleh algoritma machine learning dan hanya untuk tujuan riset.
-            <strong> JANGAN</strong> digunakan sebagai satu-satunya dasar untuk diagnosis atau
-            pengobatan. Selalu konsultasikan dengan dokter spesialis jantung untuk evaluasi medis.
-          </AlertDescription>
-        </Alert>
+        <div className="rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-medium text-red-800">Penting: Bukan Diagnosis Medis</p>
+              <p className="text-red-700/80 mt-1">
+                Hasil ini dihasilkan oleh algoritma machine learning dan hanya untuk tujuan riset.
+                <strong> JANGAN</strong> digunakan sebagai satu-satunya dasar untuk diagnosis atau
+                pengobatan. Selalu konsultasikan dengan dokter spesialis jantung untuk evaluasi medis.
+              </p>
+            </div>
+          </div>
+        </div>
 
         <div className="grid gap-6 md:grid-cols-2">
           {/* Clinical Data */}
@@ -203,7 +206,7 @@ export default function PredictionsShow({ prediction }: Props) {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <p className="text-sm text-muted-foreground">Nyeri Menjalar</p>
-                  <p>{formatValue(prediction.nyeri_menjalar)}</p>
+                  <p>{formatValue(prediction.nyeri_dada)}</p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">Sesak Napas</p>

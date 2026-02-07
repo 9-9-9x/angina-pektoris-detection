@@ -79,13 +79,13 @@ class PredictionController extends Controller
         ];
 
         // Call ML API (use mock if ML API is not available)
-        $result = $this->mlService->healthCheck()['status'] === 'healthy' 
+        $result = $this->mlService->healthCheck()['status'] === 'healthy'
             ? $this->mlService->predict($mlData)
             : $this->mlService->mockPredict($mlData);
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return redirect()->back()
-                ->with('error', 'Gagal melakukan prediksi: ' . ($result['error'] ?? 'Unknown error'));
+                ->with('error', 'Gagal melakukan prediksi: '.($result['error'] ?? 'Unknown error'));
         }
 
         $predictionData = $result['data'];
@@ -127,7 +127,7 @@ class PredictionController extends Controller
             'nama' => 'required|string|max:255',
             'umur' => 'required|integer|min:0|max:120',
             'jenis_kelamin' => 'required|in:L,P',
-            
+
             // Clinical data
             'nyeri_dada' => 'required|in:Ya,Tidak',
             'durasi_nyeri' => 'required|string|max:50',
@@ -143,7 +143,7 @@ class PredictionController extends Controller
         ]);
 
         // Format duration with unit
-        $durasiLengkap = $validated['durasi_nyeri'] . ' ' . $validated['durasi_unit'];
+        $durasiLengkap = $validated['durasi_nyeri'].' '.$validated['durasi_unit'];
 
         // Prepare data for ML API
         $mlData = [
@@ -162,13 +162,13 @@ class PredictionController extends Controller
         ];
 
         // Call ML API (use mock if ML API is not available)
-        $result = $this->mlService->healthCheck()['status'] === 'healthy' 
+        $result = $this->mlService->healthCheck()['status'] === 'healthy'
             ? $this->mlService->predict($mlData)
             : $this->mlService->mockPredict($mlData);
 
-        if (!$result['success']) {
+        if (! $result['success']) {
             return redirect()->back()
-                ->with('error', 'Gagal melakukan prediksi: ' . ($result['error'] ?? 'Unknown error'));
+                ->with('error', 'Gagal melakukan prediksi: '.($result['error'] ?? 'Unknown error'));
         }
 
         $predictionData = $result['data'];
@@ -215,7 +215,7 @@ class PredictionController extends Controller
     public function result(Request $request)
     {
         $predictionId = $request->query('prediction');
-        
+
         if ($predictionId) {
             $prediction = Prediction::with('patient')->findOrFail($predictionId);
             $this->authorize('view', $prediction);
@@ -228,12 +228,13 @@ class PredictionController extends Controller
         }
 
         return Inertia::render('classification-result', [
+            'prediction_id' => $prediction->id,
             'patient' => [
                 'nama' => $prediction->patient->nama,
                 'umur' => $prediction->usia,
                 'jenis_kelamin' => $prediction->patient->jenis_kelamin === 'L' ? 'Laki-Laki' : 'Perempuan',
                 'durasi_nyeri' => $prediction->durasi_nyeri,
-                'tekanan_darah' => $prediction->tekanan_darah . ' mmHg',
+                'tekanan_darah' => $prediction->tekanan_darah.' mmHg',
             ],
             'result' => [
                 'prediction' => $prediction->prediction_result,
@@ -305,16 +306,16 @@ class PredictionController extends Controller
     public function dashboard()
     {
         $user = auth()->user();
-        
+
         // Get prediction counts for the stats cards
         $anginaCount = Prediction::where('user_id', $user->id)
             ->where('prediction_result', 'Angina Pektoris')
             ->count();
-            
+
         $nonAnginaCount = Prediction::where('user_id', $user->id)
             ->where('prediction_result', 'Bukan Angina Pektoris')
             ->count();
-        
+
         $stats = [
             'total_patients' => Patient::where('user_id', $user->id)->count(),
             'angina_count' => $anginaCount,

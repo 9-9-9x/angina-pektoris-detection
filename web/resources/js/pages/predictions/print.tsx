@@ -32,7 +32,7 @@ interface Prediction {
   riwayat_dm: string;
   hipertensi: string;
   riwayat_pjk: string;
-  nyeri_menjalar: string;
+  nyeri_dada: string;
   durasi_nyeri: string;
   sesak_napas: string;
   mual: string;
@@ -174,7 +174,7 @@ export default function PredictionsPrint({ prediction }: Props) {
                 <td style={{ padding: '10px', borderBottom: '1px solid #e5e7eb', color: '#6b7280' }}>Riwayat Diabetes</td>
                 <td style={{ padding: '10px', borderBottom: '1px solid #e5e7eb' }}>{formatValue(prediction.riwayat_dm)}</td>
                 <td style={{ padding: '10px', borderBottom: '1px solid #e5e7eb', color: '#6b7280' }}>Nyeri Menjalar</td>
-                <td style={{ padding: '10px', borderBottom: '1px solid #e5e7eb' }}>{formatValue(prediction.nyeri_menjalar)}</td>
+                <td style={{ padding: '10px', borderBottom: '1px solid #e5e7eb' }}>{formatValue(prediction.nyeri_dada)}</td>
               </tr>
               <tr>
                 <td style={{ padding: '10px', borderBottom: '1px solid #e5e7eb', color: '#6b7280' }}>Hipertensi</td>
@@ -266,7 +266,7 @@ export default function PredictionsPrint({ prediction }: Props) {
           🖨️ Cetak / Save PDF
         </button>
         <button
-          onClick={() => window.close()}
+          onClick={() => window.history.back()}
           style={{
             padding: '12px 24px',
             backgroundColor: '#6b7280',

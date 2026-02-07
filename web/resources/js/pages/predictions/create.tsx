@@ -26,12 +26,11 @@ interface Props {
 
 export default function PredictionsCreate({ patient, mlStatus }: Props) {
   const { data, setData, post, processing, errors } = useForm({
-    usia: '',
     tekanan_darah: '',
     riwayat_dm: 'Tidak',
     hipertensi: 'Tidak',
     riwayat_pjk: 'Tidak',
-    nyeri_menjalar: 'Tidak',
+    nyeri_dada: 'Tidak',
     durasi_nyeri: '5 menit',
     sesak_napas: 'Tidak',
     mual: 'Tidak',
@@ -82,11 +81,11 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
         </div>
 
         {mlStatus.status !== 'healthy' && (
-          <Alert variant="destructive">
+          <Alert>
             <AlertTriangle className="h-4 w-4" />
             <AlertTitle>ML Service Tidak Tersedia</AlertTitle>
             <AlertDescription>
-              {mlStatus.error || 'Tidak dapat terhubung ke layanan prediksi. Silakan coba lagi nanti.'}
+              {mlStatus.error || 'Tidak dapat terhubung ke layanan prediksi.'} Prediksi akan menggunakan metode estimasi (mock) sebagai pengganti.
             </AlertDescription>
           </Alert>
         )}
@@ -99,20 +98,6 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
             </CardHeader>
             <CardContent>
               <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="usia">Usia (tahun) *</Label>
-                  <Input
-                    id="usia"
-                    type="number"
-                    min="0"
-                    max="120"
-                    value={data.usia}
-                    onChange={(e) => setData('usia', e.target.value)}
-                    placeholder="Contoh: 65"
-                  />
-                  {errors.usia && <p className="text-sm text-red-500">{errors.usia}</p>}
-                </div>
-
                 <div className="space-y-2">
                   <Label htmlFor="tekanan_darah">Tekanan Darah Sistolik (mmHg) *</Label>
                   <Input
@@ -189,7 +174,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
               <div className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-2">
                   <Label>Nyeri Dada Menjalar ke Lengan</Label>
-                  <Select value={data.nyeri_menjalar} onValueChange={(value) => setData('nyeri_menjalar', value)}>
+                  <Select value={data.nyeri_dada} onValueChange={(value) => setData('nyeri_dada', value)}>
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -277,7 +262,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
           <div className="flex gap-4">
             <Button
               type="submit"
-              disabled={processing || mlStatus.status !== 'healthy'}
+              disabled={processing}
               size="lg"
             >
               <Activity className="mr-2 h-4 w-4" />
