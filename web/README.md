@@ -10,52 +10,99 @@ Laravel + React + Inertia.js web application for predicting Angina Pektoris usin
 2. Composer
 3. Node.js 18+
 4. SQLite (or MySQL)
-5. FastAPI ML Service running on port 8000
+5. Python 3.11+ with FastAPI
 
-### Installation
+### Architecture Overview
+
+This project has **two main components**:
+
+```
+┌─────────────────┐     HTTP      ┌─────────────────┐
+│   Laravel Web   │◄──────────────►│  FastAPI ML     │
+│   (Port 8000)   │                │  (Port 8000)    │
+└─────────────────┘                └─────────────────┘
+                                          │
+                                          ▼ Load
+                                    ┌─────────────┐
+                                    │ angina_     │
+                                    │ model.pkl   │
+                                    │ (Trained)   │
+                                    └─────────────┘
+```
+
+**Web App (Laravel + React)** - User interface, patient management, displays results
+**ML Service (FastAPI)** - Loads trained model, serves predictions via HTTP API
+
+### Step 1: Train the Model (One-time)
 
 ```bash
-# Navigate to web directory
+cd ml
+source .venv/bin/activate
+
+# Train and save the model
+python model.py
+
+# Output: angina_model.pkl (trained model file)
+```
+
+### Step 2: Start ML API Service
+
+```bash
+cd ml
+source .venv/bin/activate
+
+# Start the prediction API (keep running)
+uvicorn api:app --reload --port 8000
+```
+
+### Step 3: Setup Web Application
+
+```bash
 cd web
 
-# Install PHP dependencies
+# Install dependencies
 composer install
-
-# Install Node.js dependencies
 npm install
 
-# Copy environment file
+# Setup environment
 cp .env.example .env
-
-# Generate app key
 php artisan key:generate
 
-# Run migrations
+# Database
 php artisan migrate
 
-# Build frontend assets
+# Build frontend
 npm run build
-
-# Or for development with hot reload
-npm run dev
+# Or for development: npm run dev
 ```
 
-### Running the Application
+### Step 4: Start Web Server
 
 ```bash
-# Terminal 1: Start Laravel development server
+cd web
 php artisan serve
-
-# Terminal 2: Start FastAPI ML service (from ml directory)
-cd ../ml
-source .venv/bin/activate
-uvicorn api:app --reload --port 8000
-
-# Terminal 3: Build frontend (if using npm run dev)
-npm run dev
 ```
 
-Access the application at: http://localhost:8000
+### Access the Application
+
+- **Web App:** http://localhost:8000
+- **ML API Docs:** http://localhost:8000/docs
+
+### Complete Development Setup (4 Terminals)
+
+```bash
+# Terminal 1: ML API (must be running first)
+cd ml && source .venv/bin/activate && uvicorn api:app --reload --port 8000
+
+# Terminal 2: Laravel Server
+cd web && php artisan serve
+
+# Terminal 3: Frontend Build (hot reload)
+cd web && npm run dev
+
+# Terminal 4: (Optional) Retrain model
+cd ml && source .venv/bin/activate && python model.py
+```
 
 ## 📁 Project Structure
 
@@ -94,21 +141,29 @@ web/
 - Add new patient
 - View patient details
 - Edit patient information
+- Delete patient with confirmation
 - View prediction history per patient
 
 ### 3. Prediction
 - Input clinical data (12 features)
 - Call FastAPI ML service
 - Display prediction result with:
-  - Risk level (LOW/MODERATE/HIGH)
+  - Risk level (LOW/MODERATE/HIGH) - color coded
   - Probability percentage
+  - Confidence level
   - Medical disclaimer
 - Save prediction history
+- **Print / PDF Export** - Generate printable report with signatures
 
 ### 4. Dashboard
-- Statistics cards (total patients, predictions, etc.)
+- Statistics cards (total patients, predictions, high-risk count)
 - Recent predictions
 - Risk distribution
+
+### 5. Reports
+- View all predictions history
+- Print individual prediction reports
+- Filter and search predictions
 
 ## 🔗 API Integration
 
@@ -153,21 +208,41 @@ Uses shadcn/ui components:
 
 ## 🐛 Troubleshooting
 
-### ML Service Not Found
+### "ML Service Tidak Tersedia" / "ML API returned error status"
+
+**Cause:** The FastAPI ML service is not running
+
+**Solution:**
+```bash
+cd ml
+source .venv/bin/activate
+uvicorn api:app --reload --port 8000
 ```
-Error: ML API health check failed
+
+**Remember:** You need to run BOTH services:
+1. `api.py` - The ML prediction service (keeps running)
+2. `model.py` - Only for training, not for serving!
+
+### Model file not found
+
+**Cause:** `angina_model.pkl` doesn't exist
+
+**Solution:** Train the model first:
+```bash
+cd ml
+source .venv/bin/activate
+python model.py
 ```
-**Solution**: Make sure FastAPI is running on port 8000
 
 ### Database Locked
 ```
 SQLSTATE[HY000]: General error: 5 database is locked
 ```
-**Solution**: Restart the Laravel server
+**Solution:** Restart the Laravel server
 
 ### Migration Failed
 ```bash
-php artisan migrate:fresh --seed
+php artisan migrate:fresh
 ```
 
 ## 📚 Tech Stack
@@ -177,6 +252,18 @@ php artisan migrate:fresh --seed
 - **UI**: Tailwind CSS, shadcn/ui
 - **Database**: SQLite (default) / MySQL
 - **ML Integration**: FastAPI (Python)
+
+## 🖼️ Pages Overview
+
+1. **Dashboard** - Statistics cards, recent predictions, risk distribution
+2. **Patients List** - View all patients with search functionality
+3. **Patient Detail** - Patient info, prediction history, edit/delete options
+4. **Add Patient** - Form to register new patient
+5. **Edit Patient** - Update patient information
+6. **Prediction Form** - Input 12 clinical features
+7. **Prediction Result** - Color-coded risk level with medical disclaimer
+8. **Print/PDF Report** - Printable report with patient data, results, and signature lines
+9. **Predictions History** - All predictions with filter and search
 
 ## 📝 License
 

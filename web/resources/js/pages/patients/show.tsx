@@ -1,9 +1,20 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import patientsRoute from '@/routes/patients';
+import predictionsRoute from '@/routes/predictions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { AppLayout } from '@/layouts/app-layout';
-import { ArrowLeft, Edit, Activity, Calendar, User, MapPin, Phone } from 'lucide-react';
+import AppLayout from '@/layouts/app-layout';
+import { useState } from 'react';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { ArrowLeft, Edit, Activity, Calendar, User, MapPin, Phone, Trash2 } from 'lucide-react';
 
 interface Prediction {
   id: number;
@@ -30,6 +41,14 @@ interface Props {
 }
 
 export default function PatientsShow({ patient }: Props) {
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const { delete: destroy, processing } = useForm();
+
+  const handleDelete = () => {
+    destroy(patientsRoute.destroy(patient.id), {
+      onSuccess: () => setShowDeleteDialog(false),
+    });
+  };
   const getRiskBadge = (level: string) => {
     switch (level) {
       case 'HIGH':
@@ -50,7 +69,7 @@ export default function PatientsShow({ patient }: Props) {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href={route('patients.index')}>
+            <Link href={patientsRoute.index()}>
               <Button variant="ghost" size="icon">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -61,18 +80,26 @@ export default function PatientsShow({ patient }: Props) {
             </div>
           </div>
           <div className="flex gap-2">
-            <Link href={route('predictions.create', patient.id)}>
+            <Link href={predictionsRoute.create(patient.id)}>
               <Button>
                 <Activity className="mr-2 h-4 w-4" />
                 Prediksi Baru
               </Button>
             </Link>
-            <Link href={route('patients.edit', patient.id)}>
+            <Link href={patientsRoute.edit(patient.id)}>
               <Button variant="outline">
                 <Edit className="mr-2 h-4 w-4" />
                 Edit
               </Button>
             </Link>
+            <Button 
+              variant="outline" 
+              className="text-red-600 hover:text-red-700"
+              onClick={() => setShowDeleteDialog(true)}
+            >
+              <Trash2 className="mr-2 h-4 w-4" />
+              Hapus
+            </Button>
           </div>
         </div>
 
@@ -131,7 +158,7 @@ export default function PatientsShow({ patient }: Props) {
                   {patient.predictions.map((prediction) => (
                     <Link
                       key={prediction.id}
-                      href={route('predictions.show', prediction.id)}
+                      href={predictionsRoute.show(prediction.id)}
                       className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50"
                     >
                       <div>
@@ -153,6 +180,31 @@ export default function PatientsShow({ patient }: Props) {
             </CardContent>
           </Card>
         </div>
+
+        {/* Delete Confirmation Dialog */}
+        <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Hapus Pasien</DialogTitle>
+              <DialogDescription>
+                Apakah Anda yakin ingin menghapus pasien <strong>{patient.nama}</strong>? 
+                Tindakan ini tidak dapat dibatalkan dan semua riwayat prediksi juga akan dihapus.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                Batal
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={handleDelete}
+                disabled={processing}
+              >
+                {processing ? 'Menghapus...' : 'Hapus Pasien'}
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </AppLayout>
   );

@@ -1,3 +1,20 @@
+# =============================================================================
+# MODEL TRAINING SCRIPT
+# =============================================================================
+# 
+# PURPOSE: Train the Random Forest model and save it to a file.
+# 
+# RUN THIS WHEN:
+#   - You have new training data
+#   - You want to retrain the model
+#   - First time setup (to create angina_model.pkl)
+# 
+# DO NOT RUN THIS FOR PREDICTIONS - Use api.py instead!
+# 
+# OUTPUT: angina_model.pkl (trained model file)
+# 
+# =============================================================================
+
 # --- Import Libraries ---
 import pandas as pd
 import numpy as np
@@ -472,4 +489,14 @@ print(f"Prediction Result: {result}")
 
 print("\n" + "=" * 60)
 print("MODEL BUILDING AND EVALUATION COMPLETE")
+print("=" * 60)
+print("\n✅ SUCCESS! Model trained and saved to: angina_model.pkl")
+print("\nNEXT STEPS:")
+print("  1. Start the ML API service:")
+print("     cd ml && source .venv/bin/activate && uvicorn api:app --reload --port 8000")
+print("\n  2. In another terminal, start the web app:")
+print("     cd web && php artisan serve --port 8001")
+print("\n  3. Or use the start script:")
+print("     ./start-services.sh")
+print("\nNOTE: Keep the API service running to serve predictions!")
 print("=" * 60)

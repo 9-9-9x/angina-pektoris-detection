@@ -1,227 +1,144 @@
 import { Head, Link } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Users, Heart, X, ChevronRight } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { AppLayout } from '@/layouts/app-layout';
-import { Users, Activity, Calendar, AlertTriangle, ArrowRight, TrendingUp } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import AppLayout from '@/layouts/app-layout';
 
 interface Prediction {
-  id: number;
-  created_at: string;
-  prediction_result: string;
-  risk_level: 'LOW' | 'MODERATE' | 'HIGH';
-  probability_angina: number;
-  patient: {
     id: number;
-    nama: string;
-    no_rm: string;
-  };
+    patient: {
+        nama: string;
+        umur: number;
+    };
+    prediction_result: string;
+    created_at: string;
+    risk_level: string;
 }
 
 interface Stats {
-  total_patients: number;
-  total_predictions: number;
-  today_predictions: number;
-  high_risk_count: number;
+    total_patients: number;
+    angina_count: number;
+    non_angina_count: number;
 }
 
 interface Props {
-  stats: Stats;
-  recentPredictions: Prediction[];
-  riskDistribution: Record<string, number>;
+    stats: Stats;
+    recentPredictions: Prediction[];
 }
 
-export default function Dashboard({ stats, recentPredictions, riskDistribution }: Props) {
-  const getRiskBadge = (level: string) => {
-    switch (level) {
-      case 'HIGH':
-        return <Badge className="bg-red-500">Tinggi</Badge>;
-      case 'MODERATE':
-        return <Badge className="bg-yellow-500 text-black">Sedang</Badge>;
-      case 'LOW':
-        return <Badge className="bg-green-500">Rendah</Badge>;
-      default:
-        return <Badge>Unknown</Badge>;
-    }
-  };
-
-  return (
-    <AppLayout>
-      <Head title="Dashboard" />
-
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-          <p className="text-muted-foreground">
-            Ringkasan data dan aktivitas prediksi Angina Pektoris
-          </p>
-        </div>
-
-        {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Pasien</CardTitle>
-              <Users className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.total_patients}</div>
-              <p className="text-xs text-muted-foreground">
-                Pasien terdaftar
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Total Prediksi</CardTitle>
-              <Activity className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.total_predictions}</div>
-              <p className="text-xs text-muted-foreground">
-                Analisis telah dilakukan
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Prediksi Hari Ini</CardTitle>
-              <Calendar className="h-4 w-4 text-muted-foreground" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stats.today_predictions}</div>
-              <p className="text-xs text-muted-foreground">
-                Analisis hari ini
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">Risiko Tinggi</CardTitle>
-              <AlertTriangle className="h-4 w-4 text-red-500" />
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold text-red-600">{stats.high_risk_count}</div>
-              <p className="text-xs text-muted-foreground">
-                Pasien dengan risiko tinggi
-              </p>
-            </CardContent>
-          </Card>
-        </div>
-
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Recent Predictions */}
-          <Card>
-            <CardHeader className="flex items-center justify-between">
-              <CardTitle>Prediksi Terbaru</CardTitle>
-              <Link href={route('predictions.index')}>
-                <Button variant="ghost" size="sm">
-                  Lihat Semua
-                  <ArrowRight className="ml-1 h-4 w-4" />
-                </Button>
-              </Link>
-            </CardHeader>
-            <CardContent>
-              {recentPredictions.length === 0 ? (
-                <p className="text-center text-muted-foreground py-4">
-                  Belum ada prediksi
-                </p>
-              ) : (
-                <div className="space-y-3">
-                  {recentPredictions.map((prediction) => (
-                    <Link
-                      key={prediction.id}
-                      href={route('predictions.show', prediction.id)}
-                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50"
-                    >
-                      <div>
-                        <p className="font-medium">{prediction.patient.nama}</p>
-                        <p className="text-sm text-muted-foreground">
-                          {new Date(prediction.created_at).toLocaleDateString('id-ID')}
-                        </p>
-                      </div>
-                      <div className="text-right">
-                        {getRiskBadge(prediction.risk_level)}
-                        <p className="text-sm text-muted-foreground mt-1">
-                          {(prediction.probability_angina * 100).toFixed(1)}%
-                        </p>
-                      </div>
-                    </Link>
-                  ))}
+export default function Dashboard({ stats, recentPredictions }: Props) {
+    return (
+        <AppLayout>
+            <Head title="Dashboard" />
+            
+            <div className="w-full max-w-6xl">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                    <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
+                    <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100">
+                        Update 5 menit yang lalu
+                    </Badge>
                 </div>
-              )}
-            </CardContent>
-          </Card>
 
-          {/* Risk Distribution */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Distribusi Risiko</CardTitle>
-            </CardHeader>
-            <CardContent>
-              {Object.keys(riskDistribution).length === 0 ? (
-                <p className="text-center text-muted-foreground py-4">
-                  Belum ada data
-                </p>
-              ) : (
-                <div className="space-y-4">
-                  {riskDistribution.HIGH > 0 && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-red-500" />
-                        <span>Risiko Tinggi</span>
-                      </div>
-                      <span className="font-bold">{riskDistribution.HIGH}</span>
+                {/* Stats Cards */}
+                <div className="grid grid-cols-3 gap-6 mb-8">
+                    {/* Total Patients */}
+                    <div className="bg-white rounded-xl p-6 shadow-md border border-slate-100">
+                        <div className="flex items-center gap-3 mb-3">
+                            <Users className="w-6 h-6 text-slate-600" />
+                            <span className="text-slate-600 font-medium">Total Pasien Masuk</span>
+                        </div>
+                        <p className="text-4xl font-bold text-slate-700">{stats?.total_patients || 0}</p>
                     </div>
-                  )}
-                  {riskDistribution.MODERATE > 0 && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-yellow-500" />
-                        <span>Risiko Sedang</span>
-                      </div>
-                      <span className="font-bold">{riskDistribution.MODERATE}</span>
+
+                    {/* Angina Patients */}
+                    <div className="bg-white rounded-xl p-6 shadow-md border border-slate-100">
+                        <div className="flex items-center gap-3 mb-3">
+                            <Heart className="w-6 h-6 text-red-500" />
+                            <span className="text-slate-600 font-medium">Pasien Angina Pektoris</span>
+                        </div>
+                        <p className="text-4xl font-bold text-slate-700">{stats?.angina_count || 0}</p>
                     </div>
-                  )}
-                  {riskDistribution.LOW > 0 && (
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full bg-green-500" />
-                        <span>Risiko Rendah</span>
-                      </div>
-                      <span className="font-bold">{riskDistribution.LOW}</span>
+
+                    {/* Non-Angina Patients */}
+                    <div className="bg-white rounded-xl p-6 shadow-md border border-slate-100">
+                        <div className="flex items-center gap-3 mb-3">
+                            <X className="w-6 h-6 text-slate-600" />
+                            <span className="text-slate-600 font-medium">Bukan Pasien Angina</span>
+                        </div>
+                        <p className="text-4xl font-bold text-slate-700">{stats?.non_angina_count || 0}</p>
                     </div>
-                  )}
                 </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
 
-        {/* Quick Actions */}
-        <Card>
-          <CardHeader>
-            <CardTitle>Aksi Cepat</CardTitle>
-          </CardHeader>
-          <CardContent className="flex gap-4">
-            <Link href={route('patients.create')}>
-              <Button>
-                <Users className="mr-2 h-4 w-4" />
-                Tambah Pasien Baru
-              </Button>
-            </Link>
-            <Link href={route('patients.index')}>
-              <Button variant="outline">
-                <Activity className="mr-2 h-4 w-4" />
-                Lihat Daftar Pasien
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
-      </div>
-    </AppLayout>
-  );
+                {/* Recent Classifications */}
+                <div className="bg-white rounded-xl shadow-md border border-slate-100 p-6">
+                    <div className="flex items-center justify-between mb-6">
+                        <h2 className="text-xl font-bold text-slate-800">Hasil Klasifikasi Terakhir</h2>
+                        <Link 
+                            href="/predictions" 
+                            className="text-slate-500 hover:text-slate-700 text-sm flex items-center gap-1"
+                        >
+                            Lihat Klasifikasi
+                            <ChevronRight className="w-4 h-4" />
+                        </Link>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-4">
+                        {recentPredictions?.length > 0 ? (
+                            recentPredictions.slice(0, 2).map((prediction) => (
+                                <div 
+                                    key={prediction.id} 
+                                    className="bg-slate-50 rounded-xl p-4 border border-slate-200"
+                                >
+                                    <div className="flex items-center gap-3 mb-3">
+                                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
+                                            <span className="text-xl font-bold text-blue-600">
+                                                {prediction.patient.nama.charAt(0)}
+                                            </span>
+                                        </div>
+                                        <div>
+                                            <h3 className="font-semibold text-slate-800">
+                                                {prediction.patient.nama}
+                                            </h3>
+                                            <p className="text-sm text-slate-500">
+                                                {prediction.prediction_result}, {prediction.patient.umur} Th
+                                            </p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm text-slate-500">
+                                            {new Date(prediction.created_at).toLocaleDateString('id-ID', {
+                                                day: 'numeric',
+                                                month: 'long',
+                                                year: 'numeric'
+                                            })}
+                                        </span>
+                                        <Link href={`/predictions/${prediction.id}`}>
+                                            <Button 
+                                                variant="secondary" 
+                                                size="sm"
+                                                className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                                            >
+                                                Detail
+                                            </Button>
+                                        </Link>
+                                    </div>
+                                </div>
+                            ))
+                        ) : (
+                            <div className="col-span-2 text-center py-8 text-slate-500">
+                                Belum ada data klasifikasi
+                            </div>
+                        )}
+                    </div>
+                </div>
+
+                {/* Footer */}
+                <footer className="mt-8 text-center text-slate-500 text-sm">
+                    2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
+                </footer>
+            </div>
+        </AppLayout>
+    );
 }

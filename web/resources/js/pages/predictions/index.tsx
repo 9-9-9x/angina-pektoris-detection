@@ -1,9 +1,10 @@
 import { Head, Link } from '@inertiajs/react';
+import predictionsRoute from '@/routes/predictions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { AppLayout } from '@/layouts/app-layout';
+import AppLayout from '@/layouts/app-layout';
 import { Search, Eye, Activity } from 'lucide-react';
 import { useState } from 'react';
 
@@ -116,7 +117,7 @@ export default function PredictionsIndex({ predictions }: Props) {
                           {(prediction.probability_angina * 100).toFixed(2)}%
                         </td>
                         <td className="px-4 py-3">
-                          <Link href={route('predictions.show', prediction.id)}>
+                          <Link href={predictionsRoute.show(prediction.id)}>
                             <Button variant="ghost" size="sm">
                               <Eye className="mr-1 h-4 w-4" />
                               Detail

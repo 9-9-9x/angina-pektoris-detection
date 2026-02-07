@@ -1,65 +1,48 @@
-import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
-import { NavFooter } from '@/components/nav-footer';
-import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
-import {
-    Sidebar,
-    SidebarContent,
-    SidebarFooter,
-    SidebarHeader,
-    SidebarMenu,
-    SidebarMenuButton,
-    SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
-import type { NavItem } from '@/types';
-import AppLogo from './app-logo';
+import { Link, usePage } from '@inertiajs/react';
+import { Home, Info, LayoutDashboard, ClipboardList, History, Heart, Activity } from 'lucide-react';
+import type { SharedData } from '@/types';
+import { cn } from '@/lib/utils';
 
-const mainNavItems: NavItem[] = [
-    {
-        title: 'Dashboard',
-        href: dashboard(),
-        icon: LayoutGrid,
-    },
-];
+interface NavItem {
+    title: string;
+    href: string;
+    icon: React.ElementType;
+}
 
-const footerNavItems: NavItem[] = [
-    {
-        title: 'Repository',
-        href: 'https://github.com/laravel/react-starter-kit',
-        icon: Folder,
-    },
-    {
-        title: 'Documentation',
-        href: 'https://laravel.com/docs/starter-kits#react',
-        icon: BookOpen,
-    },
+const navItems: NavItem[] = [
+    { title: 'About', href: '/about', icon: Info },
+    { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { title: 'Mulai Klasifikasi', href: '/classify', icon: ClipboardList },
+    { title: 'Riwayat Klasifikasi', href: '/history', icon: History },
 ];
 
 export function AppSidebar() {
+    const { url } = usePage<SharedData>();
+
     return (
-        <Sidebar collapsible="icon" variant="inset">
-            <SidebarHeader>
-                <SidebarMenu>
-                    <SidebarMenuItem>
-                        <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
-                                <AppLogo />
-                            </Link>
-                        </SidebarMenuButton>
-                    </SidebarMenuItem>
-                </SidebarMenu>
-            </SidebarHeader>
-
-            <SidebarContent>
-                <NavMain items={mainNavItems} />
-            </SidebarContent>
-
-            <SidebarFooter>
-                <NavFooter items={footerNavItems} className="mt-auto" />
-                <NavUser />
-            </SidebarFooter>
-        </Sidebar>
+        <aside className="w-64 bg-gradient-to-b from-slate-50 to-blue-50 border-r border-slate-200 min-h-[calc(100vh-64px)]">
+            <nav className="p-4 space-y-2">
+                {navItems.map((item) => {
+                    const isActive = url === item.href || url.startsWith(item.href + '/');
+                    const Icon = item.icon;
+                    
+                    return (
+                        <Link
+                            key={item.title}
+                            href={item.href}
+                            className={cn(
+                                "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
+                                isActive 
+                                    ? "bg-slate-700 text-white shadow-md" 
+                                    : "text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                            )}
+                        >
+                            <Icon className="w-5 h-5" />
+                            <span className="font-medium">{item.title}</span>
+                        </Link>
+                    );
+                })}
+            </nav>
+        </aside>
     );
 }

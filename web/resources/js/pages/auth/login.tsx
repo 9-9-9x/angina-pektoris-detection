@@ -1,120 +1,119 @@
-import { Form, Head } from '@inertiajs/react';
-import InputError from '@/components/input-error';
-import TextLink from '@/components/text-link';
-import { Button } from '@/components/ui/button';
-import { Checkbox } from '@/components/ui/checkbox';
+import { Head, Link, useForm } from '@inertiajs/react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Spinner } from '@/components/ui/spinner';
-import AuthLayout from '@/layouts/auth-layout';
-import { register } from '@/routes';
-import { store } from '@/routes/login';
-import { request } from '@/routes/password';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Button } from '@/components/ui/button';
+import { Heart, Activity } from 'lucide-react';
+import { login as loginRoute, register as registerRoute } from '@/routes';
 
-type Props = {
-    status?: string;
-    canResetPassword: boolean;
-    canRegister: boolean;
-};
+export default function Login({ status }: { status?: string }) {
+    const { data, setData, post, processing, errors } = useForm({
+        email: '',
+        password: '',
+        remember: false,
+    });
 
-export default function Login({
-    status,
-    canResetPassword,
-    canRegister,
-}: Props) {
+    const submit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post('/login');
+    };
+
     return (
-        <AuthLayout
-            title="Log in to your account"
-            description="Enter your email and password below to log in"
-        >
-            <Head title="Log in" />
+        <>
+            <Head title="Login" />
+            
+            <div className="min-h-screen bg-gradient-to-br from-blue-100 via-indigo-100 to-purple-100 flex items-center justify-center p-4">
+                <div className="w-full max-w-md">
+                    {/* Header with Logo */}
+                    <div className="flex items-center justify-center gap-3 mb-8">
+                        <div className="relative">
+                            <Heart className="w-12 h-12 text-red-500 fill-red-500" />
+                            <Activity className="w-6 h-6 text-white absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2" />
+                        </div>
+                        <div className="text-center">
+                            <h1 className="text-xl font-semibold text-slate-600">Sistem Klasifikasi</h1>
+                            <h2 className="text-2xl font-bold text-slate-700">Angina Pektoris</h2>
+                        </div>
+                    </div>
 
-            <Form
-                {...store.form()}
-                resetOnSuccess={['password']}
-                className="flex flex-col gap-6"
-            >
-                {({ processing, errors }) => (
-                    <>
-                        <div className="grid gap-6">
-                            <div className="grid gap-2">
-                                <Label htmlFor="email">Email address</Label>
+                    {/* Login Card */}
+                    <div className="bg-white rounded-2xl shadow-lg p-8">
+                        <h2 className="text-4xl font-bold text-slate-700 mb-8">Login</h2>
+
+                        {status && (
+                            <div className="mb-4 text-sm text-green-600 bg-green-50 p-3 rounded-lg">
+                                {status}
+                            </div>
+                        )}
+
+                        <form onSubmit={submit} className="space-y-5">
+                            <div>
+                                <Label htmlFor="email" className="text-slate-600">Email</Label>
                                 <Input
                                     id="email"
                                     type="email"
-                                    name="email"
-                                    required
-                                    autoFocus
-                                    tabIndex={1}
-                                    autoComplete="email"
-                                    placeholder="email@example.com"
+                                    value={data.email}
+                                    onChange={(e) => setData('email', e.target.value)}
+                                    className="mt-1 h-11 border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                                    placeholder="Masukkan email"
                                 />
-                                <InputError message={errors.email} />
+                                {errors.email && (
+                                    <p className="mt-1 text-sm text-red-500">{errors.email}</p>
+                                )}
                             </div>
 
-                            <div className="grid gap-2">
-                                <div className="flex items-center">
-                                    <Label htmlFor="password">Password</Label>
-                                    {canResetPassword && (
-                                        <TextLink
-                                            href={request()}
-                                            className="ml-auto text-sm"
-                                            tabIndex={5}
-                                        >
-                                            Forgot password?
-                                        </TextLink>
-                                    )}
+                            <div>
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="password" className="text-slate-600">Password</Label>
+                                    <Link
+                                        href="/forgot-password"
+                                        className="text-sm text-slate-500 hover:text-slate-700"
+                                    >
+                                        Lupa password?
+                                    </Link>
                                 </div>
                                 <Input
                                     id="password"
                                     type="password"
-                                    name="password"
-                                    required
-                                    tabIndex={2}
-                                    autoComplete="current-password"
-                                    placeholder="Password"
+                                    value={data.password}
+                                    onChange={(e) => setData('password', e.target.value)}
+                                    className="mt-1 h-11 border-slate-300 focus:border-blue-500 focus:ring-blue-500"
+                                    placeholder="Masukkan password"
                                 />
-                                <InputError message={errors.password} />
+                                {errors.password && (
+                                    <p className="mt-1 text-sm text-red-500">{errors.password}</p>
+                                )}
                             </div>
 
-                            <div className="flex items-center space-x-3">
+                            <div className="flex items-center">
                                 <Checkbox
                                     id="remember"
-                                    name="remember"
-                                    tabIndex={3}
+                                    checked={data.remember}
+                                    onCheckedChange={(checked) => setData('remember', checked as boolean)}
                                 />
-                                <Label htmlFor="remember">Remember me</Label>
+                                <Label htmlFor="remember" className="ml-2 text-sm text-slate-600">
+                                    Remember me
+                                </Label>
                             </div>
 
                             <Button
                                 type="submit"
-                                className="mt-4 w-full"
-                                tabIndex={4}
                                 disabled={processing}
-                                data-test="login-button"
+                                className="w-full h-11 bg-slate-700 hover:bg-slate-800 text-white font-medium"
                             >
-                                {processing && <Spinner />}
-                                Log in
+                                {processing ? 'Loading...' : 'Login'}
                             </Button>
-                        </div>
+                        </form>
 
-                        {canRegister && (
-                            <div className="text-center text-sm text-muted-foreground">
-                                Don't have an account?{' '}
-                                <TextLink href={register()} tabIndex={5}>
-                                    Sign up
-                                </TextLink>
-                            </div>
-                        )}
-                    </>
-                )}
-            </Form>
-
-            {status && (
-                <div className="mb-4 text-center text-sm font-medium text-green-600">
-                    {status}
+                        <p className="mt-6 text-center text-sm text-slate-600">
+                            Belum punya akun?{' '}
+                            <Link href={registerRoute()} className="font-medium text-slate-800 hover:underline">
+                                Daftar
+                            </Link>
+                        </p>
+                    </div>
                 </div>
-            )}
-        </AuthLayout>
+            </div>
+        </>
     );
 }

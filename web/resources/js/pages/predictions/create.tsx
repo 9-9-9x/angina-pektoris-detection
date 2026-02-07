@@ -1,11 +1,13 @@
 import { Head, Link, useForm } from '@inertiajs/react';
+import patientsRoute from '@/routes/patients';
+import predictionsRoute from '@/routes/predictions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AppLayout } from '@/layouts/app-layout';
+import AppLayout from '@/layouts/app-layout';
 import { ArrowLeft, Activity, AlertTriangle } from 'lucide-react';
 
 interface Patient {
@@ -39,7 +41,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(route('predictions.store', patient.id));
+    post(predictionsRoute.store(patient.id));
   };
 
   const yesNoOptions = [
@@ -66,7 +68,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
 
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Link href={route('patients.show', patient.id)}>
+          <Link href={patientsRoute.show(patient.id)}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -281,7 +283,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
               <Activity className="mr-2 h-4 w-4" />
               Analisis Risiko
             </Button>
-            <Link href={route('patients.show', patient.id)}>
+            <Link href={patientsRoute.show(patient.id)}>
               <Button variant="outline" size="lg" type="button">
                 Batal
               </Button>

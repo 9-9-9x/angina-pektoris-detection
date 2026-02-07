@@ -107,37 +107,45 @@ class PredictionController extends Controller
         ]);
     }
 
+    public function print(Prediction $prediction)
+    {
+        $this->authorize('view', $prediction);
+
+        $prediction->load(['patient', 'user']);
+
+        return Inertia::render('predictions/print', [
+            'prediction' => $prediction,
+        ]);
+    }
+
     public function dashboard()
     {
         $user = auth()->user();
         
+        // Get prediction counts for the stats cards
+        $anginaCount = Prediction::where('user_id', $user->id)
+            ->where('prediction_result', 'Angina Pektoris')
+            ->count();
+            
+        $nonAnginaCount = Prediction::where('user_id', $user->id)
+            ->where('prediction_result', 'Bukan Angina Pektoris')
+            ->count();
+        
         $stats = [
             'total_patients' => Patient::where('user_id', $user->id)->count(),
-            'total_predictions' => Prediction::where('user_id', $user->id)->count(),
-            'today_predictions' => Prediction::where('user_id', $user->id)
-                ->whereDate('created_at', today())
-                ->count(),
-            'high_risk_count' => Prediction::where('user_id', $user->id)
-                ->where('risk_level', 'HIGH')
-                ->count(),
+            'angina_count' => $anginaCount,
+            'non_angina_count' => $nonAnginaCount,
         ];
 
         $recentPredictions = Prediction::with('patient')
             ->where('user_id', $user->id)
             ->latest()
-            ->limit(5)
+            ->limit(4)
             ->get();
-
-        $riskDistribution = Prediction::where('user_id', $user->id)
-            ->selectRaw('risk_level, COUNT(*) as count')
-            ->groupBy('risk_level')
-            ->pluck('count', 'risk_level')
-            ->toArray();
 
         return Inertia::render('dashboard', [
             'stats' => $stats,
             'recentPredictions' => $recentPredictions,
-            'riskDistribution' => $riskDistribution,
         ]);
     }
 }

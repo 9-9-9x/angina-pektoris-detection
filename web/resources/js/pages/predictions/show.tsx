@@ -1,10 +1,12 @@
 import { Head, Link } from '@inertiajs/react';
+import patientsRoute from '@/routes/patients';
+import predictionsRoute from '@/routes/predictions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { AppLayout } from '@/layouts/app-layout';
-import { ArrowLeft, Activity, AlertTriangle, CheckCircle, User, Calendar } from 'lucide-react';
+import AppLayout from '@/layouts/app-layout';
+import { ArrowLeft, Activity, AlertTriangle, CheckCircle, User, Calendar, Printer } from 'lucide-react';
 
 interface Patient {
   id: number;
@@ -98,7 +100,7 @@ export default function PredictionsShow({ prediction }: Props) {
       <div className="space-y-6">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <Link href={route('patients.show', prediction.patient.id)}>
+            <Link href={patientsRoute.show(prediction.patient.id)}>
               <Button variant="ghost" size="icon">
                 <ArrowLeft className="h-4 w-4" />
               </Button>
@@ -226,13 +228,19 @@ export default function PredictionsShow({ prediction }: Props) {
 
         {/* Action Buttons */}
         <div className="flex gap-4">
-          <Link href={route('predictions.create', prediction.patient.id)}>
+          <Link href={predictionsRoute.print(prediction.id)} target="_blank">
+            <Button variant="outline">
+              <Printer className="mr-2 h-4 w-4" />
+              Cetak / PDF
+            </Button>
+          </Link>
+          <Link href={predictionsRoute.create(prediction.patient.id)}>
             <Button variant="outline">
               <Activity className="mr-2 h-4 w-4" />
               Prediksi Ulang
             </Button>
           </Link>
-          <Link href={route('patients.show', prediction.patient.id)}>
+          <Link href={patientsRoute.show(prediction.patient.id)}>
             <Button variant="ghost">Kembali ke Detail Pasien</Button>
           </Link>
         </div>

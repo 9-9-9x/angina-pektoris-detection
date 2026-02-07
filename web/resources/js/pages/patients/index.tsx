@@ -1,9 +1,11 @@
 import { Head, Link, router } from '@inertiajs/react';
+import patientsRoute from '@/routes/patients';
+import predictionsRoute from '@/routes/predictions';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { AppLayout } from '@/layouts/app-layout';
+import AppLayout from '@/layouts/app-layout';
 import { UserPlus, Search, Eye, Activity } from 'lucide-react';
 import { useState } from 'react';
 
@@ -48,7 +50,7 @@ export default function PatientsIndex({ patients }: Props) {
               Kelola data pasien dan lakukan prediksi Angina Pektoris
             </p>
           </div>
-          <Link href={route('patients.create')}>
+          <Link href={patientsRoute.create()}>
             <Button>
               <UserPlus className="mr-2 h-4 w-4" />
               Tambah Pasien
@@ -103,13 +105,13 @@ export default function PatientsIndex({ patients }: Props) {
                         </td>
                         <td className="px-4 py-3">
                           <div className="flex gap-2">
-                            <Link href={route('patients.show', patient.id)}>
+                            <Link href={patientsRoute.show(patient.id)}>
                               <Button variant="ghost" size="sm">
                                 <Eye className="mr-1 h-4 w-4" />
                                 Detail
                               </Button>
                             </Link>
-                            <Link href={route('predictions.create', patient.id)}>
+                            <Link href={predictionsRoute.create(patient.id)}>
                               <Button variant="outline" size="sm">
                                 <Activity className="mr-1 h-4 w-4" />
                                 Prediksi

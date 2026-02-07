@@ -8,35 +8,49 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import AppLayout from '@/layouts/app-layout';
 import { ArrowLeft, Save } from 'lucide-react';
 
-export default function PatientsCreate() {
-  const { data, setData, post, processing, errors } = useForm({
-    nama: '',
-    no_rm: '',
-    tanggal_lahir: '',
-    jenis_kelamin: '',
-    alamat: '',
-    telepon: '',
+interface Patient {
+  id: number;
+  nama: string;
+  no_rm: string;
+  tanggal_lahir: string;
+  jenis_kelamin: 'L' | 'P';
+  alamat: string | null;
+  telepon: string | null;
+}
+
+interface Props {
+  patient: Patient;
+}
+
+export default function PatientsEdit({ patient }: Props) {
+  const { data, setData, put, processing, errors } = useForm({
+    nama: patient.nama,
+    no_rm: patient.no_rm,
+    tanggal_lahir: patient.tanggal_lahir,
+    jenis_kelamin: patient.jenis_kelamin,
+    alamat: patient.alamat || '',
+    telepon: patient.telepon || '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    post(patientsRoute.store());
+    put(patientsRoute.update(patient.id));
   };
 
   return (
     <AppLayout>
-      <Head title="Tambah Pasien" />
+      <Head title={`Edit Pasien: ${patient.nama}`} />
 
       <div className="space-y-6">
         <div className="flex items-center gap-4">
-          <Link href={patientsRoute.index()}>
+          <Link href={patientsRoute.show(patient.id)}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Tambah Pasien</h1>
-            <p className="text-muted-foreground">Tambahkan data pasien baru</p>
+            <h1 className="text-3xl font-bold tracking-tight">Edit Pasien</h1>
+            <p className="text-muted-foreground">{patient.nama} ({patient.no_rm})</p>
           </div>
         </div>
 
@@ -82,7 +96,10 @@ export default function PatientsCreate() {
 
                 <div className="space-y-2">
                   <Label htmlFor="jenis_kelamin">Jenis Kelamin *</Label>
-                  <Select value={data.jenis_kelamin} onValueChange={(value) => setData('jenis_kelamin', value)}>
+                  <Select 
+                    value={data.jenis_kelamin} 
+                    onValueChange={(value: 'L' | 'P') => setData('jenis_kelamin', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue placeholder="Pilih jenis kelamin" />
                     </SelectTrigger>
@@ -120,9 +137,9 @@ export default function PatientsCreate() {
               <div className="flex gap-4 pt-4">
                 <Button type="submit" disabled={processing}>
                   <Save className="mr-2 h-4 w-4" />
-                  Simpan
+                  Simpan Perubahan
                 </Button>
-                <Link href={patientsRoute.index()}>
+                <Link href={patientsRoute.show(patient.id)}>
                   <Button variant="outline" type="button">
                     Batal
                   </Button>
