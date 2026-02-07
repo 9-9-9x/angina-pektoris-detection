@@ -1,17 +1,635 @@
 import { Head, useForm } from '@inertiajs/react';
-import { Calendar, ChevronDown } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Calendar, ChevronDown, Zap, X, ArrowRight, ArrowLeft, Check, CornerDownLeft } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 
+// ─── Quick Mode Step Definitions ─────────────────────────────────────────────
+
+interface StepDef {
+    key: string;
+    label: string;
+    description: string;
+    type: 'text' | 'number' | 'yesno' | 'choice' | 'duration';
+    placeholder?: string;
+    suffix?: string;
+    options?: { value: string; label: string; shortcut: string }[];
+    skip?: (data: Record<string, string>) => boolean;
+}
+
+const STEPS: StepDef[] = [
+    {
+        key: 'nama',
+        label: 'Nama Pasien',
+        description: 'Masukkan nama lengkap pasien',
+        type: 'text',
+        placeholder: 'Ketik nama pasien...',
+    },
+    {
+        key: 'umur',
+        label: 'Umur Pasien',
+        description: 'Masukkan umur pasien dalam tahun',
+        type: 'number',
+        placeholder: 'Contoh: 65',
+        suffix: 'Tahun',
+    },
+    {
+        key: 'jenis_kelamin',
+        label: 'Jenis Kelamin',
+        description: 'Pilih jenis kelamin pasien',
+        type: 'choice',
+        options: [
+            { value: 'L', label: 'Laki-laki', shortcut: 'L' },
+            { value: 'P', label: 'Perempuan', shortcut: 'P' },
+        ],
+    },
+    {
+        key: 'tekanan_darah',
+        label: 'Tekanan Darah',
+        description: 'Masukkan tekanan darah sistolik',
+        type: 'number',
+        placeholder: 'Contoh: 120',
+        suffix: 'mmHg',
+    },
+    {
+        key: 'nyeri_dada',
+        label: 'Nyeri Dada',
+        description: 'Apakah pasien mengalami nyeri dada?',
+        type: 'yesno',
+    },
+    {
+        key: 'durasi_nyeri',
+        label: 'Durasi Nyeri',
+        description: 'Berapa lama nyeri berlangsung?',
+        type: 'duration',
+        skip: (data) => data.nyeri_dada === 'Tidak',
+    },
+    {
+        key: 'sesak_napas',
+        label: 'Sesak Napas',
+        description: 'Apakah pasien mengalami sesak napas?',
+        type: 'yesno',
+    },
+    {
+        key: 'keringat_dingin',
+        label: 'Keringat Dingin',
+        description: 'Apakah pasien mengalami keringat dingin?',
+        type: 'yesno',
+    },
+    {
+        key: 'mual',
+        label: 'Mual',
+        description: 'Apakah pasien mengalami mual?',
+        type: 'yesno',
+    },
+    {
+        key: 'muntah',
+        label: 'Muntah',
+        description: 'Apakah pasien mengalami muntah?',
+        type: 'yesno',
+    },
+    {
+        key: 'hipertensi',
+        label: 'Riwayat Hipertensi',
+        description: 'Apakah pasien memiliki riwayat hipertensi?',
+        type: 'yesno',
+    },
+    {
+        key: 'riwayat_dm',
+        label: 'Riwayat DM',
+        description: 'Apakah pasien memiliki riwayat diabetes mellitus?',
+        type: 'yesno',
+    },
+    {
+        key: 'riwayat_pjk',
+        label: 'Riwayat PJK',
+        description: 'Apakah pasien memiliki riwayat penyakit jantung koroner?',
+        type: 'yesno',
+    },
+];
+
+// ─── Quick Mode Modal Component ──────────────────────────────────────────────
+
+function QuickModeModal({
+    open,
+    onClose,
+    data,
+    setData,
+    onSubmit,
+    processing,
+}: {
+    open: boolean;
+    onClose: () => void;
+    data: Record<string, string>;
+    setData: (key: string, value: string) => void;
+    onSubmit: () => void;
+    processing: boolean;
+}) {
+    const [stepIndex, setStepIndex] = useState(0);
+    const [isConfirm, setIsConfirm] = useState(false);
+    const [flash, setFlash] = useState<string | null>(null);
+    const inputRef = useRef<HTMLInputElement>(null);
+    const [durasiValue, setDurasiValue] = useState(data.durasi_nyeri || '');
+    const [durasiUnit, setDurasiUnit] = useState(data.durasi_unit || 'Menit');
+
+    // Get active steps (filter skipped)
+    const activeSteps = STEPS.filter((s) => !s.skip || !s.skip(data));
+    const totalSteps = activeSteps.length;
+    const currentStep = activeSteps[stepIndex];
+    const progress = isConfirm ? 100 : ((stepIndex) / totalSteps) * 100;
+
+    // Reset step when opening
+    useEffect(() => {
+        if (open) {
+            setStepIndex(0);
+            setIsConfirm(false);
+            setDurasiValue(data.durasi_nyeri || '');
+            setDurasiUnit(data.durasi_unit || 'Menit');
+        }
+    }, [open]);
+
+    // Auto-focus input on step change
+    useEffect(() => {
+        if (open && !isConfirm) {
+            setTimeout(() => inputRef.current?.focus(), 50);
+        }
+    }, [stepIndex, open, isConfirm]);
+
+    const showFlash = useCallback((value: string) => {
+        setFlash(value);
+        setTimeout(() => setFlash(null), 200);
+    }, []);
+
+    const goNext = useCallback(() => {
+        if (stepIndex < totalSteps - 1) {
+            setStepIndex((i) => i + 1);
+        } else {
+            setIsConfirm(true);
+        }
+    }, [stepIndex, totalSteps]);
+
+    const goPrev = useCallback(() => {
+        if (isConfirm) {
+            setIsConfirm(false);
+        } else if (stepIndex > 0) {
+            setStepIndex((i) => i - 1);
+        }
+    }, [isConfirm, stepIndex]);
+
+    const selectAndAdvance = useCallback((key: string, value: string, label: string) => {
+        setData(key, value);
+        // Handle nyeri_dada → reset durasi
+        if (key === 'nyeri_dada' && value === 'Tidak') {
+            setData('durasi_nyeri', '0');
+            setData('durasi_unit', 'Menit');
+        }
+        showFlash(label);
+        setTimeout(goNext, 180);
+    }, [setData, showFlash, goNext]);
+
+    // ─── Keyboard handler ────────────────────────────────────────────────
+
+    useEffect(() => {
+        if (!open) return;
+
+        const handler = (e: KeyboardEvent) => {
+            // Global shortcuts
+            if (e.key === 'Escape') {
+                e.preventDefault();
+                onClose();
+                return;
+            }
+
+            // Confirm screen
+            if (isConfirm) {
+                if (e.key === 'Enter' && !processing) {
+                    e.preventDefault();
+                    onSubmit();
+                }
+                if (e.key === 'Backspace' && !(document.activeElement instanceof HTMLInputElement)) {
+                    e.preventDefault();
+                    goPrev();
+                }
+                return;
+            }
+
+            if (!currentStep) return;
+
+            // Yes/No steps
+            if (currentStep.type === 'yesno') {
+                const k = e.key.toLowerCase();
+                if (k === 'y' || k === '1') {
+                    e.preventDefault();
+                    selectAndAdvance(currentStep.key, 'Ya', 'Ya');
+                } else if (k === 't' || k === '2') {
+                    e.preventDefault();
+                    selectAndAdvance(currentStep.key, 'Tidak', 'Tidak');
+                } else if (k === 'backspace') {
+                    e.preventDefault();
+                    goPrev();
+                }
+                return;
+            }
+
+            // Choice steps (gender)
+            if (currentStep.type === 'choice' && currentStep.options) {
+                const k = e.key.toUpperCase();
+                const match = currentStep.options.find((o) => o.shortcut === k);
+                if (match) {
+                    e.preventDefault();
+                    selectAndAdvance(currentStep.key, match.value, match.label);
+                } else if (e.key === 'Backspace' && !(document.activeElement instanceof HTMLInputElement)) {
+                    e.preventDefault();
+                    goPrev();
+                }
+                return;
+            }
+
+            // Duration step
+            if (currentStep.type === 'duration') {
+                if (e.key === 'Enter' && durasiValue) {
+                    e.preventDefault();
+                    setData('durasi_nyeri', durasiValue);
+                    setData('durasi_unit', durasiUnit);
+                    goNext();
+                } else if (e.key === 'Backspace' && !durasiValue) {
+                    e.preventDefault();
+                    goPrev();
+                }
+                // M/J/H to switch unit (only when not typing in input or input has value)
+                const k = e.key.toUpperCase();
+                if (k === 'M' && e.altKey) { e.preventDefault(); setDurasiUnit('Menit'); }
+                if (k === 'J' && e.altKey) { e.preventDefault(); setDurasiUnit('Jam'); }
+                if (k === 'H' && e.altKey) { e.preventDefault(); setDurasiUnit('Hari'); }
+                return;
+            }
+
+            // Text / Number steps
+            if (currentStep.type === 'text' || currentStep.type === 'number') {
+                if (e.key === 'Enter') {
+                    e.preventDefault();
+                    const val = (document.activeElement as HTMLInputElement)?.value || data[currentStep.key];
+                    if (val) {
+                        setData(currentStep.key, val);
+                        goNext();
+                    }
+                } else if (e.key === 'Backspace' && !data[currentStep.key]) {
+                    e.preventDefault();
+                    goPrev();
+                }
+            }
+        };
+
+        window.addEventListener('keydown', handler);
+        return () => window.removeEventListener('keydown', handler);
+    }, [open, isConfirm, currentStep, stepIndex, data, durasiValue, durasiUnit, processing, goNext, goPrev, selectAndAdvance, onClose, onSubmit, setData]);
+
+    if (!open) return null;
+
+    // ─── Keyboard Hint Badge ─────────────────────────────────────────────
+
+    const Kbd = ({ children }: { children: React.ReactNode }) => (
+        <kbd className="inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-md bg-slate-100 border border-slate-300 text-xs font-mono font-semibold text-slate-600 shadow-[0_1px_0_1px_rgba(0,0,0,0.05)]">
+            {children}
+        </kbd>
+    );
+
+    // ─── Render ──────────────────────────────────────────────────────────
+
+    return (
+        <div className="fixed inset-0 z-50 flex items-center justify-center">
+            {/* Backdrop */}
+            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+
+            {/* Modal */}
+            <div className="relative w-full max-w-lg mx-4 animate-in fade-in zoom-in-95 duration-200">
+                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                    {/* Progress bar */}
+                    <div className="h-1 bg-slate-100">
+                        <div
+                            className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300 ease-out"
+                            style={{ width: `${progress}%` }}
+                        />
+                    </div>
+
+                    {/* Header */}
+                    <div className="flex items-center justify-between px-6 pt-5 pb-2">
+                        <div className="flex items-center gap-2">
+                            <Zap className="w-4 h-4 text-amber-500" />
+                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Mode Cepat</span>
+                        </div>
+                        <div className="flex items-center gap-3">
+                            {!isConfirm && (
+                                <span className="text-xs text-slate-400 font-medium">
+                                    {stepIndex + 1} / {totalSteps}
+                                </span>
+                            )}
+                            <button
+                                onClick={onClose}
+                                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Content */}
+                    <div className="px-6 pb-6 pt-2 min-h-[240px] flex flex-col">
+                        {isConfirm ? (
+                            /* ─── Confirm Screen ─────────────────────────────── */
+                            <div className="flex-1">
+                                <h2 className="text-xl font-bold text-slate-800 mb-1">Konfirmasi Data</h2>
+                                <p className="text-sm text-slate-500 mb-5">Periksa data sebelum mengirim</p>
+
+                                <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm max-h-[280px] overflow-y-auto pr-2">
+                                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                                        <span className="text-slate-500">Nama</span>
+                                        <span className="font-medium text-slate-800">{data.nama}</span>
+                                    </div>
+                                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                                        <span className="text-slate-500">Umur</span>
+                                        <span className="font-medium text-slate-800">{data.umur} th</span>
+                                    </div>
+                                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                                        <span className="text-slate-500">Kelamin</span>
+                                        <span className="font-medium text-slate-800">{data.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
+                                    </div>
+                                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                                        <span className="text-slate-500">TD</span>
+                                        <span className="font-medium text-slate-800">{data.tekanan_darah} mmHg</span>
+                                    </div>
+                                    <div className="flex justify-between py-1.5 border-b border-slate-100">
+                                        <span className="text-slate-500">Nyeri Dada</span>
+                                        <span className={`font-medium ${data.nyeri_dada === 'Ya' ? 'text-red-600' : 'text-emerald-600'}`}>{data.nyeri_dada}</span>
+                                    </div>
+                                    {data.nyeri_dada === 'Ya' && (
+                                        <div className="flex justify-between py-1.5 border-b border-slate-100">
+                                            <span className="text-slate-500">Durasi</span>
+                                            <span className="font-medium text-slate-800">{data.durasi_nyeri} {data.durasi_unit}</span>
+                                        </div>
+                                    )}
+                                    {['sesak_napas', 'keringat_dingin', 'mual', 'muntah', 'hipertensi', 'riwayat_dm', 'riwayat_pjk'].map((key) => {
+                                        const labels: Record<string, string> = {
+                                            sesak_napas: 'Sesak Napas',
+                                            keringat_dingin: 'Keringat Dingin',
+                                            mual: 'Mual',
+                                            muntah: 'Muntah',
+                                            hipertensi: 'Hipertensi',
+                                            riwayat_dm: 'Riwayat DM',
+                                            riwayat_pjk: 'Riwayat PJK',
+                                        };
+                                        return (
+                                            <div key={key} className="flex justify-between py-1.5 border-b border-slate-100">
+                                                <span className="text-slate-500">{labels[key]}</span>
+                                                <span className={`font-medium ${data[key] === 'Ya' ? 'text-red-600' : 'text-emerald-600'}`}>{data[key]}</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                {/* Confirm actions */}
+                                <div className="flex items-center justify-between mt-6">
+                                    <button
+                                        onClick={goPrev}
+                                        className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors"
+                                    >
+                                        <ArrowLeft className="w-4 h-4" />
+                                        Kembali
+                                    </button>
+                                    <Button
+                                        onClick={onSubmit}
+                                        disabled={processing}
+                                        className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl px-8 h-11 text-sm font-semibold shadow-lg shadow-blue-600/20"
+                                    >
+                                        {processing ? 'Memproses...' : (
+                                            <span className="flex items-center gap-2">
+                                                <Check className="w-4 h-4" />
+                                                Klasifikasikan
+                                            </span>
+                                        )}
+                                    </Button>
+                                </div>
+
+                                {/* Keyboard hint */}
+                                <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-slate-100">
+                                    <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                        <Kbd>Enter</Kbd> Kirim
+                                    </span>
+                                    <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                        <Kbd>←</Kbd> Kembali
+                                    </span>
+                                    <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                        <Kbd>Esc</Kbd> Tutup
+                                    </span>
+                                </div>
+                            </div>
+                        ) : currentStep ? (
+                            /* ─── Step Content ──────────────────────────────── */
+                            <div className="flex-1 flex flex-col">
+                                {/* Step label */}
+                                <div className="mb-6">
+                                    <h2 className="text-2xl font-bold text-slate-800 mb-1">{currentStep.label}</h2>
+                                    <p className="text-sm text-slate-500">{currentStep.description}</p>
+                                </div>
+
+                                {/* Flash feedback */}
+                                {flash && (
+                                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-blue-600 text-white text-lg font-bold px-6 py-3 rounded-xl shadow-xl animate-in zoom-in-75 duration-150 pointer-events-none z-10">
+                                        {flash}
+                                    </div>
+                                )}
+
+                                {/* Input area */}
+                                <div className="flex-1 flex flex-col justify-center">
+                                    {/* Text input */}
+                                    {currentStep.type === 'text' && (
+                                        <div>
+                                            <input
+                                                ref={inputRef}
+                                                type="text"
+                                                value={data[currentStep.key] || ''}
+                                                onChange={(e) => setData(currentStep.key, e.target.value)}
+                                                placeholder={currentStep.placeholder}
+                                                className="w-full text-xl font-medium text-slate-800 bg-transparent border-0 border-b-2 border-slate-200 focus:border-blue-500 focus:ring-0 outline-none pb-3 placeholder:text-slate-300 transition-colors"
+                                                autoFocus
+                                            />
+                                        </div>
+                                    )}
+
+                                    {/* Number input */}
+                                    {currentStep.type === 'number' && (
+                                        <div className="flex items-end gap-3">
+                                            <input
+                                                ref={inputRef}
+                                                type="number"
+                                                value={data[currentStep.key] || ''}
+                                                onChange={(e) => setData(currentStep.key, e.target.value)}
+                                                placeholder={currentStep.placeholder}
+                                                className="w-40 text-3xl font-bold text-slate-800 bg-transparent border-0 border-b-2 border-slate-200 focus:border-blue-500 focus:ring-0 outline-none pb-2 placeholder:text-slate-300 transition-colors text-center"
+                                                autoFocus
+                                            />
+                                            {currentStep.suffix && (
+                                                <span className="text-lg text-slate-400 pb-3">{currentStep.suffix}</span>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Yes/No selection */}
+                                    {currentStep.type === 'yesno' && (
+                                        <div className="flex gap-4">
+                                            {[
+                                                { value: 'Ya', label: 'Ya', shortcut: 'Y', color: 'red' },
+                                                { value: 'Tidak', label: 'Tidak', shortcut: 'T', color: 'emerald' },
+                                            ].map((opt) => (
+                                                <button
+                                                    key={opt.value}
+                                                    onClick={() => selectAndAdvance(currentStep.key, opt.value, opt.label)}
+                                                    className={`flex-1 relative rounded-xl border-2 py-6 text-center transition-all hover:shadow-md active:scale-95 ${
+                                                        data[currentStep.key] === opt.value
+                                                            ? opt.color === 'red'
+                                                                ? 'border-red-400 bg-red-50 text-red-700'
+                                                                : 'border-emerald-400 bg-emerald-50 text-emerald-700'
+                                                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                                                    }`}
+                                                >
+                                                    <span className="text-lg font-semibold">{opt.label}</span>
+                                                    <span className="absolute top-2.5 right-3">
+                                                        <Kbd>{opt.shortcut}</Kbd>
+                                                    </span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Choice selection (gender) */}
+                                    {currentStep.type === 'choice' && currentStep.options && (
+                                        <div className="flex gap-4">
+                                            {currentStep.options.map((opt) => (
+                                                <button
+                                                    key={opt.value}
+                                                    onClick={() => selectAndAdvance(currentStep.key, opt.value, opt.label)}
+                                                    className={`flex-1 relative rounded-xl border-2 py-6 text-center transition-all hover:shadow-md active:scale-95 ${
+                                                        data[currentStep.key] === opt.value
+                                                            ? 'border-blue-400 bg-blue-50 text-blue-700'
+                                                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                                                    }`}
+                                                >
+                                                    <span className="text-lg font-semibold">{opt.label}</span>
+                                                    <span className="absolute top-2.5 right-3">
+                                                        <Kbd>{opt.shortcut}</Kbd>
+                                                    </span>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Duration compound input */}
+                                    {currentStep.type === 'duration' && (
+                                        <div className="space-y-4">
+                                            <div className="flex items-end gap-3">
+                                                <input
+                                                    ref={inputRef}
+                                                    type="number"
+                                                    value={durasiValue}
+                                                    onChange={(e) => {
+                                                        setDurasiValue(e.target.value);
+                                                        setData('durasi_nyeri', e.target.value);
+                                                    }}
+                                                    placeholder="0"
+                                                    className="w-28 text-3xl font-bold text-slate-800 bg-transparent border-0 border-b-2 border-slate-200 focus:border-blue-500 focus:ring-0 outline-none pb-2 placeholder:text-slate-300 transition-colors text-center"
+                                                    autoFocus
+                                                />
+                                            </div>
+                                            <div className="flex gap-3">
+                                                {[
+                                                    { value: 'Menit', shortcut: 'M' },
+                                                    { value: 'Jam', shortcut: 'J' },
+                                                    { value: 'Hari', shortcut: 'H' },
+                                                ].map((unit) => (
+                                                    <button
+                                                        key={unit.value}
+                                                        onClick={() => {
+                                                            setDurasiUnit(unit.value);
+                                                            setData('durasi_unit', unit.value);
+                                                        }}
+                                                        className={`relative flex-1 rounded-lg border-2 py-3 text-center transition-all text-sm font-medium ${
+                                                            durasiUnit === unit.value
+                                                                ? 'border-blue-400 bg-blue-50 text-blue-700'
+                                                                : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300'
+                                                        }`}
+                                                    >
+                                                        {unit.value}
+                                                        <span className="absolute top-1 right-1.5">
+                                                            <kbd className="text-[10px] text-slate-400 font-mono">Alt+{unit.shortcut}</kbd>
+                                                        </span>
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                {/* Navigation + keyboard hints */}
+                                <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
+                                    <button
+                                        onClick={goPrev}
+                                        disabled={stepIndex === 0}
+                                        className={`flex items-center gap-1.5 text-sm transition-colors ${
+                                            stepIndex === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:text-slate-700'
+                                        }`}
+                                    >
+                                        <ArrowLeft className="w-4 h-4" />
+                                        Kembali
+                                    </button>
+
+                                    <div className="flex items-center gap-4">
+                                        {(currentStep.type === 'text' || currentStep.type === 'number' || currentStep.type === 'duration') && (
+                                            <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                                <Kbd><CornerDownLeft className="w-3 h-3" /></Kbd> Lanjut
+                                            </span>
+                                        )}
+                                        {currentStep.type === 'yesno' && (
+                                            <>
+                                                <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                                    <Kbd>Y</Kbd> Ya
+                                                </span>
+                                                <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                                    <Kbd>T</Kbd> Tidak
+                                                </span>
+                                            </>
+                                        )}
+                                        {currentStep.type === 'choice' && currentStep.options?.map((o) => (
+                                            <span key={o.shortcut} className="flex items-center gap-1.5 text-xs text-slate-400">
+                                                <Kbd>{o.shortcut}</Kbd> {o.label}
+                                            </span>
+                                        ))}
+                                        <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                            <Kbd>Esc</Kbd> Tutup
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        ) : null}
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
+
+// ─── Main Classification Page ────────────────────────────────────────────────
+
 export default function Classification() {
+    const [quickMode, setQuickMode] = useState(false);
+
     const { data, setData, post, processing, errors, reset } = useForm({
         // Patient data
         nama: '',
         umur: '',
         jenis_kelamin: 'L',
-        
+
         // Clinical data
         nyeri_dada: 'Ya',
         durasi_nyeri: '',
@@ -26,23 +644,29 @@ export default function Classification() {
         riwayat_pjk: 'Ya',
     });
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
+    const handleSubmit = (e?: React.FormEvent) => {
+        e?.preventDefault();
         post('/classify');
+    };
+
+    const handleQuickSubmit = () => {
+        post('/classify', {
+            onSuccess: () => setQuickMode(false),
+        });
     };
 
     const handleReset = () => {
         reset();
     };
 
-    const RadioGroup = ({ 
-        name, 
-        value, 
-        onChange, 
-        options 
-    }: { 
-        name: string; 
-        value: string; 
+    const RadioGroup = ({
+        name,
+        value,
+        onChange,
+        options
+    }: {
+        name: string;
+        value: string;
         onChange: (val: string) => void;
         options: { value: string; label: string }[];
     }) => (
@@ -72,13 +696,23 @@ export default function Classification() {
     return (
         <AppLayout>
             <Head title="Mulai Klasifikasi" />
-            
+
             <div className="w-full max-w-6xl">
                 {/* Form Card */}
                 <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl shadow-lg p-8">
-                    <h1 className="text-2xl font-bold text-slate-700 mb-6 border-b border-slate-300 pb-4">
-                        Input Data Pasien
-                    </h1>
+                    <div className="flex items-center justify-between mb-6 border-b border-slate-300 pb-4">
+                        <h1 className="text-2xl font-bold text-slate-700">
+                            Input Data Pasien
+                        </h1>
+                        <button
+                            type="button"
+                            onClick={() => { handleReset(); setQuickMode(true); }}
+                            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-amber-50 border border-amber-200 text-amber-700 hover:bg-amber-100 hover:border-amber-300 transition-all text-sm font-semibold"
+                        >
+                            <Zap className="w-4 h-4" />
+                            Mode Cepat
+                        </button>
+                    </div>
 
                     <form onSubmit={handleSubmit} className="space-y-0">
                         {/* Nama Pasien */}
@@ -335,6 +969,16 @@ export default function Classification() {
                     2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
                 </footer>
             </div>
+
+            {/* Quick Mode Modal */}
+            <QuickModeModal
+                open={quickMode}
+                onClose={() => setQuickMode(false)}
+                data={data}
+                setData={setData}
+                onSubmit={handleQuickSubmit}
+                processing={processing}
+            />
         </AppLayout>
     );
 }

@@ -26,7 +26,27 @@ interface Props {
     recentPredictions: Prediction[];
 }
 
+function timeAgo(dateStr: string): string {
+    const now = new Date();
+    const date = new Date(dateStr);
+    const diffMs = now.getTime() - date.getTime();
+    const diffSec = Math.floor(diffMs / 1000);
+    const diffMin = Math.floor(diffSec / 60);
+    const diffHour = Math.floor(diffMin / 60);
+    const diffDay = Math.floor(diffHour / 24);
+
+    if (diffSec < 60) return 'Baru saja';
+    if (diffMin < 60) return `${diffMin} menit yang lalu`;
+    if (diffHour < 24) return `${diffHour} jam yang lalu`;
+    if (diffDay === 1) return 'Kemarin';
+    return `${diffDay} hari yang lalu`;
+}
+
 export default function Dashboard({ stats, recentPredictions }: Props) {
+    const lastUpdate = recentPredictions?.length > 0
+        ? timeAgo(recentPredictions[0].created_at)
+        : null;
+
     return (
         <AppLayout>
             <Head title="Dashboard" />
@@ -35,9 +55,11 @@ export default function Dashboard({ stats, recentPredictions }: Props) {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
-                    <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100">
-                        Update 5 menit yang lalu
-                    </Badge>
+                    {lastUpdate && (
+                        <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100">
+                            Update {lastUpdate}
+                        </Badge>
+                    )}
                 </div>
 
                 {/* Stats Cards */}
