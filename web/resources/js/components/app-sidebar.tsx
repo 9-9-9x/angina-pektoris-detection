@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Home, Info, LayoutDashboard, ClipboardList, History, Heart, Activity } from 'lucide-react';
+import { Home, Info, LayoutDashboard, ClipboardList, History, Users, Heart, Activity } from 'lucide-react';
 import type { SharedData } from '@/types';
 import { cn } from '@/lib/utils';
 
@@ -10,8 +10,10 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
+    { title: 'Home', href: '/', icon: Home },
     { title: 'About', href: '/about', icon: Info },
     { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+    { title: 'Data Pasien', href: '/patients', icon: Users },
     { title: 'Mulai Klasifikasi', href: '/classify', icon: ClipboardList },
     { title: 'Riwayat Klasifikasi', href: '/history', icon: History },
 ];

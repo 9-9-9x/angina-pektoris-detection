@@ -11,7 +11,7 @@ class PatientController extends Controller
 {
     public function index()
     {
-        $patients = Patient::with('user')
+        $patients = Patient::withCount('predictions')
             ->where('user_id', auth()->id())
             ->latest()
             ->paginate(10);
@@ -30,14 +30,14 @@ class PatientController extends Controller
     {
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'no_rm' => 'required|string|max:50|unique:patients',
-            'tanggal_lahir' => 'required|date|before:today',
+            'umur' => 'required|integer|min:0|max:120',
             'jenis_kelamin' => 'required|in:L,P',
             'alamat' => 'nullable|string',
             'telepon' => 'nullable|string|max:20',
         ]);
 
         $validated['user_id'] = auth()->id();
+        $validated['no_rm'] = Patient::generateNoRm();
 
         $patient = Patient::create($validated);
 
@@ -73,8 +73,7 @@ class PatientController extends Controller
 
         $validated = $request->validate([
             'nama' => 'required|string|max:255',
-            'no_rm' => 'required|string|max:50|unique:patients,no_rm,' . $patient->id,
-            'tanggal_lahir' => 'required|date|before:today',
+            'umur' => 'required|integer|min:0|max:120',
             'jenis_kelamin' => 'required|in:L,P',
             'alamat' => 'nullable|string',
             'telepon' => 'nullable|string|max:20',

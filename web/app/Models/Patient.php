@@ -14,7 +14,7 @@ class Patient extends Model
     protected $fillable = [
         'nama',
         'no_rm',
-        'tanggal_lahir',
+        'umur',
         'jenis_kelamin',
         'alamat',
         'telepon',
@@ -22,7 +22,7 @@ class Patient extends Model
     ];
 
     protected $casts = [
-        'tanggal_lahir' => 'date',
+        'umur' => 'integer',
     ];
 
     public function user(): BelongsTo
@@ -35,8 +35,24 @@ class Patient extends Model
         return $this->hasMany(Prediction::class);
     }
 
-    public function getUmurAttribute(): int
+    /**
+     * Generate a unique medical record number
+     */
+    public static function generateNoRm(): string
     {
-        return $this->tanggal_lahir->age;
+        $prefix = 'RM';
+        $year = date('Y');
+        $lastPatient = self::where('no_rm', 'like', "$prefix$year%")
+            ->orderBy('no_rm', 'desc')
+            ->first();
+        
+        if ($lastPatient) {
+            $lastNumber = (int) substr($lastPatient->no_rm, -4);
+            $newNumber = $lastNumber + 1;
+        } else {
+            $newNumber = 1;
+        }
+        
+        return sprintf("%s%s%04d", $prefix, $year, $newNumber);
     }
 }

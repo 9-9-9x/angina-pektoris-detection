@@ -14,7 +14,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { ArrowLeft, Edit, Activity, Calendar, User, MapPin, Phone, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit, Activity, User, MapPin, Phone, Trash2, Calendar } from 'lucide-react';
 
 interface Prediction {
   id: number;
@@ -28,9 +28,8 @@ interface Patient {
   id: number;
   nama: string;
   no_rm: string;
-  tanggal_lahir: string;
-  jenis_kelamin: 'L' | 'P';
   umur: number;
+  jenis_kelamin: 'L' | 'P';
   alamat: string | null;
   telepon: string | null;
   predictions: Prediction[];
@@ -49,6 +48,7 @@ export default function PatientsShow({ patient }: Props) {
       onSuccess: () => setShowDeleteDialog(false),
     });
   };
+  
   const getRiskBadge = (level: string) => {
     switch (level) {
       case 'HIGH':
@@ -66,8 +66,8 @@ export default function PatientsShow({ patient }: Props) {
     <AppLayout>
       <Head title={`Pasien: ${patient.nama}`} />
 
-      <div className="space-y-6">
-        <div className="flex items-center justify-between">
+      <div className="w-full max-w-6xl">
+        <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-4">
             <Link href={patientsRoute.index()}>
               <Button variant="ghost" size="icon">
@@ -75,13 +75,13 @@ export default function PatientsShow({ patient }: Props) {
               </Button>
             </Link>
             <div>
-              <h1 className="text-3xl font-bold tracking-tight">{patient.nama}</h1>
-              <p className="text-muted-foreground">No. RM: {patient.no_rm}</p>
+              <h1 className="text-2xl font-bold text-slate-800">{patient.nama}</h1>
+              <p className="text-slate-600">No. RM: {patient.no_rm}</p>
             </div>
           </div>
           <div className="flex gap-2">
             <Link href={predictionsRoute.create(patient.id)}>
-              <Button>
+              <Button className="bg-blue-600 hover:bg-blue-700">
                 <Activity className="mr-2 h-4 w-4" />
                 Prediksi Baru
               </Button>
@@ -110,33 +110,33 @@ export default function PatientsShow({ patient }: Props) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-3">
-                <User className="h-5 w-5 text-muted-foreground" />
+                <User className="h-5 w-5 text-slate-400" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Jenis Kelamin</p>
+                  <p className="text-sm text-slate-500">Jenis Kelamin</p>
                   <p className="font-medium">{patient.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-muted-foreground" />
+                <Calendar className="h-5 w-5 text-slate-400" />
                 <div>
-                  <p className="text-sm text-muted-foreground">Tanggal Lahir</p>
-                  <p className="font-medium">{patient.tanggal_lahir} ({patient.umur} tahun)</p>
+                  <p className="text-sm text-slate-500">Umur</p>
+                  <p className="font-medium">{patient.umur} tahun</p>
                 </div>
               </div>
               {patient.alamat && (
                 <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-muted-foreground" />
+                  <MapPin className="h-5 w-5 text-slate-400" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Alamat</p>
+                    <p className="text-sm text-slate-500">Alamat</p>
                     <p className="font-medium">{patient.alamat}</p>
                   </div>
                 </div>
               )}
               {patient.telepon && (
                 <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-muted-foreground" />
+                  <Phone className="h-5 w-5 text-slate-400" />
                   <div>
-                    <p className="text-sm text-muted-foreground">Telepon</p>
+                    <p className="text-sm text-slate-500">Telepon</p>
                     <p className="font-medium">{patient.telepon}</p>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ export default function PatientsShow({ patient }: Props) {
             </CardHeader>
             <CardContent>
               {patient.predictions.length === 0 ? (
-                <p className="text-center text-muted-foreground py-4">
+                <p className="text-center text-slate-500 py-4">
                   Belum ada riwayat prediksi
                 </p>
               ) : (
@@ -159,17 +159,17 @@ export default function PatientsShow({ patient }: Props) {
                     <Link
                       key={prediction.id}
                       href={predictionsRoute.show(prediction.id)}
-                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted/50"
+                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-slate-50"
                     >
                       <div>
-                        <p className="text-sm text-muted-foreground">
+                        <p className="text-sm text-slate-500">
                           {new Date(prediction.created_at).toLocaleDateString('id-ID')}
                         </p>
                         <p className="font-medium">{prediction.prediction_result}</p>
                       </div>
                       <div className="text-right">
                         {getRiskBadge(prediction.risk_level)}
-                        <p className="text-sm text-muted-foreground mt-1">
+                        <p className="text-sm text-slate-500 mt-1">
                           {(prediction.probability_angina * 100).toFixed(2)}%
                         </p>
                       </div>
@@ -180,6 +180,11 @@ export default function PatientsShow({ patient }: Props) {
             </CardContent>
           </Card>
         </div>
+
+        {/* Footer */}
+        <footer className="mt-8 text-center text-slate-500 text-sm">
+            2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
+        </footer>
 
         {/* Delete Confirmation Dialog */}
         <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>

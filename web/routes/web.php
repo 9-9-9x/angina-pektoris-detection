@@ -29,17 +29,15 @@ use App\Http\Controllers\PredictionController;
 // Public routes - redirect to login if not authenticated
 Route::get('/', function () {
     if (auth()->check()) {
-        return redirect('/dashboard');
+        return Inertia::render('home');
     }
     return redirect('/login');
 })->name('home');
 
-Route::get('/about', function () {
-    if (!auth()->check()) {
-        return redirect('/login');
-    }
-    return \Inertia\Inertia::render('about');
-})->name('about');
+// About page - accessible when logged in
+Route::get('/about', [PredictionController::class, 'about'])
+    ->middleware(['auth', 'verified'])
+    ->name('about');
 
 // Protected routes - require authentication
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -48,20 +46,21 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', [PredictionController::class, 'dashboard'])
         ->name('dashboard');
     
-    // Classification form
-    Route::get('/classify', function () {
-        return \Inertia\Inertia::render('classification');
-    })->name('classify');
+    // Classification form (GET)
+    Route::get('/classify', [PredictionController::class, 'showClassifyForm'])
+        ->name('classify');
+    
+    // Classification form submission (POST)
+    Route::post('/classify', [PredictionController::class, 'classify'])
+        ->name('classify.store');
     
     // Classification result
-    Route::get('/classify/result', function () {
-        return \Inertia\Inertia::render('classification-result');
-    })->name('classify.result');
+    Route::get('/classify/result', [PredictionController::class, 'result'])
+        ->name('classify.result');
     
     // Classification history
-    Route::get('/history', function () {
-        return \Inertia\Inertia::render('classification-history');
-    })->name('history');
+    Route::get('/history', [PredictionController::class, 'history'])
+        ->name('history');
     
     // Patient management (CRUD)
     Route::resource('patients', PatientController::class);

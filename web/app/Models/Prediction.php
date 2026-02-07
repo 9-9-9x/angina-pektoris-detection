@@ -14,11 +14,12 @@ class Prediction extends Model
         'patient_id',
         'user_id',
         'usia',
+        'jenis_kelamin',
         'tekanan_darah',
         'riwayat_dm',
         'hipertensi',
         'riwayat_pjk',
-        'nyeri_menjalar',
+        'nyeri_dada',
         'durasi_nyeri',
         'sesak_napas',
         'mual',
@@ -59,5 +60,22 @@ class Prediction extends Model
     public function getRiskPercentageAttribute(): float
     {
         return round($this->probability_angina * 100, 2);
+    }
+
+    public function getRiskTextAttribute(): string
+    {
+        return match($this->risk_level) {
+            'HIGH' => 'Tinggi',
+            'MODERATE' => 'Sedang',
+            'LOW' => 'Rendah',
+            default => $this->risk_level,
+        };
+    }
+
+    public function getHasilKlasifikasiAttribute(): string
+    {
+        return $this->prediction_result === 'Angina Pektoris' 
+            ? 'Angina Pektoris' 
+            : 'Bukan Angina';
     }
 }

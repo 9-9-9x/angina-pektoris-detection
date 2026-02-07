@@ -12,7 +12,7 @@ interface Patient {
   id: number;
   nama: string;
   no_rm: string;
-  tanggal_lahir: string;
+  umur: number;
   jenis_kelamin: 'L' | 'P';
   alamat: string | null;
   telepon: string | null;
@@ -25,8 +25,7 @@ interface Props {
 export default function PatientsEdit({ patient }: Props) {
   const { data, setData, put, processing, errors } = useForm({
     nama: patient.nama,
-    no_rm: patient.no_rm,
-    tanggal_lahir: patient.tanggal_lahir,
+    umur: patient.umur.toString(),
     jenis_kelamin: patient.jenis_kelamin,
     alamat: patient.alamat || '',
     telepon: patient.telepon || '',
@@ -41,16 +40,16 @@ export default function PatientsEdit({ patient }: Props) {
     <AppLayout>
       <Head title={`Edit Pasien: ${patient.nama}`} />
 
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
+      <div className="w-full max-w-6xl">
+        <div className="flex items-center gap-4 mb-6">
           <Link href={patientsRoute.show(patient.id)}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Edit Pasien</h1>
-            <p className="text-muted-foreground">{patient.nama} ({patient.no_rm})</p>
+            <h1 className="text-2xl font-bold text-slate-800">Edit Pasien</h1>
+            <p className="text-slate-600">{patient.nama} ({patient.no_rm})</p>
           </div>
         </div>
 
@@ -73,25 +72,17 @@ export default function PatientsEdit({ patient }: Props) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="no_rm">Nomor Rekam Medis *</Label>
+                  <Label htmlFor="umur">Umur (Tahun) *</Label>
                   <Input
-                    id="no_rm"
-                    value={data.no_rm}
-                    onChange={(e) => setData('no_rm', e.target.value)}
-                    placeholder="Contoh: RM001"
+                    id="umur"
+                    type="number"
+                    min="0"
+                    max="120"
+                    value={data.umur}
+                    onChange={(e) => setData('umur', e.target.value)}
+                    placeholder="Masukkan umur"
                   />
-                  {errors.no_rm && <p className="text-sm text-red-500">{errors.no_rm}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="tanggal_lahir">Tanggal Lahir *</Label>
-                  <Input
-                    id="tanggal_lahir"
-                    type="date"
-                    value={data.tanggal_lahir}
-                    onChange={(e) => setData('tanggal_lahir', e.target.value)}
-                  />
-                  {errors.tanggal_lahir && <p className="text-sm text-red-500">{errors.tanggal_lahir}</p>}
+                  {errors.umur && <p className="text-sm text-red-500">{errors.umur}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -135,7 +126,7 @@ export default function PatientsEdit({ patient }: Props) {
               </div>
 
               <div className="flex gap-4 pt-4">
-                <Button type="submit" disabled={processing}>
+                <Button type="submit" disabled={processing} className="bg-slate-700 hover:bg-slate-800">
                   <Save className="mr-2 h-4 w-4" />
                   Simpan Perubahan
                 </Button>
@@ -148,6 +139,11 @@ export default function PatientsEdit({ patient }: Props) {
             </form>
           </CardContent>
         </Card>
+
+        {/* Footer */}
+        <footer className="mt-8 text-center text-slate-500 text-sm">
+            2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
+        </footer>
       </div>
     </AppLayout>
   );

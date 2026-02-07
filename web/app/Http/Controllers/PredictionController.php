@@ -42,17 +42,19 @@ class PredictionController extends Controller
         ]);
     }
 
+    /**
+     * Store prediction for an existing patient
+     */
     public function store(Request $request, Patient $patient)
     {
         $this->authorize('view', $patient);
 
         $validated = $request->validate([
-            'usia' => 'required|integer|min:0|max:120',
             'tekanan_darah' => 'required|integer|min:60|max:300',
             'riwayat_dm' => 'required|in:Ya,Tidak',
             'hipertensi' => 'required|in:Ya,Tidak',
             'riwayat_pjk' => 'required|in:Ya,Tidak',
-            'nyeri_menjalar' => 'required|in:Ya,Tidak',
+            'nyeri_dada' => 'required|in:Ya,Tidak',
             'durasi_nyeri' => 'required|string',
             'sesak_napas' => 'required|in:Ya,Tidak',
             'mual' => 'required|in:Ya,Tidak',
@@ -60,8 +62,26 @@ class PredictionController extends Controller
             'keringat_dingin' => 'required|in:Ya,Tidak',
         ]);
 
-        // Call ML API
-        $result = $this->mlService->predict($validated);
+        // Prepare data for ML API
+        $mlData = [
+            'umur' => $patient->umur,
+            'jenis_kelamin' => $patient->jenis_kelamin,
+            'tekanan_darah' => $validated['tekanan_darah'],
+            'riwayat_dm' => $validated['riwayat_dm'],
+            'hipertensi' => $validated['hipertensi'],
+            'riwayat_pjk' => $validated['riwayat_pjk'],
+            'nyeri_dada' => $validated['nyeri_dada'],
+            'durasi_nyeri' => $validated['durasi_nyeri'],
+            'sesak_napas' => $validated['sesak_napas'],
+            'mual' => $validated['mual'],
+            'muntah' => $validated['muntah'],
+            'keringat_dingin' => $validated['keringat_dingin'],
+        ];
+
+        // Call ML API (use mock if ML API is not available)
+        $result = $this->mlService->healthCheck()['status'] === 'healthy' 
+            ? $this->mlService->predict($mlData)
+            : $this->mlService->mockPredict($mlData);
 
         if (!$result['success']) {
             return redirect()->back()
@@ -74,12 +94,13 @@ class PredictionController extends Controller
         $prediction = Prediction::create([
             'patient_id' => $patient->id,
             'user_id' => auth()->id(),
-            'usia' => $validated['usia'],
+            'usia' => $patient->umur,
+            'jenis_kelamin' => $patient->jenis_kelamin,
             'tekanan_darah' => $validated['tekanan_darah'],
             'riwayat_dm' => $validated['riwayat_dm'],
             'hipertensi' => $validated['hipertensi'],
             'riwayat_pjk' => $validated['riwayat_pjk'],
-            'nyeri_menjalar' => $validated['nyeri_menjalar'],
+            'nyeri_dada' => $validated['nyeri_dada'],
             'durasi_nyeri' => $validated['durasi_nyeri'],
             'sesak_napas' => $validated['sesak_napas'],
             'mual' => $validated['mual'],
@@ -89,11 +110,138 @@ class PredictionController extends Controller
             'probability_angina' => $predictionData['probability_angina'],
             'risk_level' => $predictionData['risk_level'],
             'confidence' => $predictionData['confidence'],
-            'features_used' => $predictionData['features_used'] ?? null,
+            'features_used' => $mlData,
         ]);
 
         return redirect()->route('predictions.show', $prediction)
             ->with('success', 'Prediksi berhasil dilakukan');
+    }
+
+    /**
+     * Handle classification form submission from /classify page
+     */
+    public function classify(Request $request)
+    {
+        $validated = $request->validate([
+            // Patient data
+            'nama' => 'required|string|max:255',
+            'umur' => 'required|integer|min:0|max:120',
+            'jenis_kelamin' => 'required|in:L,P',
+            
+            // Clinical data
+            'nyeri_dada' => 'required|in:Ya,Tidak',
+            'durasi_nyeri' => 'required|string|max:50',
+            'durasi_unit' => 'required|in:Menit,Jam,Hari',
+            'sesak_napas' => 'required|in:Ya,Tidak',
+            'keringat_dingin' => 'required|in:Ya,Tidak',
+            'mual' => 'required|in:Ya,Tidak',
+            'muntah' => 'required|in:Ya,Tidak',
+            'tekanan_darah' => 'required|integer|min:60|max:300',
+            'hipertensi' => 'required|in:Ya,Tidak',
+            'riwayat_dm' => 'required|in:Ya,Tidak',
+            'riwayat_pjk' => 'required|in:Ya,Tidak',
+        ]);
+
+        // Format duration with unit
+        $durasiLengkap = $validated['durasi_nyeri'] . ' ' . $validated['durasi_unit'];
+
+        // Prepare data for ML API
+        $mlData = [
+            'umur' => $validated['umur'],
+            'jenis_kelamin' => $validated['jenis_kelamin'],
+            'tekanan_darah' => $validated['tekanan_darah'],
+            'riwayat_dm' => $validated['riwayat_dm'],
+            'hipertensi' => $validated['hipertensi'],
+            'riwayat_pjk' => $validated['riwayat_pjk'],
+            'nyeri_dada' => $validated['nyeri_dada'],
+            'durasi_nyeri' => $durasiLengkap,
+            'sesak_napas' => $validated['sesak_napas'],
+            'mual' => $validated['mual'],
+            'muntah' => $validated['muntah'],
+            'keringat_dingin' => $validated['keringat_dingin'],
+        ];
+
+        // Call ML API (use mock if ML API is not available)
+        $result = $this->mlService->healthCheck()['status'] === 'healthy' 
+            ? $this->mlService->predict($mlData)
+            : $this->mlService->mockPredict($mlData);
+
+        if (!$result['success']) {
+            return redirect()->back()
+                ->with('error', 'Gagal melakukan prediksi: ' . ($result['error'] ?? 'Unknown error'));
+        }
+
+        $predictionData = $result['data'];
+
+        // Create or find patient
+        $patient = Patient::create([
+            'nama' => $validated['nama'],
+            'no_rm' => Patient::generateNoRm(),
+            'umur' => $validated['umur'],
+            'jenis_kelamin' => $validated['jenis_kelamin'],
+            'user_id' => auth()->id(),
+        ]);
+
+        // Save prediction to database
+        $prediction = Prediction::create([
+            'patient_id' => $patient->id,
+            'user_id' => auth()->id(),
+            'usia' => $validated['umur'],
+            'jenis_kelamin' => $validated['jenis_kelamin'],
+            'tekanan_darah' => $validated['tekanan_darah'],
+            'riwayat_dm' => $validated['riwayat_dm'],
+            'hipertensi' => $validated['hipertensi'],
+            'riwayat_pjk' => $validated['riwayat_pjk'],
+            'nyeri_dada' => $validated['nyeri_dada'],
+            'durasi_nyeri' => $durasiLengkap,
+            'sesak_napas' => $validated['sesak_napas'],
+            'mual' => $validated['mual'],
+            'muntah' => $validated['muntah'],
+            'keringat_dingin' => $validated['keringat_dingin'],
+            'prediction_result' => $predictionData['prediction'],
+            'probability_angina' => $predictionData['probability_angina'],
+            'risk_level' => $predictionData['risk_level'],
+            'confidence' => $predictionData['confidence'],
+            'features_used' => $mlData,
+        ]);
+
+        // Redirect to result page
+        return redirect()->route('classify.result', ['prediction' => $prediction->id]);
+    }
+
+    /**
+     * Show classification result page
+     */
+    public function result(Request $request)
+    {
+        $predictionId = $request->query('prediction');
+        
+        if ($predictionId) {
+            $prediction = Prediction::with('patient')->findOrFail($predictionId);
+            $this->authorize('view', $prediction);
+        } else {
+            // No prediction ID, show empty result page
+            return Inertia::render('classification-result', [
+                'patient' => null,
+                'result' => null,
+            ]);
+        }
+
+        return Inertia::render('classification-result', [
+            'patient' => [
+                'nama' => $prediction->patient->nama,
+                'umur' => $prediction->usia,
+                'jenis_kelamin' => $prediction->patient->jenis_kelamin === 'L' ? 'Laki-Laki' : 'Perempuan',
+                'durasi_nyeri' => $prediction->durasi_nyeri,
+                'tekanan_darah' => $prediction->tekanan_darah . ' mmHg',
+            ],
+            'result' => [
+                'prediction' => $prediction->prediction_result,
+                'risk_level' => $prediction->risk_level,
+                'confidence' => $prediction->risk_percentage,
+                'risk_text' => $prediction->risk_text,
+            ],
+        ]);
     }
 
     public function show(Prediction $prediction)
@@ -118,6 +266,42 @@ class PredictionController extends Controller
         ]);
     }
 
+    /**
+     * Show classification history
+     */
+    public function history()
+    {
+        $predictions = Prediction::with('patient')
+            ->where('user_id', auth()->id())
+            ->latest()
+            ->get()
+            ->map(function ($prediction) {
+                return [
+                    'id' => $prediction->id,
+                    'nama' => $prediction->patient->nama,
+                    'umur' => $prediction->usia,
+                    'hasil' => $prediction->hasil_klasifikasi,
+                    'risk_level' => $prediction->risk_level,
+                    'created_at' => $prediction->created_at->toISOString(),
+                ];
+            });
+
+        return Inertia::render('classification-history', [
+            'classifications' => $predictions,
+        ]);
+    }
+
+    /**
+     * Show about page
+     */
+    public function about()
+    {
+        return Inertia::render('about');
+    }
+
+    /**
+     * Dashboard with stats
+     */
     public function dashboard()
     {
         $user = auth()->user();
@@ -141,11 +325,36 @@ class PredictionController extends Controller
             ->where('user_id', $user->id)
             ->latest()
             ->limit(4)
-            ->get();
+            ->get()
+            ->map(function ($prediction) {
+                return [
+                    'id' => $prediction->id,
+                    'patient' => [
+                        'nama' => $prediction->patient->nama,
+                        'umur' => $prediction->usia,
+                    ],
+                    'prediction_result' => $prediction->hasil_klasifikasi,
+                    'risk_level' => $prediction->risk_level,
+                    'created_at' => $prediction->created_at->toISOString(),
+                ];
+            });
 
         return Inertia::render('dashboard', [
             'stats' => $stats,
             'recentPredictions' => $recentPredictions,
+        ]);
+    }
+
+    /**
+     * Show classification form
+     */
+    public function showClassifyForm()
+    {
+        // Check ML API health for status indicator
+        $mlStatus = $this->mlService->healthCheck();
+
+        return Inertia::render('classification', [
+            'mlStatus' => $mlStatus,
         ]);
     }
 }

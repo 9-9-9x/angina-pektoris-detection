@@ -11,8 +11,7 @@ import { ArrowLeft, Save } from 'lucide-react';
 export default function PatientsCreate() {
   const { data, setData, post, processing, errors } = useForm({
     nama: '',
-    no_rm: '',
-    tanggal_lahir: '',
+    umur: '',
     jenis_kelamin: '',
     alamat: '',
     telepon: '',
@@ -27,16 +26,16 @@ export default function PatientsCreate() {
     <AppLayout>
       <Head title="Tambah Pasien" />
 
-      <div className="space-y-6">
-        <div className="flex items-center gap-4">
+      <div className="w-full max-w-6xl">
+        <div className="flex items-center gap-4 mb-6">
           <Link href={patientsRoute.index()}>
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-3xl font-bold tracking-tight">Tambah Pasien</h1>
-            <p className="text-muted-foreground">Tambahkan data pasien baru</p>
+            <h1 className="text-2xl font-bold text-slate-800">Tambah Pasien</h1>
+            <p className="text-slate-600">Tambahkan data pasien baru</p>
           </div>
         </div>
 
@@ -59,25 +58,17 @@ export default function PatientsCreate() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="no_rm">Nomor Rekam Medis *</Label>
+                  <Label htmlFor="umur">Umur (Tahun) *</Label>
                   <Input
-                    id="no_rm"
-                    value={data.no_rm}
-                    onChange={(e) => setData('no_rm', e.target.value)}
-                    placeholder="Contoh: RM001"
+                    id="umur"
+                    type="number"
+                    min="0"
+                    max="120"
+                    value={data.umur}
+                    onChange={(e) => setData('umur', e.target.value)}
+                    placeholder="Masukkan umur"
                   />
-                  {errors.no_rm && <p className="text-sm text-red-500">{errors.no_rm}</p>}
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="tanggal_lahir">Tanggal Lahir *</Label>
-                  <Input
-                    id="tanggal_lahir"
-                    type="date"
-                    value={data.tanggal_lahir}
-                    onChange={(e) => setData('tanggal_lahir', e.target.value)}
-                  />
-                  {errors.tanggal_lahir && <p className="text-sm text-red-500">{errors.tanggal_lahir}</p>}
+                  {errors.umur && <p className="text-sm text-red-500">{errors.umur}</p>}
                 </div>
 
                 <div className="space-y-2">
@@ -118,7 +109,7 @@ export default function PatientsCreate() {
               </div>
 
               <div className="flex gap-4 pt-4">
-                <Button type="submit" disabled={processing}>
+                <Button type="submit" disabled={processing} className="bg-slate-700 hover:bg-slate-800">
                   <Save className="mr-2 h-4 w-4" />
                   Simpan
                 </Button>
@@ -131,6 +122,11 @@ export default function PatientsCreate() {
             </form>
           </CardContent>
         </Card>
+
+        {/* Footer */}
+        <footer className="mt-8 text-center text-slate-500 text-sm">
+            2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
+        </footer>
       </div>
     </AppLayout>
   );

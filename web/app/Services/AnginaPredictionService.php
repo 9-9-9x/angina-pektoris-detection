@@ -51,13 +51,20 @@ class AnginaPredictionService
     public function predict(array $data): array
     {
         try {
+            $formattedData = $this->formatData($data);
+            
+            Log::info('Sending prediction request to ML API', $formattedData);
+            
             $response = Http::timeout($this->timeout)
-                ->post("{$this->baseUrl}/predict", $this->formatData($data));
+                ->post("{$this->baseUrl}/predict", $formattedData);
 
             if ($response->successful()) {
+                $responseData = $response->json();
+                Log::info('ML API prediction successful', $responseData);
+                
                 return [
                     'success' => true,
-                    'data' => $response->json(),
+                    'data' => $responseData,
                 ];
             }
 
@@ -88,18 +95,63 @@ class AnginaPredictionService
     protected function formatData(array $data): array
     {
         return [
-            'usia' => (int) $data['usia'],
+            'usia' => (int) $data['umur'],
             'jenis_kelamin' => $data['jenis_kelamin'],
             'TD' => (int) $data['tekanan_darah'],
             'riwayat_DM' => $data['riwayat_dm'],
             'HT' => $data['hipertensi'],
             'riwayat_PJK_terdahulu' => $data['riwayat_pjk'],
-            'nyeri_dada_menjalar_ke_lengan' => $data['nyeri_menjalar'],
+            'nyeri_dada' => $data['nyeri_dada'] ?? 'Tidak',
             'durasi_nyeri' => $data['durasi_nyeri'],
             'sesak_napas' => $data['sesak_napas'],
             'mual' => $data['mual'],
             'muntah' => $data['muntah'],
             'keringat_dingin' => $data['keringat_dingin'],
+        ];
+    }
+
+    /**
+     * Get mock prediction result for testing without ML API
+     */
+    public function mockPredict(array $data): array
+    {
+        // Simple mock logic based on risk factors
+        $riskScore = 0;
+        
+        if ($data['nyeri_dada'] === 'Ya') $riskScore += 30;
+        if ($data['sesak_napas'] === 'Ya') $riskScore += 20;
+        if ($data['keringat_dingin'] === 'Ya') $riskScore += 15;
+        if ($data['mual'] === 'Ya') $riskScore += 10;
+        if ($data['muntah'] === 'Ya') $riskScore += 10;
+        if ($data['hipertensi'] === 'Ya') $riskScore += 10;
+        if ($data['riwayat_dm'] === 'Ya') $riskScore += 10;
+        if ($data['riwayat_pjk'] === 'Ya') $riskScore += 20;
+        if ((int)$data['umur'] > 60) $riskScore += 10;
+        
+        $probability = min($riskScore / 100, 0.95);
+        
+        $prediction = $probability > 0.5 ? 'Angina Pektoris' : 'Bukan Angina Pektoris';
+        
+        if ($probability > 0.7) {
+            $riskLevel = 'HIGH';
+            $confidence = 'Tinggi';
+        } elseif ($probability > 0.4) {
+            $riskLevel = 'MODERATE';
+            $confidence = 'Sedang';
+        } else {
+            $riskLevel = 'LOW';
+            $confidence = 'Rendah';
+        }
+        
+        return [
+            'success' => true,
+            'data' => [
+                'prediction' => $prediction,
+                'probability_angina' => $probability,
+                'risk_level' => $riskLevel,
+                'confidence' => $confidence,
+                'features_used' => $this->formatData($data),
+            ],
         ];
     }
 }
