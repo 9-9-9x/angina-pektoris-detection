@@ -5,16 +5,18 @@ namespace App\Http\Controllers;
 use App\Models\Patient;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Validator;
 
 class PatientController extends Controller
 {
     public function index()
     {
-        $patients = Patient::withCount('predictions')
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->paginate(10);
+        $query = Patient::withCount('predictions')->latest();
+
+        if (auth()->user()->isPatient()) {
+            $query->where('user_id', auth()->id());
+        }
+
+        $patients = $query->paginate(10);
 
         return Inertia::render('patients/index', [
             'patients' => $patients,
