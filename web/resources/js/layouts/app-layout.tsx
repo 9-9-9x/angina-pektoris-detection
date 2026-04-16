@@ -3,6 +3,7 @@ import { AppSidebar } from '@/components/app-sidebar';
 
 interface AppLayoutProps {
     children: React.ReactNode;
+    breadcrumbs?: { title: string; href: string }[];
 }
 
 export default function AppLayout({ children }: AppLayoutProps) {

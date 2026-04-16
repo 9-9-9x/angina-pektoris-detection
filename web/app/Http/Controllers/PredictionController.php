@@ -6,6 +6,7 @@ use App\Models\Patient;
 use App\Models\Prediction;
 use App\Services\AnginaPredictionService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class PredictionController extends Controller
@@ -173,37 +174,44 @@ class PredictionController extends Controller
 
         $predictionData = $result['data'];
 
-        // Create or find patient
-        $patient = Patient::create([
-            'nama' => $validated['nama'],
-            'no_rm' => Patient::generateNoRm(),
-            'umur' => $validated['umur'],
-            'jenis_kelamin' => $validated['jenis_kelamin'],
-            'user_id' => auth()->id(),
-        ]);
+        $prediction = DB::transaction(function () use ($validated, $mlData, $durasiLengkap, $predictionData) {
+            // Find or create patient to avoid duplicates
+            $patient = Patient::where('nama', $validated['nama'])
+                ->where('user_id', auth()->id())
+                ->first();
 
-        // Save prediction to database
-        $prediction = Prediction::create([
-            'patient_id' => $patient->id,
-            'user_id' => auth()->id(),
-            'usia' => $validated['umur'],
-            'jenis_kelamin' => $validated['jenis_kelamin'],
-            'tekanan_darah' => $validated['tekanan_darah'],
-            'riwayat_dm' => $validated['riwayat_dm'],
-            'hipertensi' => $validated['hipertensi'],
-            'riwayat_pjk' => $validated['riwayat_pjk'],
-            'nyeri_dada' => $validated['nyeri_dada'],
-            'durasi_nyeri' => $durasiLengkap,
-            'sesak_napas' => $validated['sesak_napas'],
-            'mual' => $validated['mual'],
-            'muntah' => $validated['muntah'],
-            'keringat_dingin' => $validated['keringat_dingin'],
-            'prediction_result' => $predictionData['prediction'],
-            'probability_angina' => $predictionData['probability_angina'],
-            'risk_level' => $predictionData['risk_level'],
-            'confidence' => $predictionData['confidence'],
-            'features_used' => $mlData,
-        ]);
+            if (! $patient) {
+                $patient = Patient::create([
+                    'nama' => $validated['nama'],
+                    'no_rm' => Patient::generateNoRm(),
+                    'umur' => $validated['umur'],
+                    'jenis_kelamin' => $validated['jenis_kelamin'],
+                    'user_id' => auth()->id(),
+                ]);
+            }
+
+            return Prediction::create([
+                'patient_id' => $patient->id,
+                'user_id' => auth()->id(),
+                'usia' => $validated['umur'],
+                'jenis_kelamin' => $validated['jenis_kelamin'],
+                'tekanan_darah' => $validated['tekanan_darah'],
+                'riwayat_dm' => $validated['riwayat_dm'],
+                'hipertensi' => $validated['hipertensi'],
+                'riwayat_pjk' => $validated['riwayat_pjk'],
+                'nyeri_dada' => $validated['nyeri_dada'],
+                'durasi_nyeri' => $durasiLengkap,
+                'sesak_napas' => $validated['sesak_napas'],
+                'mual' => $validated['mual'],
+                'muntah' => $validated['muntah'],
+                'keringat_dingin' => $validated['keringat_dingin'],
+                'prediction_result' => $predictionData['prediction'],
+                'probability_angina' => $predictionData['probability_angina'],
+                'risk_level' => $predictionData['risk_level'],
+                'confidence' => $predictionData['confidence'],
+                'features_used' => $mlData,
+            ]);
+        });
 
         // Redirect to result page
         return redirect()->route('classify.result', ['prediction' => $prediction->id]);
