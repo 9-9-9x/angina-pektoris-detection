@@ -1,11 +1,9 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import patientsRoute from '@/routes/patients';
-import predictionsRoute from '@/routes/predictions';
+import { ArrowLeft, Edit, Activity, User, MapPin, Phone, Trash2, Calendar } from 'lucide-react';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import AppLayout from '@/layouts/app-layout';
-import { useState } from 'react';
 import {
   Dialog,
   DialogContent,
@@ -14,7 +12,9 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { ArrowLeft, Edit, Activity, User, MapPin, Phone, Trash2, Calendar } from 'lucide-react';
+import AppLayout from '@/layouts/app-layout';
+import patientsRoute from '@/routes/patients';
+import predictionsRoute from '@/routes/predictions';
 
 interface Prediction {
   id: number;

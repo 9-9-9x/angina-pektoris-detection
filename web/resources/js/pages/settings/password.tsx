@@ -2,7 +2,6 @@ import { Transition } from '@headlessui/react';
 import { Form, Head } from '@inertiajs/react';
 import { useRef } from 'react';
 import PasswordController from '@/actions/App/Http/Controllers/Settings/PasswordController';
-import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -13,10 +12,7 @@ import { edit } from '@/routes/user-password';
 import type { BreadcrumbItem } from '@/types';
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Password settings',
-        href: edit().url,
-    },
+    { title: 'Pengaturan Kata Sandi', href: edit().url },
 ];
 
 export default function Password() {
@@ -25,47 +21,30 @@ export default function Password() {
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Password settings" />
-
-            <h1 className="sr-only">Password Settings</h1>
+            <Head title="Pengaturan Kata Sandi" />
 
             <SettingsLayout>
                 <div className="space-y-6">
-                    <Heading
-                        variant="small"
-                        title="Update password"
-                        description="Ensure your account is using a long, random password to stay secure"
-                    />
+                    <div>
+                        <h2 className="text-base font-semibold text-slate-800">Perbarui Kata Sandi</h2>
+                        <p className="text-sm text-slate-500 mt-0.5">Gunakan kata sandi yang panjang dan acak agar akun Anda tetap aman</p>
+                    </div>
 
                     <Form
                         {...PasswordController.update.form()}
-                        options={{
-                            preserveScroll: true,
-                        }}
-                        resetOnError={[
-                            'password',
-                            'password_confirmation',
-                            'current_password',
-                        ]}
+                        options={{ preserveScroll: true }}
+                        resetOnError={['password', 'password_confirmation', 'current_password']}
                         resetOnSuccess
                         onError={(errors) => {
-                            if (errors.password) {
-                                passwordInput.current?.focus();
-                            }
-
-                            if (errors.current_password) {
-                                currentPasswordInput.current?.focus();
-                            }
+                            if (errors.password) passwordInput.current?.focus();
+                            if (errors.current_password) currentPasswordInput.current?.focus();
                         }}
                         className="space-y-6"
                     >
                         {({ errors, processing, recentlySuccessful }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="current_password">
-                                        Current password
-                                    </Label>
-
+                                    <Label htmlFor="current_password" className="text-slate-700">Kata Sandi Saat Ini</Label>
                                     <Input
                                         id="current_password"
                                         ref={currentPasswordInput}
@@ -73,19 +52,13 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="current-password"
-                                        placeholder="Current password"
+                                        placeholder="Kata sandi saat ini"
                                     />
-
-                                    <InputError
-                                        message={errors.current_password}
-                                    />
+                                    <InputError message={errors.current_password} />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password">
-                                        New password
-                                    </Label>
-
+                                    <Label htmlFor="password" className="text-slate-700">Kata Sandi Baru</Label>
                                     <Input
                                         id="password"
                                         ref={passwordInput}
@@ -93,39 +66,32 @@ export default function Password() {
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="New password"
+                                        placeholder="Kata sandi baru"
                                     />
-
                                     <InputError message={errors.password} />
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password_confirmation">
-                                        Confirm password
-                                    </Label>
-
+                                    <Label htmlFor="password_confirmation" className="text-slate-700">Konfirmasi Kata Sandi</Label>
                                     <Input
                                         id="password_confirmation"
                                         name="password_confirmation"
                                         type="password"
                                         className="mt-1 block w-full"
                                         autoComplete="new-password"
-                                        placeholder="Confirm password"
+                                        placeholder="Konfirmasi kata sandi baru"
                                     />
-
-                                    <InputError
-                                        message={errors.password_confirmation}
-                                    />
+                                    <InputError message={errors.password_confirmation} />
                                 </div>
 
                                 <div className="flex items-center gap-4">
                                     <Button
                                         disabled={processing}
+                                        className="bg-[#4a6fa5] hover:bg-[#3d5d8a] text-white"
                                         data-test="update-password-button"
                                     >
-                                        Save password
+                                        Simpan Kata Sandi
                                     </Button>
-
                                     <Transition
                                         show={recentlySuccessful}
                                         enter="transition ease-in-out"
@@ -133,9 +99,7 @@ export default function Password() {
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-neutral-600">
-                                            Saved
-                                        </p>
+                                        <p className="text-sm text-slate-500">Tersimpan</p>
                                     </Transition>
                                 </div>
                             </>

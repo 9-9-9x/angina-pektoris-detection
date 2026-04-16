@@ -1,12 +1,12 @@
 import { Head, Link } from '@inertiajs/react';
-import predictionsRoute from '@/routes/predictions';
+import { Search, Eye, Activity } from 'lucide-react';
+import { useState } from 'react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
-import { Search, Eye, Activity } from 'lucide-react';
-import { useState } from 'react';
+import predictionsRoute from '@/routes/predictions';
 
 interface Prediction {
   id: number;

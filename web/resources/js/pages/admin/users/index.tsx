@@ -1,8 +1,8 @@
 import { Head, Link } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
-import AppLayout from '@/layouts/app-layout';
 import { Users, Trash2, ArrowLeft } from 'lucide-react';
 import { useState } from 'react';
+import { Button } from '@/components/ui/button';
+import AppLayout from '@/layouts/app-layout';
 import type { Role } from '@/types/auth';
 
 interface User {

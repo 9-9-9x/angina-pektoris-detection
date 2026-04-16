@@ -1,9 +1,9 @@
 import { Head, Link, useForm } from '@inertiajs/react';
+import { Heart, Activity } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { Heart, Activity } from 'lucide-react';
 import { login as loginRoute, register as registerRoute } from '@/routes';
 
 export default function Login({ status }: { status?: string }) {

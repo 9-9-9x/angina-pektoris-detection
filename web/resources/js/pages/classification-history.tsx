@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
-import { Button } from '@/components/ui/button';
 import { FileX } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 
 interface Classification {

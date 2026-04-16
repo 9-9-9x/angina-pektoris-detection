@@ -22,38 +22,24 @@ export default function About() {
                 {/* Card 1: Apa itu Angina Pektoris? */}
                 <div className="bg-white rounded-2xl p-7 shadow-sm">
                     <h2 className="text-lg font-bold text-[#1a237e] mb-5">Apa itu Angina Pektoris?</h2>
-                    <div className="flex items-center gap-3 mb-5">
-                        <div className="flex-1 flex justify-center">
+                    <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-5">
+                        <div className="w-full md:w-auto flex justify-center">
                             <img
-                                src="/jantung_login_image.png"
-                                alt="Jantung"
-                                className="max-h-40 object-contain"
+                                src="/images/about/heart-anatomy.png"
+                                alt="Ilustrasi anatomi jantung"
+                                className="w-full max-w-[280px] md:max-w-[360px] h-auto object-contain"
                             />
                         </div>
-                        <div className="flex-shrink-0">
-                            <ArrowRight className="w-8 h-8 text-red-500" />
+                        <div className="flex items-center justify-center shrink-0 px-2">
+                            <div className="hidden md:block h-1 w-16 bg-red-600 rounded-full" />
+                            <ArrowRight className="w-10 h-10 text-red-600" strokeWidth={2.5} />
                         </div>
-                        <div className="flex-1 bg-gray-50 border border-gray-100 rounded-xl p-3">
-                            <p className="text-center text-xs font-bold text-gray-700 mb-3 tracking-wide">ATHEROSCLEROSIS</p>
-                            <div className="flex gap-2">
-                                <div className="flex-1 text-center">
-                                    <div className="relative h-14 bg-[#f8b4b4] rounded-lg mx-1 flex items-center justify-center overflow-hidden">
-                                        <div className="w-full h-4 bg-[#f472b6]/40 absolute" />
-                                        <div className="w-3 h-full bg-[#f87171]/60 absolute rounded-full" />
-                                    </div>
-                                    <p className="text-[9px] text-gray-500 mt-1 font-medium">NORMAL ARTERY</p>
-                                    <p className="text-[8px] text-gray-400">BLOOD FLOW</p>
-                                </div>
-                                <div className="flex-1 text-center">
-                                    <div className="relative h-14 bg-[#f8b4b4] rounded-lg mx-1 flex items-center justify-center overflow-hidden">
-                                        <div className="w-full h-4 bg-[#fbbf24]/50 absolute" />
-                                        <div className="w-5 h-5 bg-[#d97706] absolute rounded-full top-1 right-2 opacity-70" />
-                                        <div className="w-2 h-full bg-[#f87171]/60 absolute rounded-full" />
-                                    </div>
-                                    <p className="text-[9px] text-gray-500 mt-1 font-medium">ARTERY NARROWED</p>
-                                    <p className="text-[8px] text-gray-400">BY PLAQUE</p>
-                                </div>
-                            </div>
+                        <div className="w-full md:w-auto flex justify-center">
+                            <img
+                                src="/images/about/atherosclerosis-diagram.png"
+                                alt="Ilustrasi penyempitan pembuluh darah akibat plak"
+                                className="w-full max-w-[320px] md:max-w-[420px] h-auto object-contain"
+                            />
                         </div>
                     </div>
                     <p className="text-[#1a237e] text-center leading-relaxed text-sm">

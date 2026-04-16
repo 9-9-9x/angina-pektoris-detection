@@ -1,7 +1,6 @@
 import { Form } from '@inertiajs/react';
 import { useRef } from 'react';
 import ProfileController from '@/actions/App/Http/Controllers/Settings/ProfileController';
-import Heading from '@/components/heading';
 import InputError from '@/components/input-error';
 import { Button } from '@/components/ui/button';
 import {
@@ -21,44 +20,32 @@ export default function DeleteUser() {
 
     return (
         <div className="space-y-6">
-            <Heading
-                variant="small"
-                title="Delete account"
-                description="Delete your account and all of its resources"
-            />
-            <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4 dark:border-red-200/10 dark:bg-red-700/10">
-                <div className="relative space-y-0.5 text-red-600 dark:text-red-100">
-                    <p className="font-medium">Warning</p>
-                    <p className="text-sm">
-                        Please proceed with caution, this cannot be undone.
-                    </p>
+            <div>
+                <h2 className="text-base font-semibold text-slate-800">Hapus Akun</h2>
+                <p className="text-sm text-slate-500 mt-0.5">Hapus akun dan semua data terkait</p>
+            </div>
+            <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4">
+                <div className="space-y-0.5 text-red-600">
+                    <p className="font-medium">Peringatan</p>
+                    <p className="text-sm">Harap berhati-hati, tindakan ini tidak dapat dibatalkan.</p>
                 </div>
 
                 <Dialog>
                     <DialogTrigger asChild>
-                        <Button
-                            variant="destructive"
-                            data-test="delete-user-button"
-                        >
-                            Delete account
+                        <Button variant="destructive" data-test="delete-user-button">
+                            Hapus Akun
                         </Button>
                     </DialogTrigger>
                     <DialogContent>
-                        <DialogTitle>
-                            Are you sure you want to delete your account?
-                        </DialogTitle>
+                        <DialogTitle>Apakah Anda yakin ingin menghapus akun?</DialogTitle>
                         <DialogDescription>
-                            Once your account is deleted, all of its resources
-                            and data will also be permanently deleted. Please
-                            enter your password to confirm you would like to
-                            permanently delete your account.
+                            Setelah akun dihapus, semua data dan sumber daya terkait akan ikut terhapus secara permanen.
+                            Masukkan kata sandi Anda untuk mengonfirmasi penghapusan akun.
                         </DialogDescription>
 
                         <Form
                             {...ProfileController.destroy.form()}
-                            options={{
-                                preserveScroll: true,
-                            }}
+                            options={{ preserveScroll: true }}
                             onError={() => passwordInput.current?.focus()}
                             resetOnSuccess
                             className="space-y-6"
@@ -66,22 +53,15 @@ export default function DeleteUser() {
                             {({ resetAndClearErrors, processing, errors }) => (
                                 <>
                                     <div className="grid gap-2">
-                                        <Label
-                                            htmlFor="password"
-                                            className="sr-only"
-                                        >
-                                            Password
-                                        </Label>
-
+                                        <Label htmlFor="password" className="sr-only">Kata Sandi</Label>
                                         <Input
                                             id="password"
                                             type="password"
                                             name="password"
                                             ref={passwordInput}
-                                            placeholder="Password"
+                                            placeholder="Kata sandi"
                                             autoComplete="current-password"
                                         />
-
                                         <InputError message={errors.password} />
                                     </div>
 
@@ -89,24 +69,14 @@ export default function DeleteUser() {
                                         <DialogClose asChild>
                                             <Button
                                                 variant="secondary"
-                                                onClick={() =>
-                                                    resetAndClearErrors()
-                                                }
+                                                onClick={() => resetAndClearErrors()}
                                             >
-                                                Cancel
+                                                Batal
                                             </Button>
                                         </DialogClose>
-
-                                        <Button
-                                            variant="destructive"
-                                            disabled={processing}
-                                            asChild
-                                        >
-                                            <button
-                                                type="submit"
-                                                data-test="confirm-delete-user-button"
-                                            >
-                                                Delete account
+                                        <Button variant="destructive" disabled={processing} asChild>
+                                            <button type="submit" data-test="confirm-delete-user-button">
+                                                Hapus Akun
                                             </button>
                                         </Button>
                                     </DialogFooter>

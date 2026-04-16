@@ -1,14 +1,14 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import patientsRoute from '@/routes/patients';
-import predictionsRoute from '@/routes/predictions';
+import { ArrowLeft, Activity, AlertTriangle } from 'lucide-react';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import AppLayout from '@/layouts/app-layout';
-import { ArrowLeft, Activity, AlertTriangle } from 'lucide-react';
+import patientsRoute from '@/routes/patients';
+import predictionsRoute from '@/routes/predictions';
 
 interface Patient {
   id: number;

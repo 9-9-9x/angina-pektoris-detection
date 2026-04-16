@@ -15,44 +15,65 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create test users (doctors/medical staff)
-        $users = [
+        $usersData = [
+            [
+                'name' => 'Admin',
+                'email' => 'admin@rsud.go.id',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ],
             [
                 'name' => 'dr. Ahmad Susanto',
                 'email' => 'dr.ahmad@rsud.go.id',
                 'password' => Hash::make('password'),
+                'role' => 'doctor',
             ],
             [
                 'name' => 'dr. Sarah Wijaya',
                 'email' => 'dr.sarah@rsud.go.id',
                 'password' => Hash::make('password'),
+                'role' => 'doctor',
             ],
             [
                 'name' => 'dr. Budi Santoso',
                 'email' => 'dr.budi@rsud.go.id',
                 'password' => Hash::make('password'),
+                'role' => 'doctor',
+            ],
+            [
+                'name' => 'Demo Pasien',
+                'email' => 'demo@example.com',
+                'password' => Hash::make('password'),
+                'role' => 'patient',
             ],
         ];
 
-        foreach ($users as $userData) {
-            User::create($userData);
+        $createdUsers = [];
+        foreach ($usersData as $userData) {
+            $createdUsers[] = User::create($userData);
         }
 
-        // Demo user for quick testing
-        $demoUser = User::create([
-            'name' => 'Demo User',
-            'email' => 'demo@example.com',
-            'password' => Hash::make('password'),
-        ]);
+        $demoUser = User::where('email', 'demo@example.com')->first();
 
         // Seed patients and predictions for demo user
         $this->seedPatientsAndPredictions($demoUser);
-        
+
         // Seed patients and predictions for dr. Ahmad
         $this->seedPatientsAndPredictions(User::where('email', 'dr.ahmad@rsud.go.id')->first());
 
         $this->command->info('Database seeded successfully!');
-        $this->command->info('Demo login: demo@example.com / password');
+        $this->command->newLine();
+        $this->command->info('=== Akun yang tersedia ===');
+        foreach ($createdUsers as $user) {
+            $role = match($user->role) {
+                'admin'   => 'Admin',
+                'doctor'  => 'Dokter',
+                'patient' => 'Pasien',
+                default   => $user->role,
+            };
+            $this->command->line("  [{$role}] {$user->name} | {$user->email} | password");
+        }
+        $this->command->newLine();
     }
 
     private function seedPatientsAndPredictions(User $user): void

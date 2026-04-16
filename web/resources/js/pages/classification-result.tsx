@@ -1,6 +1,6 @@
 import { Head, Link } from '@inertiajs/react';
-import { useState } from 'react';
 import { User, AlertTriangle, Check, FileText, Home, ShieldAlert } from 'lucide-react';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 

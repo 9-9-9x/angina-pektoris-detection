@@ -1,11 +1,11 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import patientsRoute from '@/routes/patients';
-import predictionsRoute from '@/routes/predictions';
+import { ArrowLeft, Activity, AlertTriangle, CheckCircle, User, Calendar, Printer } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import AppLayout from '@/layouts/app-layout';
-import { ArrowLeft, Activity, AlertTriangle, CheckCircle, User, Calendar, Printer } from 'lucide-react';
+import patientsRoute from '@/routes/patients';
+import predictionsRoute from '@/routes/predictions';
 
 interface Patient {
   id: number;

@@ -1,9 +1,9 @@
 import { Head, useForm } from '@inertiajs/react';
-import { useState, useEffect, useRef, useCallback } from 'react';
 import { Calendar, ChevronDown, Zap, X, ArrowRight, ArrowLeft, Check, CornerDownLeft } from 'lucide-react';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
 
 // ─── Quick Mode Step Definitions ─────────────────────────────────────────────
