@@ -31,7 +31,7 @@ export function AppSidebar() {
     const visibleItems = navItems.filter((item) => !item.roles || item.roles.includes(userRole));
 
     return (
-        <aside className="w-64 bg-gradient-to-b from-slate-50 to-blue-50 border-r border-slate-200 min-h-[calc(100vh-64px)]">
+        <aside className="w-64 bg-sidebar border-r border-sidebar-border min-h-[calc(100vh-64px)]">
             <nav className="p-4 space-y-2">
                 {visibleItems.map((item) => {
                     const isActive = item.activePrefix
@@ -46,8 +46,8 @@ export function AppSidebar() {
                             className={cn(
                                 "flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200",
                                 isActive
-                                    ? "bg-slate-700 text-white shadow-md"
-                                    : "text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                                    ? "bg-sidebar-primary text-sidebar-primary-foreground shadow-md"
+                                    : "text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                             )}
                         >
                             <Icon className="w-5 h-5" />

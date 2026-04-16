@@ -6,7 +6,7 @@ export function AppHeader() {
     const { auth } = usePage<SharedData>().props;
 
     return (
-        <header className="border-b border-slate-200 bg-white shadow-sm">
+        <header className="border-b border-border bg-card shadow-sm">
             <div className="flex h-16 items-center justify-between px-6">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-3">
@@ -14,7 +14,7 @@ export function AppHeader() {
                         <Heart className="h-8 w-8 fill-red-500 text-red-500" />
                         <Activity className="absolute top-1/2 left-1/2 h-4 w-4 -translate-x-1/2 -translate-y-1/2 transform text-white" />
                     </div>
-                    <span className="text-lg font-semibold text-slate-700">
+                    <span className="text-lg font-semibold text-card-foreground">
                         Sistem Klasifikasi{' '}
                         <span className="font-bold">Angina Pektoris</span>
                     </span>
@@ -24,14 +24,14 @@ export function AppHeader() {
                 <nav className="flex items-center gap-6">
                     <Link
                         href="/"
-                        className="flex items-center gap-2 text-slate-600 transition-colors hover:text-slate-900"
+                        className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
                     >
                         <Home className="h-5 w-5" />
                         <span>Home</span>
                     </Link>
                     <Link
                         href="/about"
-                        className="flex items-center gap-2 text-slate-600 transition-colors hover:text-slate-900"
+                        className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
                     >
                         <Info className="h-5 w-5" />
                         <span>About</span>
@@ -42,7 +42,7 @@ export function AppHeader() {
                             href="/logout"
                             method="post"
                             as="button"
-                            className="flex items-center gap-2 text-slate-600 hover:text-red-600"
+                            className="flex items-center gap-2 text-muted-foreground hover:text-destructive"
                         >
                             <LogOut className="h-5 w-5" />
                             <span>Logout</span>

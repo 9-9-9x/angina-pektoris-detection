@@ -8,7 +8,7 @@ interface AppLayoutProps {
 
 export default function AppLayout({ children }: AppLayoutProps) {
     return (
-        <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100">
+        <div className="min-h-screen bg-background">
             <AppHeader />
             <div className="flex">
                 <AppSidebar />
