@@ -27,15 +27,15 @@ interface Props {
 export default function PredictionsCreate({ patient, mlStatus }: Props) {
   const { data, setData, post, processing, errors } = useForm({
     tekanan_darah: '',
-    riwayat_dm: 'Tidak',
-    hipertensi: 'Tidak',
-    riwayat_pjk: 'Tidak',
-    nyeri_dada: 'Tidak',
-    durasi_nyeri: '5 menit',
-    sesak_napas: 'Tidak',
-    mual: 'Tidak',
-    muntah: 'Tidak',
-    keringat_dingin: 'Tidak',
+    riwayat_dm: '',
+    hipertensi: '',
+    riwayat_pjk: '',
+    nyeri_dada: '',
+    durasi_nyeri: '',
+    sesak_napas: '',
+    mual: '',
+    muntah: '',
+    keringat_dingin: '',
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -97,20 +97,18 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
               <CardDescription>Masukkan data klinis pasien untuk analisis</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-6 md:grid-cols-2">
-                <div className="space-y-2">
-                  <Label htmlFor="tekanan_darah">Tekanan Darah Sistolik (mmHg) *</Label>
-                  <Input
-                    id="tekanan_darah"
-                    type="number"
-                    min="60"
-                    max="300"
-                    value={data.tekanan_darah}
-                    onChange={(e) => setData('tekanan_darah', e.target.value)}
-                    placeholder="Contoh: 150"
-                  />
-                  {errors.tekanan_darah && <p className="text-sm text-red-500">{errors.tekanan_darah}</p>}
-                </div>
+              <div className="max-w-xs space-y-2">
+                <Label htmlFor="tekanan_darah">Tekanan Darah Sistolik (mmHg) *</Label>
+                <Input
+                  id="tekanan_darah"
+                  type="number"
+                  min="60"
+                  max="300"
+                  value={data.tekanan_darah}
+                  onChange={(e) => setData('tekanan_darah', e.target.value)}
+                  placeholder="Contoh: 150"
+                />
+                {errors.tekanan_darah && <p className="text-sm text-red-500">{errors.tekanan_darah}</p>}
               </div>
             </CardContent>
           </Card>
@@ -125,7 +123,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                   <Label>Riwayat Diabetes</Label>
                   <Select value={data.riwayat_dm} onValueChange={(value) => setData('riwayat_dm', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Pilih..." />
                     </SelectTrigger>
                     <SelectContent>
                       {yesNoOptions.map((opt) => (
@@ -139,7 +137,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                   <Label>Hipertensi</Label>
                   <Select value={data.hipertensi} onValueChange={(value) => setData('hipertensi', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Pilih..." />
                     </SelectTrigger>
                     <SelectContent>
                       {yesNoOptions.map((opt) => (
@@ -153,7 +151,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                   <Label>Riwayat PJK</Label>
                   <Select value={data.riwayat_pjk} onValueChange={(value) => setData('riwayat_pjk', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Pilih..." />
                     </SelectTrigger>
                     <SelectContent>
                       {yesNoOptions.map((opt) => (
@@ -176,7 +174,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                   <Label>Nyeri Dada Menjalar ke Lengan</Label>
                   <Select value={data.nyeri_dada} onValueChange={(value) => setData('nyeri_dada', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Pilih..." />
                     </SelectTrigger>
                     <SelectContent>
                       {yesNoOptions.map((opt) => (
@@ -190,7 +188,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                   <Label>Durasi Nyeri</Label>
                   <Select value={data.durasi_nyeri} onValueChange={(value) => setData('durasi_nyeri', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Pilih..." />
                     </SelectTrigger>
                     <SelectContent>
                       {durasiOptions.map((opt) => (
@@ -204,7 +202,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                   <Label>Sesak Napas</Label>
                   <Select value={data.sesak_napas} onValueChange={(value) => setData('sesak_napas', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Pilih..." />
                     </SelectTrigger>
                     <SelectContent>
                       {yesNoOptions.map((opt) => (
@@ -218,7 +216,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                   <Label>Mual</Label>
                   <Select value={data.mual} onValueChange={(value) => setData('mual', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Pilih..." />
                     </SelectTrigger>
                     <SelectContent>
                       {yesNoOptions.map((opt) => (
@@ -232,7 +230,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                   <Label>Muntah</Label>
                   <Select value={data.muntah} onValueChange={(value) => setData('muntah', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Pilih..." />
                     </SelectTrigger>
                     <SelectContent>
                       {yesNoOptions.map((opt) => (
@@ -246,7 +244,7 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                   <Label>Keringat Dingin</Label>
                   <Select value={data.keringat_dingin} onValueChange={(value) => setData('keringat_dingin', value)}>
                     <SelectTrigger>
-                      <SelectValue />
+                      <SelectValue placeholder="Pilih..." />
                     </SelectTrigger>
                     <SelectContent>
                       {yesNoOptions.map((opt) => (

@@ -628,20 +628,20 @@ export default function Classification() {
         // Patient data
         nama: '',
         umur: '',
-        jenis_kelamin: 'L',
+        jenis_kelamin: '',
 
         // Clinical data
-        nyeri_dada: 'Ya',
+        nyeri_dada: '',
         durasi_nyeri: '',
         durasi_unit: 'Menit',
-        sesak_napas: 'Ya',
-        keringat_dingin: 'Ya',
-        mual: 'Ya',
-        muntah: 'Ya',
+        sesak_napas: '',
+        keringat_dingin: '',
+        mual: '',
+        muntah: '',
         tekanan_darah: '',
-        hipertensi: 'Ya',
-        riwayat_dm: 'Ya',
-        riwayat_pjk: 'Ya',
+        hipertensi: '',
+        riwayat_dm: '',
+        riwayat_pjk: '',
     });
 
     const handleSubmit = (e?: React.FormEvent) => {
@@ -731,7 +731,7 @@ export default function Classification() {
                         {/* Umur Pasien */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Umur Pasien</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Umur Pasien</Label>
                                 <div className="relative flex-1 max-w-xs">
                                     <Input
                                         type="number"
@@ -749,7 +749,7 @@ export default function Classification() {
                         {/* Jenis Kelamin */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Jenis Kelamin</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Jenis Kelamin</Label>
                                 <RadioGroup
                                     name="jenis_kelamin"
                                     value={data.jenis_kelamin}
@@ -765,7 +765,7 @@ export default function Classification() {
                         {/* Nyeri Dada */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Nyeri Dada</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Nyeri Dada</Label>
                                 <RadioGroup
                                     name="nyeri_dada"
                                     value={data.nyeri_dada}
@@ -788,7 +788,7 @@ export default function Classification() {
                         {data.nyeri_dada === 'Ya' && (
                             <div className="py-4 border-b border-slate-300">
                                 <div className="flex items-center gap-4">
-                                    <Label className="text-slate-700 w-32">Durasi Nyeri</Label>
+                                    <Label className="text-slate-700 w-36 shrink-0">Durasi Nyeri</Label>
                                     <div className="flex items-center gap-4 flex-1">
                                         <div className="relative w-32">
                                             <Input
@@ -817,7 +817,7 @@ export default function Classification() {
                         {/* Sesak Napas */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Sesak Napas</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Sesak Napas</Label>
                                 <RadioGroup
                                     name="sesak_napas"
                                     value={data.sesak_napas}
@@ -833,7 +833,7 @@ export default function Classification() {
                         {/* Keringat Dingin */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Keringat Dingin</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Keringat Dingin</Label>
                                 <RadioGroup
                                     name="keringat_dingin"
                                     value={data.keringat_dingin}
@@ -849,7 +849,7 @@ export default function Classification() {
                         {/* Mual */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Mual</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Mual</Label>
                                 <RadioGroup
                                     name="mual"
                                     value={data.mual}
@@ -865,7 +865,7 @@ export default function Classification() {
                         {/* Muntah */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Muntah</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Muntah</Label>
                                 <RadioGroup
                                     name="muntah"
                                     value={data.muntah}
@@ -881,7 +881,7 @@ export default function Classification() {
                         {/* Tekanan Darah */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Tekanan Darah</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Tekanan Darah</Label>
                                 <div className="flex items-center gap-3">
                                     <Input
                                         type="number"
@@ -898,7 +898,7 @@ export default function Classification() {
                         {/* Riwayat Hipertensi */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Riwayat Hipertensi</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Riwayat Hipertensi</Label>
                                 <RadioGroup
                                     name="hipertensi"
                                     value={data.hipertensi}
@@ -914,7 +914,7 @@ export default function Classification() {
                         {/* Riwayat DM */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-32">Riwayat DM</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Riwayat DM</Label>
                                 <RadioGroup
                                     name="riwayat_dm"
                                     value={data.riwayat_dm}
@@ -930,7 +930,7 @@ export default function Classification() {
                         {/* Riwayat PJK Terdahulu */}
                         <div className="py-4 border-b border-slate-300">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-40">Riwayat PJK Terdahulu</Label>
+                                <Label className="text-slate-700 w-36 shrink-0">Riwayat PJK Terdahulu</Label>
                                 <RadioGroup
                                     name="riwayat_pjk"
                                     value={data.riwayat_pjk}
