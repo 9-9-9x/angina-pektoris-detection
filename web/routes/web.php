@@ -43,8 +43,9 @@ Route::get('/about', [PredictionController::class, 'about'])
 // Protected routes - require authentication
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Dashboard with stats
+    // Dashboard with stats (admin only)
     Route::get('/dashboard', [PredictionController::class, 'dashboard'])
+        ->middleware('role:admin')
         ->name('dashboard');
 
     // Classification form (GET)
@@ -65,8 +66,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/history', [PredictionController::class, 'history'])
         ->name('history');
 
-    // Patient management (CRUD)
-    Route::resource('patients', PatientController::class);
+    // Patient management (CRUD) — doctor/admin only
+    Route::resource('patients', PatientController::class)
+        ->middleware('role:doctor,admin');
 
     // Predictions
     Route::get('predictions', [PredictionController::class, 'index'])
