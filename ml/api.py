@@ -51,6 +51,7 @@ preprocessing_config = None
 # PREPROCESSING FUNCTIONS (Must match training logic)
 # ============================================================================
 
+
 def bin_usia(usia: int) -> int:
     """Bin age into categories: 0=<20, 1=20-40, 2=40-60, 3=>60"""
     if usia < 20:
@@ -62,6 +63,7 @@ def bin_usia(usia: int) -> int:
     else:
         return 3
 
+
 def bin_td(td: int) -> int:
     """Bin blood pressure (systolic): 0=<120, 1=120-130, 2=>130"""
     if td < 120:
@@ -71,6 +73,7 @@ def bin_td(td: int) -> int:
     else:
         return 2  # High
 
+
 def parse_duration_to_minutes(durasi_text: str) -> int:
     """Convert duration text to minutes."""
     try:
@@ -79,17 +82,18 @@ def parse_duration_to_minutes(durasi_text: str) -> int:
             return 30  # Default fallback
         value = int(parts[0])
         unit = parts[1].lower()
-        
-        if unit in ['menit', 'minute', 'minutes']:
+
+        if unit in ["menit", "minute", "minutes"]:
             return value
-        elif unit in ['jam', 'hour', 'hours']:
+        elif unit in ["jam", "hour", "hours"]:
             return value * 60
-        elif unit in ['hari', 'day', 'days']:
+        elif unit in ["hari", "day", "days"]:
             return value * 24 * 60
         else:
             return 30  # Default fallback
     except Exception:
         return 30  # Default fallback
+
 
 def bin_durasi(menit: int) -> int:
     """Bin pain duration: 0=<5min, 1=5-10min, 2=>10min"""
@@ -100,89 +104,88 @@ def bin_durasi(menit: int) -> int:
     else:
         return 2
 
+
 # ============================================================================
 # PYDANTIC MODELS FOR VALIDATION
 # ============================================================================
 
+
 class PatientData(BaseModel):
     """
     Patient data for Angina Pektoris prediction.
-    
+
     All fields are required for accurate prediction.
     """
+
     usia: int = Field(
-        ..., 
-        ge=0, 
-        le=120, 
-        description="Usia pasien dalam tahun (0-120)",
-        example=65
+        ..., ge=0, le=120, description="Usia pasien dalam tahun (0-120)", example=65
     )
-    jenis_kelamin: Literal['L', 'P'] = Field(
-        ..., 
+    jenis_kelamin: Literal["L", "P"] = Field(
+        ...,
         description="Jenis kelamin: 'L' untuk Laki-laki, 'P' untuk Perempuan",
-        example="L"
+        example="L",
     )
     tekanan_darah: int = Field(
-        ..., 
-        ge=60, 
-        le=300, 
+        ...,
+        ge=60,
+        le=300,
         description="Tekanan darah sistolik dalam mmHg (60-300)",
         alias="TD",
-        example=150
+        example=150,
     )
-    riwayat_dm: Literal['Ya', 'Tidak'] = Field(
-        ..., 
+    riwayat_dm: Literal["Ya", "Tidak"] = Field(
+        ...,
         description="Riwayat Diabetes Mellitus: 'Ya' atau 'Tidak'",
         alias="riwayat_DM",
-        example="Ya"
+        example="Ya",
     )
-    hipertensi: Literal['Ya', 'Tidak'] = Field(
-        ..., 
+    hipertensi: Literal["Ya", "Tidak"] = Field(
+        ...,
         description="Status Hipertensi: 'Ya' atau 'Tidak'",
         alias="HT",
-        example="Ya"
+        example="Ya",
     )
-    riwayat_pjk: Literal['Ya', 'Tidak'] = Field(
-        ..., 
+    riwayat_pjk: Literal["Ya", "Tidak"] = Field(
+        ...,
         description="Riwayat Penyakit Jantung Koroner terdahulu: 'Ya' atau 'Tidak'",
         alias="riwayat_PJK_terdahulu",
-        example="Tidak"
+        example="Tidak",
     )
-    nyeri_menjalar: Literal['Ya', 'Tidak'] = Field(
-        ..., 
+    nyeri_menjalar: Literal["Ya", "Tidak"] = Field(
+        ...,
         description="Nyeri dada menjalar ke lengan: 'Ya' atau 'Tidak'",
         alias="nyeri_dada_menjalar_ke_lengan",
-        example="Ya"
+        example="Ya",
     )
     durasi_nyeri: str = Field(
-        ..., 
+        ...,
         description="Durasi nyeri dada (contoh: '30 menit', '2 jam', '1 hari')",
         alias="durasi_nyeri",
-        example="10 menit"
+        example="10 menit",
     )
-    sesak_napas: Literal['Ya', 'Tidak'] = Field(
-        ..., 
+    sesak_napas: Literal["Ya", "Tidak"] = Field(
+        ...,
         description="Mengalami sesak napas: 'Ya' atau 'Tidak'",
         alias="sesak_napas",
-        example="Ya"
+        example="Ya",
     )
-    mual: Literal['Ya', 'Tidak'] = Field(
-        ..., 
+    mual: Literal["Ya", "Tidak"] = Field(
+        ...,
         description="Mengalami mual: 'Ya' atau 'Tidak'",
         alias="mual",
-        example="Tidak"
+        example="Tidak",
     )
-    muntah: Literal['Ya', 'Tidak'] = Field(
-        ..., 
+    muntah: Literal["Ya", "Tidak"] = Field(
+        ...,
         description="Mengalami muntah: 'Ya' atau 'Tidak'",
         alias="muntah",
-        example="Tidak"
+        example="Tidak",
     )
-    keringat_dingin: Literal['Ya', 'Tidak'] = Field(
-        ..., 
+    keringat_dingin: Literal["Ya", "Tidak"] = Field(
+        ...,
         description="Mengalami keringat dingin: 'Ya' atau 'Tidak'",
         alias="keringat_dingin",
-        example="Ya"
+        example="Ya",
     )
 
     class Config:
@@ -200,7 +203,7 @@ class PatientData(BaseModel):
                 "sesak_napas": "Ya",
                 "mual": "Tidak",
                 "muntah": "Tidak",
-                "keringat_dingin": "Ya"
+                "keringat_dingin": "Ya",
             }
         }
 
@@ -209,50 +212,41 @@ class PredictionResponse(BaseModel):
     """
     Response model for prediction endpoint.
     """
-    prediction: Literal['Angina Pektoris', 'Bukan Angina Pektoris'] = Field(
-        ...,
-        description="Hasil prediksi model"
+
+    prediction: Literal["Angina Pektoris", "Bukan Angina Pektoris"] = Field(
+        ..., description="Hasil prediksi model"
     )
     prediction_code: Literal[0, 1] = Field(
-        ...,
-        description="Kode prediksi: 0 = Bukan Angina, 1 = Angina"
+        ..., description="Kode prediksi: 0 = Bukan Angina, 1 = Angina"
     )
     probability_angina: float = Field(
         ...,
         ge=0.0,
         le=1.0,
-        description="Probabilitas pasien menderita Angina Pektoris (0.0 - 1.0)"
+        description="Probabilitas pasien menderita Angina Pektoris (0.0 - 1.0)",
     )
     probability_non_angina: float = Field(
         ...,
         ge=0.0,
         le=1.0,
-        description="Probabilitas pasien TIDAK menderita Angina Pektoris (0.0 - 1.0)"
+        description="Probabilitas pasien TIDAK menderita Angina Pektoris (0.0 - 1.0)",
     )
-    risk_level: Literal['LOW', 'MODERATE', 'HIGH'] = Field(
-        ...,
-        description="Tingkat risiko berdasarkan probabilitas"
+    risk_level: Literal["LOW", "MODERATE", "HIGH"] = Field(
+        ..., description="Tingkat risiko berdasarkan probabilitas"
     )
-    risk_percentage: float = Field(
-        ...,
-        description="Persentase risiko Angina Pektoris"
-    )
+    risk_percentage: float = Field(..., description="Persentase risiko Angina Pektoris")
     confidence: str = Field(
-        ...,
-        description="Tingkat kepercayaan model terhadap prediksi"
+        ..., description="Tingkat kepercayaan model terhadap prediksi"
     )
     features_used: Dict[str, Any] = Field(
-        ...,
-        description="Fitur yang digunakan untuk prediksi (setelah preprocessing)"
+        ..., description="Fitur yang digunakan untuk prediksi (setelah preprocessing)"
     )
-    disclaimer: str = Field(
-        ...,
-        description="Peringatan penggunaan model"
-    )
+    disclaimer: str = Field(..., description="Peringatan penggunaan model")
 
 
 class HealthResponse(BaseModel):
     """Health check response."""
+
     status: str
     model_loaded: bool
     model_version: str
@@ -261,38 +255,41 @@ class HealthResponse(BaseModel):
 
 class APIInfo(BaseModel):
     """API information response."""
+
     name: str
     version: str
     description: str
     endpoints: Dict[str, str]
     disclaimer: str
 
+
 # ============================================================================
 # MODEL LOADING FUNCTION
 # ============================================================================
 
+
 def load_model():
     """
     Load the trained model from angina_model.pkl file.
-    
+
     IMPORTANT: This file is generated by model.py during training.
     If the file doesn't exist, run: python model.py
-    
+
     Returns:
         bool: True if model loaded successfully, False otherwise
     """
     global model_data, rf_model, feature_columns, preprocessing_config
-    
+
     try:
         # Load the pickle file created by model.py
-        with open('angina_model.pkl', 'rb') as f:
+        with open("angina_model.pkl", "rb") as f:
             model_data = pickle.load(f)
-        
+
         # Extract components from the saved model
-        rf_model = model_data['model']              # The trained Random Forest
-        feature_columns = model_data['feature_columns']  # Feature names
-        preprocessing_config = model_data['preprocessing']  # Encoding mappings
-        
+        rf_model = model_data["model"]  # The trained Random Forest
+        feature_columns = model_data["feature_columns"]  # Feature names
+        preprocessing_config = model_data["preprocessing"]  # Encoding mappings
+
         print("✅ Model loaded successfully!")
         print(f"   - Feature columns: {len(feature_columns)}")
         print(f"   - Model type: {type(rf_model).__name__}")
@@ -330,17 +327,19 @@ load_model()
 # LIFESPAN MANAGER (Handle startup/shutdown)
 # ============================================================================
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """Handle application startup and shutdown events."""
     # STARTUP: Model already loaded during import, but verify
     if rf_model is None:
         load_model()
-    
+
     yield
-    
+
     # SHUTDOWN: Cleanup (if needed)
     print("👋 Shutting down API...")
+
 
 # ============================================================================
 # FASTAPI APPLICATION
@@ -374,14 +373,8 @@ app = FastAPI(
     lifespan=lifespan,
     docs_url="/docs",
     redoc_url="/redoc",
-    contact={
-        "name": "Tim Data Science",
-        "email": "support@example.com"
-    },
-    license_info={
-        "name": "MIT License",
-        "url": "https://opensource.org/licenses/MIT"
-    }
+    contact={"name": "Tim Data Science", "email": "support@example.com"},
+    license_info={"name": "MIT License", "url": "https://opensource.org/licenses/MIT"},
 )
 
 # Add CORS middleware
@@ -397,54 +390,57 @@ app.add_middleware(
 # HELPER FUNCTIONS
 # ============================================================================
 
+
 def preprocess_patient_data(patient: PatientData) -> pd.DataFrame:
     """
     Preprocess patient data to match model training format.
-    
+
     Args:
         patient: PatientData object with raw clinical data
-        
+
     Returns:
         DataFrame with preprocessed features ready for prediction
     """
-    binary_mapping = {'Tidak': 0, 'Ya': 1}
-    gender_mapping = {'L': 0, 'P': 1}
-    
+    binary_mapping = {"Tidak": 0, "Ya": 1}
+    gender_mapping = {"L": 0, "P": 1}
+
     features = {}
-    
+
     # Binning transformations
-    features['Usia_Binned'] = bin_usia(patient.usia)
-    features['Jenis_Kelamin_Encoded'] = gender_mapping[patient.jenis_kelamin]
-    features['TD_Binned'] = bin_td(patient.tekanan_darah)
-    
+    features["Usia_Binned"] = bin_usia(patient.usia)
+    features["Jenis_Kelamin_Encoded"] = gender_mapping[patient.jenis_kelamin]
+    features["TD_Binned"] = bin_td(patient.tekanan_darah)
+
     # Duration parsing and binning
     durasi_menit = parse_duration_to_minutes(patient.durasi_nyeri)
-    features['Durasi_Nyeri_Binned'] = bin_durasi(durasi_menit)
-    
+    features["Durasi_Nyeri_Binned"] = bin_durasi(durasi_menit)
+
     # Binary encoding
-    features['Riwayat DM_Encoded'] = binary_mapping[patient.riwayat_dm]
-    features['HT_Encoded'] = binary_mapping[patient.hipertensi]
-    features['Riwayat PJK terdahulu_Encoded'] = binary_mapping[patient.riwayat_pjk]
-    features['Nyeri dada menjalar ke lengan_Encoded'] = binary_mapping[patient.nyeri_menjalar]
-    features['Sesak napas_Encoded'] = binary_mapping[patient.sesak_napas]
-    features['Mual_Encoded'] = binary_mapping[patient.mual]
-    features['Muntah_Encoded'] = binary_mapping[patient.muntah]
-    features['Keringat dingin_Encoded'] = binary_mapping[patient.keringat_dingin]
-    
+    features["Riwayat DM_Encoded"] = binary_mapping[patient.riwayat_dm]
+    features["HT_Encoded"] = binary_mapping[patient.hipertensi]
+    features["Riwayat PJK terdahulu_Encoded"] = binary_mapping[patient.riwayat_pjk]
+    features["Nyeri dada menjalar ke lengan_Encoded"] = binary_mapping[
+        patient.nyeri_menjalar
+    ]
+    features["Sesak napas_Encoded"] = binary_mapping[patient.sesak_napas]
+    features["Mual_Encoded"] = binary_mapping[patient.mual]
+    features["Muntah_Encoded"] = binary_mapping[patient.muntah]
+    features["Keringat dingin_Encoded"] = binary_mapping[patient.keringat_dingin]
+
     # Create DataFrame with correct column order
     X = pd.DataFrame([features])[feature_columns]
-    
+
     return X, features
 
 
 def get_risk_level(probability: float) -> str:
     """Determine risk level based on probability."""
     if probability > 0.7:
-        return 'HIGH'
+        return "HIGH"
     elif probability > 0.3:
-        return 'MODERATE'
+        return "MODERATE"
     else:
-        return 'LOW'
+        return "LOW"
 
 
 def get_confidence(probability: float) -> str:
@@ -456,15 +452,17 @@ def get_confidence(probability: float) -> str:
     else:
         return "Low (uncertain prediction)"
 
+
 # ============================================================================
 # API ENDPOINTS
 # ============================================================================
+
 
 @app.get("/", response_model=APIInfo, tags=["General"])
 async def root():
     """
     Root endpoint - Returns API information.
-    
+
     This is the welcome endpoint that provides basic information about the API
     and available endpoints.
     """
@@ -476,9 +474,9 @@ async def root():
             "health": "/health - Health check",
             "predict": "/predict - Predict Angina Pektoris (POST)",
             "docs": "/docs - API Documentation (Swagger UI)",
-            "redoc": "/redoc - API Documentation (ReDoc)"
+            "redoc": "/redoc - API Documentation (ReDoc)",
         },
-        disclaimer="This API is for research purposes only. Not for clinical use without proper validation."
+        disclaimer="This API is for research purposes only. Not for clinical use without proper validation.",
     )
 
 
@@ -486,20 +484,20 @@ async def root():
 async def health_check():
     """
     Health check endpoint.
-    
+
     Use this to verify the API is running and the model is loaded properly.
     """
     if rf_model is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Model not loaded. Please train and save the model first."
+            detail="Model not loaded. Please train and save the model first.",
         )
-    
+
     return HealthResponse(
         status="healthy",
         model_loaded=True,
         model_version="1.0.0",
-        message="API is running and model is loaded successfully"
+        message="API is running and model is loaded successfully",
     )
 
 
@@ -535,15 +533,15 @@ async def health_check():
         "keringat_dingin": "Ya"
     }
     ```
-    """
+    """,
 )
 async def predict(patient: PatientData):
     """
     Predict Angina Pektoris for a patient.
-    
+
     Args:
         patient: Patient clinical data
-        
+
     Returns:
         Prediction results with probabilities and risk assessment
     """
@@ -551,28 +549,30 @@ async def predict(patient: PatientData):
     if rf_model is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Model not available. Please ensure 'angina_model.pkl' exists."
+            detail="Model not available. Please ensure 'angina_model.pkl' exists.",
         )
-    
+
     try:
         # Preprocess the input data
         X_processed, features_dict = preprocess_patient_data(patient)
-        
+
         # Make prediction
         prediction_proba = rf_model.predict_proba(X_processed)[0]
         prediction_class = rf_model.predict(X_processed)[0]
-        
+
         # Extract probabilities
         prob_non_angina = float(prediction_proba[0])
         prob_angina = float(prediction_proba[1])
-        
+
         # Determine risk level and confidence
         risk_level = get_risk_level(prob_angina)
         confidence = get_confidence(prob_angina)
-        
+
         # Map prediction to label
-        prediction_label = 'Angina Pektoris' if prediction_class == 1 else 'Bukan Angina Pektoris'
-        
+        prediction_label = (
+            "Angina Pektoris" if prediction_class == 1 else "Bukan Angina Pektoris"
+        )
+
         return PredictionResponse(
             prediction=prediction_label,
             prediction_code=int(prediction_class),
@@ -587,13 +587,13 @@ async def predict(patient: PatientData):
                 "and is for research purposes only. It should NOT be used as the sole basis "
                 "for medical diagnosis or treatment decisions. Always consult with a qualified "
                 "healthcare professional for proper medical evaluation and diagnosis."
-            )
+            ),
         )
-        
+
     except Exception as e:
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Prediction error: {str(e)}"
+            detail=f"Prediction error: {str(e)}",
         )
 
 
@@ -601,51 +601,53 @@ async def predict(patient: PatientData):
 async def predict_batch(patients: list[PatientData]):
     """
     Predict Angina Pektoris for multiple patients at once (batch prediction).
-    
+
     Args:
         patients: List of patient data (max 100 patients per request)
-        
+
     Returns:
         List of prediction results
     """
     if len(patients) > 100:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Batch size too large. Maximum 100 patients per request."
+            detail="Batch size too large. Maximum 100 patients per request.",
         )
-    
+
     if rf_model is None:
         raise HTTPException(
             status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
-            detail="Model not available"
+            detail="Model not available",
         )
-    
+
     results = []
     for i, patient in enumerate(patients):
         try:
             X_processed, _ = preprocess_patient_data(patient)
             prediction_proba = rf_model.predict_proba(X_processed)[0]
             prediction_class = rf_model.predict(X_processed)[0]
-            
-            results.append({
-                "patient_index": i,
-                "prediction": 'Angina Pektoris' if prediction_class == 1 else 'Bukan Angina Pektoris',
-                "probability_angina": round(float(prediction_proba[1]), 4),
-                "risk_level": get_risk_level(float(prediction_proba[1])),
-                "status": "success"
-            })
+
+            results.append(
+                {
+                    "patient_index": i,
+                    "prediction": "Angina Pektoris"
+                    if prediction_class == 1
+                    else "Bukan Angina Pektoris",
+                    "probability_angina": round(float(prediction_proba[1]), 4),
+                    "risk_level": get_risk_level(float(prediction_proba[1])),
+                    "status": "success",
+                }
+            )
         except Exception as e:
-            results.append({
-                "patient_index": i,
-                "status": "error",
-                "error_message": str(e)
-            })
-    
+            results.append(
+                {"patient_index": i, "status": "error", "error_message": str(e)}
+            )
+
     return {
         "batch_size": len(patients),
         "successful_predictions": sum(1 for r in results if r["status"] == "success"),
         "failed_predictions": sum(1 for r in results if r["status"] == "error"),
-        "results": results
+        "results": results,
     }
 
 
@@ -653,17 +655,15 @@ async def predict_batch(patients: list[PatientData]):
 # ERROR HANDLERS
 # ============================================================================
 
+
 @app.exception_handler(HTTPException)
 async def http_exception_handler(request, exc):
     """Handle HTTP exceptions."""
     from fastapi.responses import JSONResponse
+
     return JSONResponse(
         status_code=exc.status_code,
-        content={
-            "error": True,
-            "status_code": exc.status_code,
-            "message": exc.detail
-        }
+        content={"error": True, "status_code": exc.status_code, "message": exc.detail},
     )
 
 
@@ -671,21 +671,37 @@ async def http_exception_handler(request, exc):
 async def general_exception_handler(request, exc):
     """Handle general exceptions."""
     from fastapi.responses import JSONResponse
+
     return JSONResponse(
         status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         content={
             "error": True,
             "status_code": 500,
-            "message": f"Internal server error: {str(exc)}"
-        }
+            "message": f"Internal server error: {str(exc)}",
+        },
     )
+
 
 # ============================================================================
 # MAIN ENTRY POINT (for development)
 # ============================================================================
 
 if __name__ == "__main__":
+    import argparse
     import uvicorn
-    print("Starting Angina Pektoris Detection API...")
-    print("Access the API documentation at: http://localhost:8000/docs")
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+
+    parser = argparse.ArgumentParser(description="Angina Pektoris Detection API")
+    parser.add_argument(
+        "--port",
+        type=int,
+        default=8000,
+        help="Port to run the server on (default: 8000)",
+    )
+    parser.add_argument(
+        "--host", type=str, default="0.0.0.0", help="Host to bind to (default: 0.0.0.0)"
+    )
+    args = parser.parse_args()
+
+    print(f"Starting Angina Pektoris Detection API on {args.host}:{args.port}...")
+    print(f"Access the API documentation at: http://localhost:{args.port}/docs")
+    uvicorn.run(app, host=args.host, port=args.port)
