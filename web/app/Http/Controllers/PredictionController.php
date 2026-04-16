@@ -20,10 +20,13 @@ class PredictionController extends Controller
 
     public function index()
     {
-        $predictions = Prediction::with(['patient', 'user'])
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->paginate(15);
+        $query = Prediction::with(['patient', 'user'])->latest();
+
+        if (auth()->user()->isPatient()) {
+            $query->where('user_id', auth()->id());
+        }
+
+        $predictions = $query->paginate(15);
 
         return Inertia::render('predictions/index', [
             'predictions' => $predictions,
@@ -259,7 +262,7 @@ class PredictionController extends Controller
     {
         $this->authorize('view', $prediction);
 
-        $prediction->load('patient');
+        $prediction->load(['patient', 'verdictBy']);
 
         return Inertia::render('predictions/show', [
             'prediction' => $prediction,
@@ -282,20 +285,22 @@ class PredictionController extends Controller
      */
     public function history()
     {
-        $predictions = Prediction::with('patient')
-            ->where('user_id', auth()->id())
-            ->latest()
-            ->get()
-            ->map(function ($prediction) {
-                return [
-                    'id' => $prediction->id,
-                    'nama' => $prediction->patient->nama,
-                    'umur' => $prediction->usia,
-                    'hasil' => $prediction->hasil_klasifikasi,
-                    'risk_level' => $prediction->risk_level,
-                    'created_at' => $prediction->created_at->toISOString(),
-                ];
-            });
+        $query = Prediction::with('patient')->latest();
+
+        if (auth()->user()->isPatient()) {
+            $query->where('user_id', auth()->id());
+        }
+
+        $predictions = $query->get()->map(function ($prediction) {
+            return [
+                'id' => $prediction->id,
+                'nama' => $prediction->patient->nama,
+                'umur' => $prediction->usia,
+                'hasil' => $prediction->hasil_klasifikasi,
+                'risk_level' => $prediction->risk_level,
+                'created_at' => $prediction->created_at->toISOString(),
+            ];
+        });
 
         return Inertia::render('classification-history', [
             'classifications' => $predictions,
@@ -317,23 +322,30 @@ class PredictionController extends Controller
     {
         $user = auth()->user();
 
-        // Get prediction counts for the stats cards
-        $anginaCount = Prediction::where('user_id', $user->id)
+        $query = Prediction::query();
+        $patientQuery = Patient::query();
+
+        if ($user->isPatient()) {
+            $query->where('user_id', $user->id);
+            $patientQuery->where('user_id', $user->id);
+        }
+
+        $anginaCount = (clone $query)
             ->where('prediction_result', 'Angina Pektoris')
             ->count();
 
-        $nonAnginaCount = Prediction::where('user_id', $user->id)
+        $nonAnginaCount = (clone $query)
             ->where('prediction_result', 'Bukan Angina Pektoris')
             ->count();
 
         $stats = [
-            'total_patients' => Patient::where('user_id', $user->id)->count(),
+            'total_patients' => $patientQuery->count(),
             'angina_count' => $anginaCount,
             'non_angina_count' => $nonAnginaCount,
         ];
 
-        $recentPredictions = Prediction::with('patient')
-            ->where('user_id', $user->id)
+        $recentPredictions = (clone $query)
+            ->with('patient')
             ->latest()
             ->limit(4)
             ->get()
