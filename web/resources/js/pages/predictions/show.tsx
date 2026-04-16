@@ -1,4 +1,4 @@
-import { Head, Link } from '@inertiajs/react';
+import { Head, Link, useForm } from '@inertiajs/react';
 import patientsRoute from '@/routes/patients';
 import predictionsRoute from '@/routes/predictions';
 import { Button } from '@/components/ui/button';
@@ -35,13 +35,26 @@ interface Prediction {
   muntah: string;
   keringat_dingin: string;
   patient: Patient;
+  doctor_verdict: string | null;
+  doctor_notes: string | null;
+  verdict_by: number | null;
+  verdict_at: string | null;
+  verdict_by_user?: {
+    id: number;
+    name: string;
+  } | null;
 }
 
 interface Props {
   prediction: Prediction;
+  auth: {
+    user: {
+      role: string;
+    };
+  };
 }
 
-export default function PredictionsShow({ prediction }: Props) {
+export default function PredictionsShow({ prediction, auth }: Props) {
   const getRiskConfig = (level: string) => {
     switch (level) {
       case 'HIGH':
@@ -90,6 +103,16 @@ export default function PredictionsShow({ prediction }: Props) {
     if (value === 'Ya') return <span className="text-red-600 font-medium">Ya</span>;
     if (value === 'Tidak') return <span className="text-green-600">Tidak</span>;
     return value;
+  };
+
+  const { data, setData, post, processing } = useForm({
+    doctor_verdict: '',
+    doctor_notes: '',
+  });
+
+  const submitVerdict = (e: React.FormEvent) => {
+    e.preventDefault();
+    post(`/predictions/${prediction.id}/verdict`);
   };
 
   return (
@@ -228,6 +251,72 @@ export default function PredictionsShow({ prediction }: Props) {
             </CardContent>
           </Card>
         </div>
+
+        {/* Doctor Verdict Section */}
+        {auth.user.role === 'doctor' && !prediction.doctor_verdict && (
+          <Card className="border-blue-200 bg-blue-50">
+            <CardHeader>
+              <CardTitle>Verdict Dokter</CardTitle>
+              <CardDescription>Berikan verdict Anda untuk prediksi ini</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={submitVerdict} className="space-y-4">
+                <div>
+                  <label className="text-sm font-medium text-slate-700">Verdict</label>
+                  <select
+                    value={data.doctor_verdict}
+                    onChange={(e) => setData('doctor_verdict', e.target.value)}
+                    className="w-full mt-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                    required
+                  >
+                    <option value="">Pilih verdict...</option>
+                    <option value="Angina Pektoris">Angina Pektoris</option>
+                    <option value="Bukan Angina Pektoris">Bukan Angina Pektoris</option>
+                    <option value="Perlu Pemeriksaan Lanjut">Perlu Pemeriksaan Lanjut</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-sm font-medium text-slate-700">Catatan (opsional)</label>
+                  <textarea
+                    value={data.doctor_notes}
+                    onChange={(e) => setData('doctor_notes', e.target.value)}
+                    className="w-full mt-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                    rows={3}
+                    placeholder="Tambahkan catatan..."
+                  />
+                </div>
+                <Button type="submit" disabled={processing || !data.doctor_verdict}>
+                  Simpan Verdict
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Show existing verdict */}
+        {prediction.doctor_verdict && (
+          <Card className="border-green-200 bg-green-50">
+            <CardHeader>
+              <CardTitle className="text-green-800">Verdict Dokter</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-2">
+              <Badge variant="outline" className="text-base px-4 py-1 border-green-400 text-green-700">
+                {prediction.doctor_verdict}
+              </Badge>
+              {prediction.doctor_notes && (
+                <p className="text-slate-700 mt-2">{prediction.doctor_notes}</p>
+              )}
+              {prediction.verdict_by_user && (
+                <p className="text-sm text-slate-500 mt-2">
+                  Oleh: {prediction.verdict_by_user.name}
+                  {prediction.verdict_at && (
+                    <> &middot; {new Date(prediction.verdict_at).toLocaleString('id-ID')}</>
+                  )}
+                </p>
+              )}
+            </CardContent>
+          </Card>
+        )}
 
         {/* Action Buttons */}
         <div className="flex gap-4">
