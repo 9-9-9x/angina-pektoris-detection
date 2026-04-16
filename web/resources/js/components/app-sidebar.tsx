@@ -1,5 +1,5 @@
 import { Link, usePage } from '@inertiajs/react';
-import { Home, Info, LayoutDashboard, ClipboardList, History, Users, Heart, Activity } from 'lucide-react';
+import { Home, Info, LayoutDashboard, ClipboardList, History, Users, Settings } from 'lucide-react';
 import type { SharedData } from '@/types';
 import { cn } from '@/lib/utils';
 
@@ -7,6 +7,7 @@ interface NavItem {
     title: string;
     href: string;
     icon: React.ElementType;
+    activePrefix?: string;
 }
 
 const navItems: NavItem[] = [
@@ -16,6 +17,7 @@ const navItems: NavItem[] = [
     { title: 'Data Pasien', href: '/patients', icon: Users },
     { title: 'Mulai Klasifikasi', href: '/classify', icon: ClipboardList },
     { title: 'Riwayat Klasifikasi', href: '/history', icon: History },
+    { title: 'Pengaturan', href: '/settings/profile', icon: Settings, activePrefix: '/settings' },
 ];
 
 export function AppSidebar() {
@@ -25,7 +27,9 @@ export function AppSidebar() {
         <aside className="w-64 bg-gradient-to-b from-slate-50 to-blue-50 border-r border-slate-200 min-h-[calc(100vh-64px)]">
             <nav className="p-4 space-y-2">
                 {navItems.map((item) => {
-                    const isActive = url === item.href || url.startsWith(item.href + '/');
+                    const isActive = item.activePrefix
+                        ? url.startsWith(item.activePrefix)
+                        : url === item.href || (item.href !== '/' && url.startsWith(item.href + '/'));
                     const Icon = item.icon;
                     
                     return (
