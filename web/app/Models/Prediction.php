@@ -30,6 +30,10 @@ class Prediction extends Model
         'risk_level',
         'confidence',
         'features_used',
+        'doctor_verdict',
+        'doctor_notes',
+        'verdict_by',
+        'verdict_at',
     ];
 
     protected $appends = [
@@ -42,6 +46,7 @@ class Prediction extends Model
     protected $casts = [
         'probability_angina' => 'float',
         'features_used' => 'array',
+        'verdict_at' => 'datetime',
     ];
 
     public function patient(): BelongsTo
@@ -52,6 +57,11 @@ class Prediction extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function verdictBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'verdict_by');
     }
 
     public function getRiskColorAttribute(): string
