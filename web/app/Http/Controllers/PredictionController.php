@@ -79,10 +79,11 @@ class PredictionController extends Controller
             'keringat_dingin' => $validated['keringat_dingin'],
         ];
 
-        // Call ML API (use mock if ML API is not available)
-        $result = $this->mlService->healthCheck()['status'] === 'healthy'
-            ? $this->mlService->predict($mlData)
-            : $this->mlService->mockPredict($mlData);
+        // Call ML API, fall back to mock if unavailable
+        $result = $this->mlService->predict($mlData);
+        if (! $result['success']) {
+            $result = $this->mlService->mockPredict($mlData);
+        }
 
         if (! $result['success']) {
             return redirect()->back()
@@ -162,10 +163,11 @@ class PredictionController extends Controller
             'keringat_dingin' => $validated['keringat_dingin'],
         ];
 
-        // Call ML API (use mock if ML API is not available)
-        $result = $this->mlService->healthCheck()['status'] === 'healthy'
-            ? $this->mlService->predict($mlData)
-            : $this->mlService->mockPredict($mlData);
+        // Call ML API, fall back to mock if unavailable
+        $result = $this->mlService->predict($mlData);
+        if (! $result['success']) {
+            $result = $this->mlService->mockPredict($mlData);
+        }
 
         if (! $result['success']) {
             return redirect()->back()
