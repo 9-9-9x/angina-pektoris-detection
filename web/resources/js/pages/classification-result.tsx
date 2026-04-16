@@ -196,10 +196,10 @@ export default function ClassificationResult({ prediction_id, patient, result }:
                             Cetak PDF
                         </Button>
                     )}
-                    <Link href="/dashboard">
+                    <Link href="/">
                         <Button className="bg-[#3d4f6f] hover:bg-[#2e3d56] text-white rounded-lg px-10 h-12 text-[15px] font-medium shadow-sm">
                             <Home className="w-4 h-4 mr-2" />
-                            Kembali Ke Dashboard
+                            Kembali ke Beranda
                         </Button>
                     </Link>
                 </div>
