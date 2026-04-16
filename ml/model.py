@@ -123,10 +123,13 @@ def parse_duration_to_minutes(durasi_text):
 
 df_cleaned['Durasi_Nyeri_Menit'] = df_cleaned['Durasi Nyeri'].apply(parse_duration_to_minutes)
 
+# Save median before filling NaN (needed for serving fallback)
+duration_median = df_cleaned['Durasi_Nyeri_Menit'].median()
+
 # Check for any parsing errors
 if df_cleaned['Durasi_Nyeri_Menit'].isnull().any():
     print("\nWarning: Some duration values could not be parsed. Filling with median.")
-    df_cleaned['Durasi_Nyeri_Menit'].fillna(df_cleaned['Durasi_Nyeri_Menit'].median(), inplace=True)
+    df_cleaned['Durasi_Nyeri_Menit'].fillna(duration_median, inplace=True)
 
 def bin_durasi(menit):
     """Bin pain duration into categories."""
@@ -405,7 +408,8 @@ model_data = {
     'preprocessing': {
         'binary_mapping': binary_mapping,
         'gender_mapping': gender_mapping,
-        'label_mapping': label_mapping
+        'label_mapping': label_mapping,
+        'duration_median': duration_median,
     }
 }
 

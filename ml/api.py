@@ -79,7 +79,8 @@ def parse_duration_to_minutes(durasi_text: str) -> int:
     try:
         parts = str(durasi_text).strip().split()
         if len(parts) != 2:
-            return 30  # Default fallback
+            fallback = preprocessing_config.get("duration_median", 30) if preprocessing_config else 30
+            return int(fallback)
         value = int(parts[0])
         unit = parts[1].lower()
 
@@ -90,9 +91,11 @@ def parse_duration_to_minutes(durasi_text: str) -> int:
         elif unit in ["hari", "day", "days"]:
             return value * 24 * 60
         else:
-            return 30  # Default fallback
+            fallback = preprocessing_config.get("duration_median", 30) if preprocessing_config else 30
+            return int(fallback)
     except Exception:
-        return 30  # Default fallback
+        fallback = preprocessing_config.get("duration_median", 30) if preprocessing_config else 30
+        return int(fallback)
 
 
 def bin_durasi(menit: int) -> int:
