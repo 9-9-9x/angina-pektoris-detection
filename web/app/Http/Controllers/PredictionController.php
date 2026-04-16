@@ -112,7 +112,7 @@ class PredictionController extends Controller
             'probability_angina' => $predictionData['probability_angina'],
             'risk_level' => $predictionData['risk_level'],
             'confidence' => $predictionData['confidence'],
-            'features_used' => $mlData,
+            'features_used' => $predictionData['features_used'] ?? $mlData,
         ]);
 
         return redirect()->route('predictions.show', $prediction)
@@ -211,7 +211,7 @@ class PredictionController extends Controller
                 'probability_angina' => $predictionData['probability_angina'],
                 'risk_level' => $predictionData['risk_level'],
                 'confidence' => $predictionData['confidence'],
-                'features_used' => $mlData,
+                'features_used' => $predictionData['features_used'] ?? $mlData,
             ]);
         });
 
