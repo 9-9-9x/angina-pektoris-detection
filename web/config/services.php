@@ -36,8 +36,8 @@ return [
     ],
 
     'ml_api' => [
-        'url' => 'http://localhost:8007',
-        'timeout' => 30,
+        'url' => env('ML_API_URL', 'http://localhost:8007'),
+        'timeout' => env('ML_API_TIMEOUT', 30),
     ],
 
 ];
