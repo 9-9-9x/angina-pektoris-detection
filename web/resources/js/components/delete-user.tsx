@@ -21,8 +21,8 @@ export default function DeleteUser() {
     return (
         <div className="space-y-6">
             <div>
-                <h2 className="text-base font-semibold text-slate-800">Hapus Akun</h2>
-                <p className="text-sm text-slate-500 mt-0.5">Hapus akun dan semua data terkait</p>
+                <h2 className="text-base font-semibold text-foreground">Hapus Akun</h2>
+                <p className="text-sm text-muted-foreground mt-0.5">Hapus akun dan semua data terkait</p>
             </div>
             <div className="space-y-4 rounded-lg border border-red-100 bg-red-50 p-4">
                 <div className="space-y-0.5 text-red-600">

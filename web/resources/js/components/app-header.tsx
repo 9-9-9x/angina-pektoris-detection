@@ -6,7 +6,7 @@ export function AppHeader() {
     const { auth } = usePage<SharedData>().props;
 
     return (
-        <header className="border-b border-slate-200 bg-white shadow-sm">
+        <header className="border-b border-border bg-card shadow-sm">
             <div className="flex h-16 items-center justify-between px-6">
                 {/* Logo */}
                 <Link href="/" className="flex items-center gap-3">

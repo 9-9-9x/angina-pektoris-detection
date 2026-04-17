@@ -50,11 +50,11 @@ export default function Dashboard({ stats, recentPredictions }: Props) {
     return (
         <AppLayout>
             <Head title="Dashboard" />
-            
+
             <div className="w-full max-w-6xl">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
-                    <h1 className="text-2xl font-bold text-slate-800">Dashboard</h1>
+                    <h1 className="text-2xl font-bold text-foreground">Dashboard</h1>
                     {lastUpdate && (
                         <Badge variant="secondary" className="bg-green-100 text-green-700 hover:bg-green-100">
                             Update {lastUpdate}
@@ -65,40 +65,40 @@ export default function Dashboard({ stats, recentPredictions }: Props) {
                 {/* Stats Cards */}
                 <div className="grid grid-cols-3 gap-6 mb-8">
                     {/* Total Patients */}
-                    <div className="bg-white rounded-xl p-6 shadow-md border border-slate-100">
+                    <div className="bg-card rounded-xl p-6 shadow-md border border-border">
                         <div className="flex items-center gap-3 mb-3">
-                            <Users className="w-6 h-6 text-slate-600" />
-                            <span className="text-slate-600 font-medium">Total Pasien Masuk</span>
+                            <Users className="w-6 h-6 text-muted-foreground" />
+                            <span className="text-muted-foreground font-medium">Total Pasien Masuk</span>
                         </div>
-                        <p className="text-4xl font-bold text-slate-700">{stats?.total_patients || 0}</p>
+                        <p className="text-4xl font-bold text-foreground">{stats?.total_patients || 0}</p>
                     </div>
 
                     {/* Angina Patients */}
-                    <div className="bg-white rounded-xl p-6 shadow-md border border-slate-100">
+                    <div className="bg-card rounded-xl p-6 shadow-md border border-border">
                         <div className="flex items-center gap-3 mb-3">
                             <Heart className="w-6 h-6 text-red-500" />
-                            <span className="text-slate-600 font-medium">Pasien Angina Pektoris</span>
+                            <span className="text-muted-foreground font-medium">Pasien Angina Pektoris</span>
                         </div>
-                        <p className="text-4xl font-bold text-slate-700">{stats?.angina_count || 0}</p>
+                        <p className="text-4xl font-bold text-foreground">{stats?.angina_count || 0}</p>
                     </div>
 
                     {/* Non-Angina Patients */}
-                    <div className="bg-white rounded-xl p-6 shadow-md border border-slate-100">
+                    <div className="bg-card rounded-xl p-6 shadow-md border border-border">
                         <div className="flex items-center gap-3 mb-3">
-                            <X className="w-6 h-6 text-slate-600" />
-                            <span className="text-slate-600 font-medium">Bukan Pasien Angina</span>
+                            <X className="w-6 h-6 text-muted-foreground" />
+                            <span className="text-muted-foreground font-medium">Bukan Pasien Angina</span>
                         </div>
-                        <p className="text-4xl font-bold text-slate-700">{stats?.non_angina_count || 0}</p>
+                        <p className="text-4xl font-bold text-foreground">{stats?.non_angina_count || 0}</p>
                     </div>
                 </div>
 
                 {/* Recent Classifications */}
-                <div className="bg-white rounded-xl shadow-md border border-slate-100 p-6">
+                <div className="bg-card rounded-xl shadow-md border border-border p-6">
                     <div className="flex items-center justify-between mb-6">
-                        <h2 className="text-xl font-bold text-slate-800">Hasil Klasifikasi Terakhir</h2>
-                        <Link 
-                            href="/predictions" 
-                            className="text-slate-500 hover:text-slate-700 text-sm flex items-center gap-1"
+                        <h2 className="text-xl font-bold text-foreground">Hasil Klasifikasi Terakhir</h2>
+                        <Link
+                            href="/predictions"
+                            className="text-muted-foreground hover:text-foreground text-sm flex items-center gap-1"
                         >
                             Lihat Klasifikasi
                             <ChevronRight className="w-4 h-4" />
@@ -108,28 +108,28 @@ export default function Dashboard({ stats, recentPredictions }: Props) {
                     <div className="grid grid-cols-2 gap-4">
                         {recentPredictions?.length > 0 ? (
                             recentPredictions.slice(0, 2).map((prediction) => (
-                                <div 
-                                    key={prediction.id} 
-                                    className="bg-slate-50 rounded-xl p-4 border border-slate-200"
+                                <div
+                                    key={prediction.id}
+                                    className="bg-muted rounded-xl p-4 border border-border"
                                 >
                                     <div className="flex items-center gap-3 mb-3">
-                                        <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                                            <span className="text-xl font-bold text-blue-600">
+                                        <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                                            <span className="text-xl font-bold text-primary">
                                                 {prediction.patient.nama.charAt(0)}
                                             </span>
                                         </div>
                                         <div>
-                                            <h3 className="font-semibold text-slate-800">
+                                            <h3 className="font-semibold text-foreground">
                                                 {prediction.patient.nama}
                                             </h3>
-                                            <p className="text-sm text-slate-500">
+                                            <p className="text-sm text-muted-foreground">
                                                 {prediction.prediction_result}, {prediction.patient.umur} Th
                                             </p>
                                         </div>
                                     </div>
-                                    
+
                                     <div className="flex items-center justify-between">
-                                        <span className="text-sm text-slate-500">
+                                        <span className="text-sm text-muted-foreground">
                                             {new Date(prediction.created_at).toLocaleDateString('id-ID', {
                                                 day: 'numeric',
                                                 month: 'long',
@@ -137,10 +137,10 @@ export default function Dashboard({ stats, recentPredictions }: Props) {
                                             })}
                                         </span>
                                         <Link href={`/predictions/${prediction.id}`}>
-                                            <Button 
-                                                variant="secondary" 
+                                            <Button
+                                                variant="secondary"
                                                 size="sm"
-                                                className="bg-blue-100 hover:bg-blue-200 text-blue-700"
+                                                className="bg-primary/10 hover:bg-primary/20 text-primary"
                                             >
                                                 Detail
                                             </Button>
@@ -149,7 +149,7 @@ export default function Dashboard({ stats, recentPredictions }: Props) {
                                 </div>
                             ))
                         ) : (
-                            <div className="col-span-2 text-center py-8 text-slate-500">
+                            <div className="col-span-2 text-center py-8 text-muted-foreground">
                                 Belum ada data klasifikasi
                             </div>
                         )}
@@ -157,7 +157,7 @@ export default function Dashboard({ stats, recentPredictions }: Props) {
                 </div>
 
                 {/* Footer */}
-                <footer className="mt-8 text-center text-slate-500 text-sm">
+                <footer className="mt-8 text-center text-muted-foreground text-sm">
                     2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
                 </footer>
             </div>

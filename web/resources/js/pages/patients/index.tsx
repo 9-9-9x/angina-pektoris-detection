@@ -34,11 +34,11 @@ export default function PatientsIndex({ patients }: Props) {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">Data Pasien</h1>
-                        <p className="text-slate-600 mt-1">Kelola data pasien dan riwayat klasifikasi</p>
+                        <h1 className="text-2xl font-bold text-foreground">Data Pasien</h1>
+                        <p className="text-muted-foreground mt-1">Kelola data pasien dan riwayat klasifikasi</p>
                     </div>
                     <Link href="/patients/create">
-                        <Button className="bg-slate-700 hover:bg-slate-800 text-white flex items-center gap-2">
+                        <Button className="bg-primary hover:bg-primary/90 text-white flex items-center gap-2">
                             <Plus className="w-5 h-5" />
                             Tambah Pasien
                         </Button>
@@ -46,25 +46,25 @@ export default function PatientsIndex({ patients }: Props) {
                 </div>
 
                 {/* Search Bar */}
-                <div className="bg-white rounded-xl shadow-md border border-slate-100 p-4 mb-6">
+                <div className="bg-card rounded-xl shadow-md border border-border p-4 mb-6">
                     <div className="flex items-center gap-4">
                         <div className="relative flex-1">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                             <Input
                                 type="text"
                                 placeholder="Cari pasien berdasarkan nama atau nomor RM..."
                                 className="pl-10"
                             />
                         </div>
-                        <Button variant="outline" className="border-slate-300">
+                        <Button variant="outline" className="border-input">
                             Filter
                         </Button>
                     </div>
                 </div>
 
                 {/* Patients Table */}
-                <div className="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden">
-                    <div className="grid grid-cols-6 gap-4 p-4 bg-slate-50 text-slate-700 font-medium border-b border-slate-200">
+                <div className="bg-card rounded-xl shadow-md border border-border overflow-hidden">
+                    <div className="grid grid-cols-6 gap-4 p-4 bg-muted text-foreground font-medium border-b border-border">
                         <div>No. RM</div>
                         <div>Nama Pasien</div>
                         <div>Umur</div>
@@ -78,15 +78,15 @@ export default function PatientsIndex({ patients }: Props) {
                             data.map((patient) => (
                                 <div 
                                     key={patient.id} 
-                                    className="grid grid-cols-6 gap-4 p-4 items-center hover:bg-slate-50"
+                                    className="grid grid-cols-6 gap-4 p-4 items-center hover:bg-muted"
                                 >
-                                    <div className="text-slate-600 font-mono">{patient.no_rm}</div>
-                                    <div className="text-slate-800 font-medium">{patient.nama}</div>
-                                    <div className="text-slate-600">{patient.umur} Tahun</div>
-                                    <div className="text-slate-600">
+                                    <div className="text-muted-foreground font-mono">{patient.no_rm}</div>
+                                    <div className="text-foreground font-medium">{patient.nama}</div>
+                                    <div className="text-muted-foreground">{patient.umur} Tahun</div>
+                                    <div className="text-muted-foreground">
                                         {patient.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}
                                     </div>
-                                    <div className="text-slate-600">
+                                    <div className="text-muted-foreground">
                                         <span className="inline-flex items-center gap-1">
                                             <Users className="w-4 h-4" />
                                             {patient.predictions_count || 0} klasifikasi
@@ -115,8 +115,8 @@ export default function PatientsIndex({ patients }: Props) {
                                 </div>
                             ))
                         ) : (
-                            <div className="col-span-6 text-center py-12 text-slate-500">
-                                <Users className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                            <div className="col-span-6 text-center py-12 text-muted-foreground">
+                                <Users className="w-12 h-12 mx-auto mb-4 text-border" />
                                 <p>Belum ada data pasien</p>
                                 <Link href="/patients/create" className="text-blue-600 hover:underline mt-2 inline-block">
                                     Tambah pasien baru
@@ -135,8 +135,8 @@ export default function PatientsIndex({ patients }: Props) {
                                 href={`/patients?page=${page}`}
                                 className={`px-4 py-2 rounded-lg ${
                                     page === patients.current_page
-                                        ? 'bg-slate-700 text-white'
-                                        : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
+                                        ? 'bg-primary text-white'
+                                        : 'bg-background text-foreground hover:bg-muted border border-input'
                                 }`}
                             >
                                 {page}
@@ -146,7 +146,7 @@ export default function PatientsIndex({ patients }: Props) {
                 )}
 
                 {/* Footer */}
-                <footer className="mt-8 text-center text-slate-500 text-sm">
+                <footer className="mt-8 text-center text-muted-foreground text-sm">
                     2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
                 </footer>
             </div>

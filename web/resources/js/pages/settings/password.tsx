@@ -26,8 +26,8 @@ export default function Password() {
             <SettingsLayout>
                 <div className="space-y-6">
                     <div>
-                        <h2 className="text-base font-semibold text-slate-800">Perbarui Kata Sandi</h2>
-                        <p className="text-sm text-slate-500 mt-0.5">Gunakan kata sandi yang panjang dan acak agar akun Anda tetap aman</p>
+                        <h2 className="text-base font-semibold text-foreground">Perbarui Kata Sandi</h2>
+                        <p className="text-sm text-muted-foreground mt-0.5">Gunakan kata sandi yang panjang dan acak agar akun Anda tetap aman</p>
                     </div>
 
                     <Form
@@ -44,7 +44,7 @@ export default function Password() {
                         {({ errors, processing, recentlySuccessful }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="current_password" className="text-slate-700">Kata Sandi Saat Ini</Label>
+                                    <Label htmlFor="current_password" className="text-foreground">Kata Sandi Saat Ini</Label>
                                     <Input
                                         id="current_password"
                                         ref={currentPasswordInput}
@@ -58,7 +58,7 @@ export default function Password() {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password" className="text-slate-700">Kata Sandi Baru</Label>
+                                    <Label htmlFor="password" className="text-foreground">Kata Sandi Baru</Label>
                                     <Input
                                         id="password"
                                         ref={passwordInput}
@@ -72,7 +72,7 @@ export default function Password() {
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="password_confirmation" className="text-slate-700">Konfirmasi Kata Sandi</Label>
+                                    <Label htmlFor="password_confirmation" className="text-foreground">Konfirmasi Kata Sandi</Label>
                                     <Input
                                         id="password_confirmation"
                                         name="password_confirmation"
@@ -87,7 +87,7 @@ export default function Password() {
                                 <div className="flex items-center gap-4">
                                     <Button
                                         disabled={processing}
-                                        className="bg-[#4a6fa5] hover:bg-[#3d5d8a] text-white"
+                                        className="bg-primary hover:bg-primary/90 text-primary-foreground"
                                         data-test="update-password-button"
                                     >
                                         Simpan Kata Sandi
@@ -99,7 +99,7 @@ export default function Password() {
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-slate-500">Tersimpan</p>
+                                        <p className="text-sm text-muted-foreground">Tersimpan</p>
                                     </Transition>
                                 </div>
                             </>

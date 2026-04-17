@@ -81,8 +81,8 @@ const riskConfigs = {
 function DataRow({ label, value }: { label: string; value: React.ReactNode }) {
     return (
         <div>
-            <p className="text-xs text-slate-500 mb-0.5">{label}</p>
-            <p className="text-sm font-medium text-slate-800">{value}</p>
+            <p className="text-xs text-muted-foreground mb-0.5">{label}</p>
+            <p className="text-sm font-medium text-foreground">{value}</p>
         </div>
     );
 }
@@ -120,11 +120,11 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">Hasil Prediksi</h1>
-                        <p className="text-slate-500 text-sm flex items-center gap-2 mt-0.5">
+                        <h1 className="text-2xl font-bold text-foreground">Hasil Prediksi</h1>
+                        <p className="text-muted-foreground text-sm flex items-center gap-2 mt-0.5">
                             <User className="h-3.5 w-3.5" />
                             {prediction.patient.nama} &middot; {prediction.patient.no_rm}
-                            <span className="text-slate-300">|</span>
+                            <span className="text-border">|</span>
                             <Calendar className="h-3.5 w-3.5" />
                             {new Date(prediction.created_at).toLocaleString('id-ID')}
                         </p>
@@ -139,15 +139,15 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                         </div>
                         <div className="flex-1 text-center md:text-left">
                             <p className={`text-xl font-bold ${risk.textColor}`}>{risk.label}</p>
-                            <p className="text-slate-600 text-sm mt-1">{risk.desc}</p>
+                            <p className="text-muted-foreground text-sm mt-1">{risk.desc}</p>
                             <p className={`text-4xl font-bold mt-3 ${risk.textColor}`}>{prediction.risk_percentage}%</p>
-                            <p className="text-xs text-slate-500 mt-1">Probabilitas Angina Pektoris</p>
+                            <p className="text-xs text-muted-foreground mt-1">Probabilitas Angina Pektoris</p>
                         </div>
                         <div className="text-center">
                             <span className={`inline-block px-4 py-2 rounded-lg border-2 font-semibold text-sm ${risk.border} ${risk.textColor}`}>
                                 {prediction.prediction_result}
                             </span>
-                            <p className="text-xs text-slate-500 mt-2">Confidence: {prediction.confidence}</p>
+                            <p className="text-xs text-muted-foreground mt-2">Confidence: {prediction.confidence}</p>
                         </div>
                     </div>
                 </div>
@@ -167,8 +167,8 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                 {/* Data Grid */}
                 <div className="grid md:grid-cols-2 gap-6">
                     {/* Clinical Data */}
-                    <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                        <h2 className="font-semibold text-slate-800 mb-4">Data Klinis</h2>
+                    <div className="bg-card rounded-xl border border-border shadow-sm p-5">
+                        <h2 className="font-semibold text-foreground mb-4">Data Klinis</h2>
                         <div className="grid grid-cols-2 gap-4">
                             <DataRow label="Usia" value={`${prediction.usia} tahun`} />
                             <DataRow label="Tekanan Darah" value={`${prediction.tekanan_darah} mmHg`} />
@@ -180,8 +180,8 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                     </div>
 
                     {/* Symptoms */}
-                    <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                        <h2 className="font-semibold text-slate-800 mb-4">Gejala</h2>
+                    <div className="bg-card rounded-xl border border-border shadow-sm p-5">
+                        <h2 className="font-semibold text-foreground mb-4">Gejala</h2>
                         <div className="grid grid-cols-2 gap-4">
                             <DataRow label="Nyeri Menjalar" value={formatYesNo(prediction.nyeri_dada)} />
                             <DataRow label="Sesak Napas" value={formatYesNo(prediction.sesak_napas)} />
@@ -194,16 +194,16 @@ export default function PredictionsShow({ prediction, auth }: Props) {
 
                 {/* Doctor Verdict Form */}
                 {auth.user.role === 'doctor' && !prediction.doctor_verdict && (
-                    <div className="bg-white rounded-xl border border-[#4a6fa5]/30 shadow-sm p-5">
-                        <h2 className="font-semibold text-slate-800 mb-1">Verdict Dokter</h2>
-                        <p className="text-sm text-slate-500 mb-4">Berikan verdict Anda untuk prediksi ini</p>
+                    <div className="bg-card rounded-xl border border-[#4a6fa5]/30 shadow-sm p-5">
+                        <h2 className="font-semibold text-foreground mb-1">Verdict Dokter</h2>
+                        <p className="text-sm text-muted-foreground mb-4">Berikan verdict Anda untuk prediksi ini</p>
                         <form onSubmit={submitVerdict} className="space-y-4">
                             <div className="grid gap-1.5">
-                                <label className="text-sm font-medium text-slate-700">Verdict</label>
+                                <label className="text-sm font-medium text-foreground">Verdict</label>
                                 <select
                                     value={data.doctor_verdict}
                                     onChange={(e) => setData('doctor_verdict', e.target.value)}
-                                    className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                                    className="rounded-lg border border-input bg-card px-3 py-2 text-sm"
                                     required
                                 >
                                     <option value="">Pilih verdict...</option>
@@ -213,11 +213,11 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                                 </select>
                             </div>
                             <div className="grid gap-1.5">
-                                <label className="text-sm font-medium text-slate-700">Catatan (opsional)</label>
+                                <label className="text-sm font-medium text-foreground">Catatan (opsional)</label>
                                 <textarea
                                     value={data.doctor_notes}
                                     onChange={(e) => setData('doctor_notes', e.target.value)}
-                                    className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                                    className="rounded-lg border border-input bg-card px-3 py-2 text-sm"
                                     rows={3}
                                     placeholder="Tambahkan catatan..."
                                 />
@@ -241,10 +241,10 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                             {prediction.doctor_verdict}
                         </span>
                         {prediction.doctor_notes && (
-                            <p className="text-slate-700 mt-3 text-sm">{prediction.doctor_notes}</p>
+                            <p className="text-foreground mt-3 text-sm">{prediction.doctor_notes}</p>
                         )}
                         {prediction.verdict_by_user && (
-                            <p className="text-xs text-slate-500 mt-2">
+                            <p className="text-xs text-muted-foreground mt-2">
                                 Oleh: {prediction.verdict_by_user.name}
                                 {prediction.verdict_at && <> &middot; {new Date(prediction.verdict_at).toLocaleString('id-ID')}</>}
                             </p>

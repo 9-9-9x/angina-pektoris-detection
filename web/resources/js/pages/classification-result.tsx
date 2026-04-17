@@ -33,7 +33,7 @@ export default function ClassificationResult({ prediction_id, patient, result }:
             case 'HIGH': return 'text-red-500';
             case 'MODERATE': return 'text-amber-500';
             case 'LOW': return 'text-emerald-500';
-            default: return 'text-slate-500';
+            default: return 'text-muted-foreground';
         }
     };
 
@@ -42,7 +42,7 @@ export default function ClassificationResult({ prediction_id, patient, result }:
             case 'HIGH': return 'from-red-50 to-red-100/50 border-red-200';
             case 'MODERATE': return 'from-amber-50 to-yellow-100/50 border-amber-200';
             case 'LOW': return 'from-emerald-50 to-green-100/50 border-emerald-200';
-            default: return 'from-slate-50 to-slate-100/50 border-slate-200';
+            default: return 'from-muted to-muted border-border';
         }
     };
 
@@ -51,7 +51,7 @@ export default function ClassificationResult({ prediction_id, patient, result }:
             case 'HIGH': return 'bg-red-100 text-red-500';
             case 'MODERATE': return 'bg-amber-100 text-amber-500';
             case 'LOW': return 'bg-emerald-100 text-emerald-500';
-            default: return 'bg-slate-100 text-slate-500';
+            default: return 'bg-muted text-muted-foreground';
         }
     };
 
@@ -66,12 +66,12 @@ export default function ClassificationResult({ prediction_id, patient, result }:
             <AppLayout>
                 <Head title="Hasil Klasifikasi" />
                 <div className="w-full max-w-5xl mx-auto py-8">
-                    <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl shadow-lg p-12 text-center">
+                    <div className="bg-muted rounded-2xl shadow-lg p-12 text-center">
                         <AlertTriangle className="w-12 h-12 text-yellow-500 mx-auto mb-4" />
-                        <h2 className="text-xl font-bold text-slate-700 mb-2">Data Tidak Tersedia</h2>
-                        <p className="text-slate-500 mb-6">Tidak ada data hasil klasifikasi untuk ditampilkan.</p>
+                        <h2 className="text-xl font-bold text-foreground mb-2">Data Tidak Tersedia</h2>
+                        <p className="text-muted-foreground mb-6">Tidak ada data hasil klasifikasi untuk ditampilkan.</p>
                         <Link href="/classify">
-                            <Button className="bg-[#3d4f6f] hover:bg-[#2e3d56] text-white rounded-lg px-10 h-12">
+                            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-10 h-12">
                                 Mulai Klasifikasi
                             </Button>
                         </Link>
@@ -87,35 +87,35 @@ export default function ClassificationResult({ prediction_id, patient, result }:
 
             <div className="w-full max-w-5xl mx-auto py-4 space-y-8">
                 {/* Patient Info Card */}
-                <div className="bg-gradient-to-br from-white to-blue-50/80 rounded-2xl shadow-md border border-slate-100 px-8 pt-6 pb-6">
+                <div className="bg-card rounded-2xl shadow-md border border-border px-8 pt-6 pb-6">
                     {/* Name row */}
                     <div className="flex items-center gap-4 mb-1">
-                        <div className="w-12 h-12 rounded-full bg-blue-50 border-2 border-blue-200 flex items-center justify-center flex-shrink-0">
-                            <User className="w-6 h-6 text-blue-400" />
+                        <div className="w-12 h-12 rounded-full bg-primary/10 border-2 border-primary/20 flex items-center justify-center flex-shrink-0">
+                            <User className="w-6 h-6 text-primary" />
                         </div>
-                        <h1 className="text-2xl font-bold text-slate-800 tracking-tight">{patient.nama}</h1>
+                        <h1 className="text-2xl font-bold text-foreground tracking-tight">{patient.nama}</h1>
                     </div>
 
-                    {/* Blue accent line */}
-                    <div className="h-[2px] bg-gradient-to-r from-blue-400 via-blue-300 to-transparent rounded-full mb-5 mt-3" />
+                    {/* Accent line */}
+                    <div className="h-[2px] bg-gradient-to-r from-primary via-primary/50 to-transparent rounded-full mb-5 mt-3" />
 
                     {/* Patient details grid */}
                     <div className="grid grid-cols-2 gap-x-16 gap-y-3 px-2">
                         <div className="flex items-baseline justify-between">
-                            <span className="text-slate-500 text-[15px]">Umur</span>
-                            <span className="text-slate-800 font-medium text-[15px]">{patient.umur} Tahun</span>
+                            <span className="text-muted-foreground text-[15px]">Umur</span>
+                            <span className="text-foreground font-medium text-[15px]">{patient.umur} Tahun</span>
                         </div>
                         <div className="flex items-baseline justify-between">
-                            <span className="text-slate-500 text-[15px]">Durasi Nyeri</span>
-                            <span className="text-slate-800 font-medium text-[15px]">{patient.durasi_nyeri}</span>
+                            <span className="text-muted-foreground text-[15px]">Durasi Nyeri</span>
+                            <span className="text-foreground font-medium text-[15px]">{patient.durasi_nyeri}</span>
                         </div>
                         <div className="flex items-baseline justify-between">
-                            <span className="text-slate-500 text-[15px]">Jenis Kelamin</span>
-                            <span className="text-slate-800 font-medium text-[15px]">{patient.jenis_kelamin}</span>
+                            <span className="text-muted-foreground text-[15px]">Jenis Kelamin</span>
+                            <span className="text-foreground font-medium text-[15px]">{patient.jenis_kelamin}</span>
                         </div>
                         <div className="flex items-baseline justify-between">
-                            <span className="text-slate-500 text-[15px]">Tekanan Darah</span>
-                            <span className="text-slate-800 font-medium text-[15px]">{patient.tekanan_darah}</span>
+                            <span className="text-muted-foreground text-[15px]">Tekanan Darah</span>
+                            <span className="text-foreground font-medium text-[15px]">{patient.tekanan_darah}</span>
                         </div>
                     </div>
                 </div>
@@ -129,8 +129,8 @@ export default function ClassificationResult({ prediction_id, patient, result }:
                         </div>
 
                         <div className="space-y-2">
-                            <p className="text-sm text-slate-400 font-medium tracking-widest uppercase">Hasil Klasifikasi</p>
-                            <h3 className="text-3xl font-bold text-[#3d4f6f] leading-snug">
+                            <p className="text-sm text-muted-foreground font-medium tracking-widest uppercase">Hasil Klasifikasi</p>
+                            <h3 className="text-3xl font-bold text-foreground leading-snug">
                                 {getResultLabel(result.prediction)}
                             </h3>
                         </div>
@@ -138,15 +138,15 @@ export default function ClassificationResult({ prediction_id, patient, result }:
                         {/* Risk & Confidence */}
                         <div className="flex items-center justify-center gap-8 pt-2">
                             <div className="text-center">
-                                <p className="text-sm text-slate-500 mb-1">Tingkat Risiko</p>
+                                <p className="text-sm text-muted-foreground mb-1">Tingkat Risiko</p>
                                 <p className={`text-2xl font-bold ${getRiskColor(result.risk_level)}`}>
                                     {result.risk_text}
                                 </p>
                             </div>
-                            <div className="w-px h-12 bg-slate-300" />
+                            <div className="w-px h-12 bg-border" />
                             <div className="text-center">
-                                <p className="text-sm text-slate-500 mb-1">Confidence</p>
-                                <p className="text-2xl font-bold text-slate-700">
+                                <p className="text-sm text-muted-foreground mb-1">Confidence</p>
+                                <p className="text-2xl font-bold text-foreground">
                                     {result.confidence}%
                                 </p>
                             </div>
@@ -178,26 +178,26 @@ export default function ClassificationResult({ prediction_id, patient, result }:
                         className={`rounded-lg px-10 h-12 text-[15px] font-medium shadow-sm transition-all ${
                             saved
                                 ? 'bg-emerald-600 hover:bg-emerald-600 text-white'
-                                : 'bg-[#3d4f6f] hover:bg-[#2e3d56] text-white'
+                                : 'bg-primary hover:bg-primary/90 text-primary-foreground'
                         }`}
                     >
                         {saved ? (<><Check className="w-4 h-4 mr-2" />Tersimpan</>) : 'Simpan'}
                     </Button>
                     {prediction_id ? (
                         <Link href={`/predictions/${prediction_id}/print`} target="_blank">
-                            <Button className="bg-[#3d4f6f] hover:bg-[#2e3d56] text-white rounded-lg px-10 h-12 text-[15px] font-medium shadow-sm">
+                            <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-10 h-12 text-[15px] font-medium shadow-sm">
                                 <FileText className="w-4 h-4 mr-2" />
                                 Cetak PDF
                             </Button>
                         </Link>
                     ) : (
-                        <Button disabled className="bg-slate-400 text-white rounded-lg px-10 h-12 text-[15px] font-medium shadow-sm">
+                        <Button disabled className="bg-muted text-muted-foreground rounded-lg px-10 h-12 text-[15px] font-medium shadow-sm">
                             <FileText className="w-4 h-4 mr-2" />
                             Cetak PDF
                         </Button>
                     )}
                     <Link href="/">
-                        <Button className="bg-[#3d4f6f] hover:bg-[#2e3d56] text-white rounded-lg px-10 h-12 text-[15px] font-medium shadow-sm">
+                        <Button className="bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg px-10 h-12 text-[15px] font-medium shadow-sm">
                             <Home className="w-4 h-4 mr-2" />
                             Kembali ke Beranda
                         </Button>
@@ -205,7 +205,7 @@ export default function ClassificationResult({ prediction_id, patient, result }:
                 </div>
 
                 {/* Footer */}
-                <footer className="text-center text-slate-400 text-sm pb-4">
+                <footer className="text-center text-muted-foreground text-sm pb-4">
                     2026 Sistem Klasifikasi Angina Pektoris | All rights reserved.
                 </footer>
             </div>

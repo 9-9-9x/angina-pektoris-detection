@@ -32,8 +32,8 @@ export default function Profile({
             <SettingsLayout>
                 <div className="space-y-6">
                     <div>
-                        <h2 className="text-base font-semibold text-slate-800">Informasi Profil</h2>
-                        <p className="text-sm text-slate-500 mt-0.5">Perbarui nama dan alamat email Anda</p>
+                        <h2 className="text-base font-semibold text-foreground">Informasi Profil</h2>
+                        <p className="text-sm text-muted-foreground mt-0.5">Perbarui nama dan alamat email Anda</p>
                     </div>
 
                     <Form
@@ -44,7 +44,7 @@ export default function Profile({
                         {({ processing, recentlySuccessful, errors }) => (
                             <>
                                 <div className="grid gap-2">
-                                    <Label htmlFor="name" className="text-slate-700">Nama</Label>
+                                    <Label htmlFor="name" className="text-foreground">Nama</Label>
                                     <Input
                                         id="name"
                                         className="mt-1 block w-full"
@@ -58,7 +58,7 @@ export default function Profile({
                                 </div>
 
                                 <div className="grid gap-2">
-                                    <Label htmlFor="email" className="text-slate-700">Alamat Email</Label>
+                                    <Label htmlFor="email" className="text-foreground">Alamat Email</Label>
                                     <Input
                                         id="email"
                                         type="email"
@@ -74,12 +74,12 @@ export default function Profile({
 
                                 {mustVerifyEmail && auth.user.email_verified_at === null && (
                                     <div>
-                                        <p className="-mt-4 text-sm text-slate-500">
+                                        <p className="-mt-4 text-sm text-muted-foreground">
                                             Alamat email Anda belum terverifikasi.{' '}
                                             <Link
                                                 href={send()}
                                                 as="button"
-                                                className="text-[#4a6fa5] underline underline-offset-4"
+                                                className="text-primary underline underline-offset-4"
                                             >
                                                 Klik di sini untuk mengirim ulang email verifikasi.
                                             </Link>
@@ -95,7 +95,7 @@ export default function Profile({
                                 <div className="flex items-center gap-4">
                                     <Button
                                         disabled={processing}
-                                        className="bg-[#4a6fa5] hover:bg-[#3d5d8a] text-white"
+                                        className="bg-primary hover:bg-primary/90 text-primary-foreground"
                                         data-test="update-profile-button"
                                     >
                                         Simpan
@@ -107,7 +107,7 @@ export default function Profile({
                                         leave="transition ease-in-out"
                                         leaveTo="opacity-0"
                                     >
-                                        <p className="text-sm text-slate-500">Tersimpan</p>
+                                        <p className="text-sm text-muted-foreground">Tersimpan</p>
                                     </Transition>
                                 </div>
                             </>

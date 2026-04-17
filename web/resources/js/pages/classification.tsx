@@ -291,7 +291,7 @@ function QuickModeModal({
     // ─── Keyboard Hint Badge ─────────────────────────────────────────────
 
     const Kbd = ({ children }: { children: React.ReactNode }) => (
-        <kbd className="inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-md bg-slate-100 border border-slate-300 text-xs font-mono font-semibold text-slate-600 shadow-[0_1px_0_1px_rgba(0,0,0,0.05)]">
+        <kbd className="inline-flex items-center justify-center min-w-[28px] h-7 px-2 rounded-md bg-muted border border-input text-xs font-mono font-semibold text-muted-foreground shadow-[0_1px_0_1px_rgba(0,0,0,0.05)]">
             {children}
         </kbd>
     );
@@ -301,15 +301,15 @@ function QuickModeModal({
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center">
             {/* Backdrop */}
-            <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onClick={onClose} />
+            <div className="absolute inset-0 bg-foreground/60 backdrop-blur-sm" onClick={onClose} />
 
             {/* Modal */}
             <div className="relative w-full max-w-lg mx-4 animate-in fade-in zoom-in-95 duration-200">
-                <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+                <div className="bg-card rounded-2xl shadow-2xl overflow-hidden">
                     {/* Progress bar */}
-                    <div className="h-1 bg-slate-100">
+                    <div className="h-1 bg-muted">
                         <div
-                            className="h-full bg-gradient-to-r from-blue-500 to-blue-600 transition-all duration-300 ease-out"
+                            className="h-full bg-gradient-to-r from-primary to-primary transition-all duration-300 ease-out"
                             style={{ width: `${progress}%` }}
                         />
                     </div>
@@ -318,17 +318,17 @@ function QuickModeModal({
                     <div className="flex items-center justify-between px-6 pt-5 pb-2">
                         <div className="flex items-center gap-2">
                             <Zap className="w-4 h-4 text-amber-500" />
-                            <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider">Mode Cepat</span>
+                            <span className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">Mode Cepat</span>
                         </div>
                         <div className="flex items-center gap-3">
                             {!isConfirm && (
-                                <span className="text-xs text-slate-400 font-medium">
+                                <span className="text-xs text-muted-foreground font-medium">
                                     {stepIndex + 1} / {totalSteps}
                                 </span>
                             )}
                             <button
                                 onClick={onClose}
-                                className="w-7 h-7 rounded-lg flex items-center justify-center text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+                                className="w-7 h-7 rounded-lg flex items-center justify-center text-muted-foreground hover:text-muted-foreground hover:bg-muted transition-colors"
                             >
                                 <X className="w-4 h-4" />
                             </button>
@@ -340,34 +340,34 @@ function QuickModeModal({
                         {isConfirm ? (
                             /* ─── Confirm Screen ─────────────────────────────── */
                             <div className="flex-1">
-                                <h2 className="text-xl font-bold text-slate-800 mb-1">Konfirmasi Data</h2>
-                                <p className="text-sm text-slate-500 mb-5">Periksa data sebelum mengirim</p>
+                                <h2 className="text-xl font-bold text-foreground mb-1">Konfirmasi Data</h2>
+                                <p className="text-sm text-muted-foreground mb-5">Periksa data sebelum mengirim</p>
 
                                 <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm max-h-[280px] overflow-y-auto pr-2">
-                                    <div className="flex justify-between py-1.5 border-b border-slate-100">
-                                        <span className="text-slate-500">Nama</span>
-                                        <span className="font-medium text-slate-800">{data.nama}</span>
+                                    <div className="flex justify-between py-1.5 border-b border-border">
+                                        <span className="text-muted-foreground">Nama</span>
+                                        <span className="font-medium text-foreground">{data.nama}</span>
                                     </div>
-                                    <div className="flex justify-between py-1.5 border-b border-slate-100">
-                                        <span className="text-slate-500">Umur</span>
-                                        <span className="font-medium text-slate-800">{data.umur} th</span>
+                                    <div className="flex justify-between py-1.5 border-b border-border">
+                                        <span className="text-muted-foreground">Umur</span>
+                                        <span className="font-medium text-foreground">{data.umur} th</span>
                                     </div>
-                                    <div className="flex justify-between py-1.5 border-b border-slate-100">
-                                        <span className="text-slate-500">Kelamin</span>
-                                        <span className="font-medium text-slate-800">{data.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
+                                    <div className="flex justify-between py-1.5 border-b border-border">
+                                        <span className="text-muted-foreground">Kelamin</span>
+                                        <span className="font-medium text-foreground">{data.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
                                     </div>
-                                    <div className="flex justify-between py-1.5 border-b border-slate-100">
-                                        <span className="text-slate-500">TD</span>
-                                        <span className="font-medium text-slate-800">{data.tekanan_darah} mmHg</span>
+                                    <div className="flex justify-between py-1.5 border-b border-border">
+                                        <span className="text-muted-foreground">TD</span>
+                                        <span className="font-medium text-foreground">{data.tekanan_darah} mmHg</span>
                                     </div>
-                                    <div className="flex justify-between py-1.5 border-b border-slate-100">
-                                        <span className="text-slate-500">Nyeri Dada</span>
+                                    <div className="flex justify-between py-1.5 border-b border-border">
+                                        <span className="text-muted-foreground">Nyeri Dada</span>
                                         <span className={`font-medium ${data.nyeri_dada === 'Ya' ? 'text-red-600' : 'text-emerald-600'}`}>{data.nyeri_dada}</span>
                                     </div>
                                     {data.nyeri_dada === 'Ya' && (
-                                        <div className="flex justify-between py-1.5 border-b border-slate-100">
-                                            <span className="text-slate-500">Durasi</span>
-                                            <span className="font-medium text-slate-800">{data.durasi_nyeri} {data.durasi_unit}</span>
+                                        <div className="flex justify-between py-1.5 border-b border-border">
+                                            <span className="text-muted-foreground">Durasi</span>
+                                            <span className="font-medium text-foreground">{data.durasi_nyeri} {data.durasi_unit}</span>
                                         </div>
                                     )}
                                     {['sesak_napas', 'keringat_dingin', 'mual', 'muntah', 'hipertensi', 'riwayat_dm', 'riwayat_pjk'].map((key) => {
@@ -381,8 +381,8 @@ function QuickModeModal({
                                             riwayat_pjk: 'Riwayat PJK',
                                         };
                                         return (
-                                            <div key={key} className="flex justify-between py-1.5 border-b border-slate-100">
-                                                <span className="text-slate-500">{labels[key]}</span>
+                                            <div key={key} className="flex justify-between py-1.5 border-b border-border">
+                                                <span className="text-muted-foreground">{labels[key]}</span>
                                                 <span className={`font-medium ${data[key] === 'Ya' ? 'text-red-600' : 'text-emerald-600'}`}>{data[key]}</span>
                                             </div>
                                         );
@@ -393,7 +393,7 @@ function QuickModeModal({
                                 <div className="flex items-center justify-between mt-6">
                                     <button
                                         onClick={goPrev}
-                                        className="flex items-center gap-2 text-sm text-slate-500 hover:text-slate-700 transition-colors"
+                                        className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground transition-colors"
                                     >
                                         <ArrowLeft className="w-4 h-4" />
                                         Kembali
@@ -413,14 +413,14 @@ function QuickModeModal({
                                 </div>
 
                                 {/* Keyboard hint */}
-                                <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-slate-100">
-                                    <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                <div className="flex items-center justify-center gap-4 mt-4 pt-4 border-t border-border">
+                                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                         <Kbd>Enter</Kbd> Kirim
                                     </span>
-                                    <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                         <Kbd>←</Kbd> Kembali
                                     </span>
-                                    <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                    <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                         <Kbd>Esc</Kbd> Tutup
                                     </span>
                                 </div>
@@ -430,8 +430,8 @@ function QuickModeModal({
                             <div className="flex-1 flex flex-col">
                                 {/* Step label */}
                                 <div className="mb-6">
-                                    <h2 className="text-2xl font-bold text-slate-800 mb-1">{currentStep.label}</h2>
-                                    <p className="text-sm text-slate-500">{currentStep.description}</p>
+                                    <h2 className="text-2xl font-bold text-foreground mb-1">{currentStep.label}</h2>
+                                    <p className="text-sm text-muted-foreground">{currentStep.description}</p>
                                 </div>
 
                                 {/* Flash feedback */}
@@ -452,7 +452,7 @@ function QuickModeModal({
                                                 value={data[currentStep.key] || ''}
                                                 onChange={(e) => setData(currentStep.key, e.target.value)}
                                                 placeholder={currentStep.placeholder}
-                                                className="w-full text-xl font-medium text-slate-800 bg-transparent border-0 border-b-2 border-slate-200 focus:border-blue-500 focus:ring-0 outline-none pb-3 placeholder:text-slate-300 transition-colors"
+                                                className="w-full text-xl font-medium text-foreground bg-transparent border-0 border-b-2 border-border focus:border-blue-500 focus:ring-0 outline-none pb-3 placeholder:text-border transition-colors"
                                                 autoFocus
                                             />
                                         </div>
@@ -467,11 +467,11 @@ function QuickModeModal({
                                                 value={data[currentStep.key] || ''}
                                                 onChange={(e) => setData(currentStep.key, e.target.value)}
                                                 placeholder={currentStep.placeholder}
-                                                className="w-40 text-3xl font-bold text-slate-800 bg-transparent border-0 border-b-2 border-slate-200 focus:border-blue-500 focus:ring-0 outline-none pb-2 placeholder:text-slate-300 transition-colors text-center"
+                                                className="w-40 text-3xl font-bold text-foreground bg-transparent border-0 border-b-2 border-border focus:border-blue-500 focus:ring-0 outline-none pb-2 placeholder:text-border transition-colors text-center"
                                                 autoFocus
                                             />
                                             {currentStep.suffix && (
-                                                <span className="text-lg text-slate-400 pb-3">{currentStep.suffix}</span>
+                                                <span className="text-lg text-muted-foreground pb-3">{currentStep.suffix}</span>
                                             )}
                                         </div>
                                     )}
@@ -491,7 +491,7 @@ function QuickModeModal({
                                                             ? opt.color === 'red'
                                                                 ? 'border-red-400 bg-red-50 text-red-700'
                                                                 : 'border-emerald-400 bg-emerald-50 text-emerald-700'
-                                                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                                                            : 'border-border bg-background text-muted-foreground hover:border-input'
                                                     }`}
                                                 >
                                                     <span className="text-lg font-semibold">{opt.label}</span>
@@ -513,7 +513,7 @@ function QuickModeModal({
                                                     className={`flex-1 relative rounded-xl border-2 py-6 text-center transition-all hover:shadow-md active:scale-95 ${
                                                         data[currentStep.key] === opt.value
                                                             ? 'border-blue-400 bg-blue-50 text-blue-700'
-                                                            : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300'
+                                                            : 'border-border bg-background text-muted-foreground hover:border-input'
                                                     }`}
                                                 >
                                                     <span className="text-lg font-semibold">{opt.label}</span>
@@ -538,7 +538,7 @@ function QuickModeModal({
                                                         setData('durasi_nyeri', e.target.value);
                                                     }}
                                                     placeholder="0"
-                                                    className="w-28 text-3xl font-bold text-slate-800 bg-transparent border-0 border-b-2 border-slate-200 focus:border-blue-500 focus:ring-0 outline-none pb-2 placeholder:text-slate-300 transition-colors text-center"
+                                                    className="w-28 text-3xl font-bold text-foreground bg-transparent border-0 border-b-2 border-border focus:border-blue-500 focus:ring-0 outline-none pb-2 placeholder:text-border transition-colors text-center"
                                                     autoFocus
                                                 />
                                             </div>
@@ -557,12 +557,12 @@ function QuickModeModal({
                                                         className={`relative flex-1 rounded-lg border-2 py-3 text-center transition-all text-sm font-medium ${
                                                             durasiUnit === unit.value
                                                                 ? 'border-blue-400 bg-blue-50 text-blue-700'
-                                                                : 'border-slate-200 bg-white text-slate-500 hover:border-slate-300'
+                                                                : 'border-border bg-background text-muted-foreground hover:border-input'
                                                         }`}
                                                     >
                                                         {unit.value}
                                                         <span className="absolute top-1 right-1.5">
-                                                            <kbd className="text-[10px] text-slate-400 font-mono">Alt+{unit.shortcut}</kbd>
+                                                            <kbd className="text-[10px] text-muted-foreground font-mono">Alt+{unit.shortcut}</kbd>
                                                         </span>
                                                     </button>
                                                 ))}
@@ -572,12 +572,12 @@ function QuickModeModal({
                                 </div>
 
                                 {/* Navigation + keyboard hints */}
-                                <div className="flex items-center justify-between mt-6 pt-4 border-t border-slate-100">
+                                <div className="flex items-center justify-between mt-6 pt-4 border-t border-border">
                                     <button
                                         onClick={goPrev}
                                         disabled={stepIndex === 0}
                                         className={`flex items-center gap-1.5 text-sm transition-colors ${
-                                            stepIndex === 0 ? 'text-slate-300 cursor-not-allowed' : 'text-slate-500 hover:text-slate-700'
+                                            stepIndex === 0 ? 'text-border cursor-not-allowed' : 'text-muted-foreground hover:text-foreground'
                                         }`}
                                     >
                                         <ArrowLeft className="w-4 h-4" />
@@ -586,26 +586,26 @@ function QuickModeModal({
 
                                     <div className="flex items-center gap-4">
                                         {(currentStep.type === 'text' || currentStep.type === 'number' || currentStep.type === 'duration') && (
-                                            <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                            <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                 <Kbd><CornerDownLeft className="w-3 h-3" /></Kbd> Lanjut
                                             </span>
                                         )}
                                         {currentStep.type === 'yesno' && (
                                             <>
-                                                <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                     <Kbd>Y</Kbd> Ya
                                                 </span>
-                                                <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                                <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                     <Kbd>T</Kbd> Tidak
                                                 </span>
                                             </>
                                         )}
                                         {currentStep.type === 'choice' && currentStep.options?.map((o) => (
-                                            <span key={o.shortcut} className="flex items-center gap-1.5 text-xs text-slate-400">
+                                            <span key={o.shortcut} className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                 <Kbd>{o.shortcut}</Kbd> {o.label}
                                             </span>
                                         ))}
-                                        <span className="flex items-center gap-1.5 text-xs text-slate-400">
+                                        <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                             <Kbd>Esc</Kbd> Tutup
                                         </span>
                                     </div>
@@ -682,12 +682,12 @@ export default function Classification() {
                             onChange={(e) => onChange(e.target.value)}
                             className="peer sr-only"
                         />
-                        <div className="w-5 h-5 rounded-full border-2 border-slate-400 peer-checked:border-blue-600 peer-checked:bg-blue-600 transition-all" />
+                        <div className="w-5 h-5 rounded-full border-2 border-muted-foreground peer-checked:border-primary peer-checked:bg-primary transition-all" />
                         <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
                             <div className="w-2 h-2 rounded-full bg-white opacity-0 peer-checked:opacity-100" />
                         </div>
                     </div>
-                    <span className="text-slate-700">{opt.label}</span>
+                    <span className="text-foreground">{opt.label}</span>
                 </label>
             ))}
         </div>
@@ -699,9 +699,9 @@ export default function Classification() {
 
             <div className="w-full max-w-6xl">
                 {/* Form Card */}
-                <div className="bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl shadow-lg p-8">
-                    <div className="flex items-center justify-between mb-6 border-b border-slate-300 pb-4">
-                        <h1 className="text-2xl font-bold text-slate-700">
+                <div className="bg-gradient-to-br bg-muted rounded-2xl shadow-lg p-8">
+                    <div className="flex items-center justify-between mb-6 border-b border-input pb-4">
+                        <h1 className="text-2xl font-bold text-foreground">
                             Input Data Pasien
                         </h1>
                         <button
@@ -716,40 +716,40 @@ export default function Classification() {
 
                     <form onSubmit={handleSubmit} className="space-y-0">
                         {/* Nama Pasien */}
-                        <div className="py-4 border-b border-slate-300">
-                            <Label className="text-slate-700 mb-2 block">Nama Pasien</Label>
+                        <div className="py-4 border-b border-input">
+                            <Label className="text-foreground mb-2 block">Nama Pasien</Label>
                             <Input
                                 type="text"
                                 value={data.nama}
                                 onChange={(e) => setData('nama', e.target.value)}
-                                className="bg-white border-slate-300 h-11"
+                                className="bg-background border-input h-11"
                                 placeholder="Masukkan nama pasien"
                             />
                             {errors.nama && <p className="text-red-500 text-sm mt-1">{errors.nama}</p>}
                         </div>
 
                         {/* Umur Pasien */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Umur Pasien</Label>
+                                <Label className="text-foreground w-36 shrink-0">Umur Pasien</Label>
                                 <div className="relative flex-1 max-w-xs">
                                     <Input
                                         type="number"
                                         value={data.umur}
                                         onChange={(e) => setData('umur', e.target.value)}
-                                        className="bg-white border-slate-300 h-11 pr-10"
+                                        className="bg-background border-input h-11 pr-10"
                                         placeholder="Umur"
                                     />
-                                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                 </div>
                             </div>
                             {errors.umur && <p className="text-red-500 text-sm mt-1">{errors.umur}</p>}
                         </div>
 
                         {/* Jenis Kelamin */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Jenis Kelamin</Label>
+                                <Label className="text-foreground w-36 shrink-0">Jenis Kelamin</Label>
                                 <RadioGroup
                                     name="jenis_kelamin"
                                     value={data.jenis_kelamin}
@@ -763,9 +763,9 @@ export default function Classification() {
                         </div>
 
                         {/* Nyeri Dada */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Nyeri Dada</Label>
+                                <Label className="text-foreground w-36 shrink-0">Nyeri Dada</Label>
                                 <RadioGroup
                                     name="nyeri_dada"
                                     value={data.nyeri_dada}
@@ -786,18 +786,18 @@ export default function Classification() {
 
                         {/* Durasi Nyeri - only shown when nyeri_dada is Ya */}
                         {data.nyeri_dada === 'Ya' && (
-                            <div className="py-4 border-b border-slate-300">
+                            <div className="py-4 border-b border-input">
                                 <div className="flex items-center gap-4">
-                                    <Label className="text-slate-700 w-36 shrink-0">Durasi Nyeri</Label>
+                                    <Label className="text-foreground w-36 shrink-0">Durasi Nyeri</Label>
                                     <div className="flex items-center gap-4 flex-1">
                                         <div className="relative w-32">
                                             <Input
                                                 type="number"
                                                 value={data.durasi_nyeri}
                                                 onChange={(e) => setData('durasi_nyeri', e.target.value)}
-                                                className="bg-white border-slate-300 h-11 pr-8"
+                                                className="bg-background border-input h-11 pr-8"
                                             />
-                                            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                                            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                                         </div>
                                         <RadioGroup
                                             name="durasi_unit"
@@ -815,9 +815,9 @@ export default function Classification() {
                         )}
 
                         {/* Sesak Napas */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Sesak Napas</Label>
+                                <Label className="text-foreground w-36 shrink-0">Sesak Napas</Label>
                                 <RadioGroup
                                     name="sesak_napas"
                                     value={data.sesak_napas}
@@ -831,9 +831,9 @@ export default function Classification() {
                         </div>
 
                         {/* Keringat Dingin */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Keringat Dingin</Label>
+                                <Label className="text-foreground w-36 shrink-0">Keringat Dingin</Label>
                                 <RadioGroup
                                     name="keringat_dingin"
                                     value={data.keringat_dingin}
@@ -847,9 +847,9 @@ export default function Classification() {
                         </div>
 
                         {/* Mual */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Mual</Label>
+                                <Label className="text-foreground w-36 shrink-0">Mual</Label>
                                 <RadioGroup
                                     name="mual"
                                     value={data.mual}
@@ -863,9 +863,9 @@ export default function Classification() {
                         </div>
 
                         {/* Muntah */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Muntah</Label>
+                                <Label className="text-foreground w-36 shrink-0">Muntah</Label>
                                 <RadioGroup
                                     name="muntah"
                                     value={data.muntah}
@@ -879,26 +879,26 @@ export default function Classification() {
                         </div>
 
                         {/* Tekanan Darah */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Tekanan Darah</Label>
+                                <Label className="text-foreground w-36 shrink-0">Tekanan Darah</Label>
                                 <div className="flex items-center gap-3">
                                     <Input
                                         type="number"
                                         value={data.tekanan_darah}
                                         onChange={(e) => setData('tekanan_darah', e.target.value)}
-                                        className="bg-white border-slate-300 h-11 w-32 text-center"
+                                        className="bg-background border-input h-11 w-32 text-center"
                                         placeholder="120"
                                     />
-                                    <span className="text-slate-600">mmHg</span>
+                                    <span className="text-muted-foreground">mmHg</span>
                                 </div>
                             </div>
                         </div>
 
                         {/* Riwayat Hipertensi */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Riwayat Hipertensi</Label>
+                                <Label className="text-foreground w-36 shrink-0">Riwayat Hipertensi</Label>
                                 <RadioGroup
                                     name="hipertensi"
                                     value={data.hipertensi}
@@ -912,9 +912,9 @@ export default function Classification() {
                         </div>
 
                         {/* Riwayat DM */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Riwayat DM</Label>
+                                <Label className="text-foreground w-36 shrink-0">Riwayat DM</Label>
                                 <RadioGroup
                                     name="riwayat_dm"
                                     value={data.riwayat_dm}
@@ -928,9 +928,9 @@ export default function Classification() {
                         </div>
 
                         {/* Riwayat PJK Terdahulu */}
-                        <div className="py-4 border-b border-slate-300">
+                        <div className="py-4 border-b border-input">
                             <div className="flex items-center gap-4">
-                                <Label className="text-slate-700 w-36 shrink-0">Riwayat PJK Terdahulu</Label>
+                                <Label className="text-foreground w-36 shrink-0">Riwayat PJK Terdahulu</Label>
                                 <RadioGroup
                                     name="riwayat_pjk"
                                     value={data.riwayat_pjk}
@@ -948,7 +948,7 @@ export default function Classification() {
                             <Button
                                 type="submit"
                                 disabled={processing}
-                                className="bg-slate-700 hover:bg-slate-800 text-white px-12 py-2 h-11"
+                                className="bg-primary hover:bg-primary/90 text-white px-12 py-2 h-11"
                             >
                                 {processing ? 'Loading...' : 'Klasifikasikan'}
                             </Button>
@@ -956,7 +956,7 @@ export default function Classification() {
                                 type="button"
                                 variant="outline"
                                 onClick={handleReset}
-                                className="border-slate-400 text-slate-700 hover:bg-slate-100 px-12 py-2 h-11"
+                                className="border-muted-foreground text-foreground hover:bg-muted px-12 py-2 h-11"
                             >
                                 Reset
                             </Button>
@@ -965,7 +965,7 @@ export default function Classification() {
                 </div>
 
                 {/* Footer */}
-                <footer className="mt-8 text-center text-slate-500 text-sm">
+                <footer className="mt-8 text-center text-muted-foreground text-sm">
                     2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
                 </footer>
             </div>

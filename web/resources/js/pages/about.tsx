@@ -6,8 +6,8 @@ function PPKButton() {
     return (
         <div className="flex justify-end mt-6">
             <div className="flex rounded-full overflow-hidden text-sm font-semibold shadow-sm">
-                <span className="bg-[#c5cae9] text-[#1a237e] px-6 py-2">PPK Angina Pektoris</span>
-                <span className="bg-[#e8eaf6] text-[#3949ab] px-5 py-2">Detail</span>
+                <span className="bg-primary/20 text-primary px-6 py-2">PPK Angina Pektoris</span>
+                <span className="bg-primary/10 text-primary px-5 py-2">Detail</span>
             </div>
         </div>
     );
@@ -20,8 +20,8 @@ export default function About() {
             <div className="w-full space-y-5 py-4">
 
                 {/* Card 1: Apa itu Angina Pektoris? */}
-                <div className="bg-white rounded-2xl p-7 shadow-sm">
-                    <h2 className="text-lg font-bold text-[#1a237e] mb-5">Apa itu Angina Pektoris?</h2>
+                <div className="bg-card rounded-2xl p-7 shadow-sm">
+                    <h2 className="text-lg font-bold text-foreground mb-5">Apa itu Angina Pektoris?</h2>
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-5">
                         <div className="w-full md:w-auto flex justify-center">
                             <img
@@ -42,7 +42,7 @@ export default function About() {
                             />
                         </div>
                     </div>
-                    <p className="text-[#1a237e] text-center leading-relaxed text-sm">
+                    <p className="text-foreground text-center leading-relaxed text-sm">
                         Angina pektoris adalah nyeri dada akibat otot jantung kekurangan darah dan oksigen, biasanya
                         karena penyempitan pembuluh darah koroner (PJK) akibat plak. Angina Pektoris bisa terjadi kapan
                         saja dan pada siapa saja. Nyeri akibat Angina Pektoris ini sering disalahartikan sebagai gejala dari
@@ -52,10 +52,10 @@ export default function About() {
                 </div>
 
                 {/* Card 2: Gejala */}
-                <div className="bg-white rounded-2xl p-7 shadow-sm">
-                    <h2 className="text-lg font-bold text-[#1a237e] mb-4">Apa sih gejala Angina Pektoris?</h2>
-                    <p className="text-[#1a237e] mb-5 ml-2">Gejala utama pada Angina Pektoris berupa nyeri dada yang khas meliputi :</p>
-                    <ol className="space-y-5 text-[#1a237e] ml-2">
+                <div className="bg-card rounded-2xl p-7 shadow-sm">
+                    <h2 className="text-lg font-bold text-foreground mb-4">Apa sih gejala Angina Pektoris?</h2>
+                    <p className="text-foreground mb-5 ml-2">Gejala utama pada Angina Pektoris berupa nyeri dada yang khas meliputi :</p>
+                    <ol className="space-y-5 text-foreground ml-2">
                         <li className="flex gap-3">
                             <span className="font-medium flex-shrink-0">1.</span>
                             <span className="leading-relaxed">
@@ -79,13 +79,13 @@ export default function About() {
                             </span>
                         </li>
                     </ol>
-                    <div className="mt-8 text-center text-xs text-gray-400">
+                    <div className="mt-8 text-center text-xs text-muted-foreground">
                         2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
                     </div>
                 </div>
 
                 {/* Card 3: Faktor Risiko */}
-                <div className="bg-white rounded-2xl p-7 shadow-sm">
+                <div className="bg-card rounded-2xl p-7 shadow-sm">
                     <div className="flex items-start gap-4 mb-6">
                         <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center">
                             <svg viewBox="0 0 80 80" className="w-16 h-16">
@@ -96,14 +96,14 @@ export default function About() {
                             </svg>
                         </div>
                         <div>
-                            <h2 className="text-lg font-bold text-[#1a237e]">Kenali Faktor Risiko Angina Pektoris</h2>
-                            <p className="text-[#1a237e] mt-1 text-sm leading-relaxed">
+                            <h2 className="text-lg font-bold text-foreground">Kenali Faktor Risiko Angina Pektoris</h2>
+                            <p className="text-foreground mt-1 text-sm leading-relaxed">
                                 Faktor risiko adalah karakteristik, kondisi, atau perilaku yang
                                 meningkatkan kemungkinan seseorang terkena penyakit.
                             </p>
                         </div>
                     </div>
-                    <div className="grid grid-cols-2 gap-6 text-[#1a237e] text-sm">
+                    <div className="grid grid-cols-2 gap-6 text-foreground text-sm">
                         <div>
                             <p className="font-semibold mb-3">Faktor risiko yang dapat diubah :</p>
                             <ol className="space-y-2">
@@ -129,47 +129,47 @@ export default function About() {
                 </div>
 
                 {/* Card 4: Tips Pencegahan */}
-                <div className="bg-white rounded-2xl p-7 shadow-sm">
-                    <h2 className="text-lg font-bold text-[#1a237e] mb-6">Tips Pencegahan dengan gaya hidup sehat</h2>
-                    <div className="grid grid-cols-2 gap-x-6 gap-y-5 text-[#1a237e] text-sm">
+                <div className="bg-card rounded-2xl p-7 shadow-sm">
+                    <h2 className="text-lg font-bold text-foreground mb-6">Tips Pencegahan dengan gaya hidup sehat</h2>
+                    <div className="grid grid-cols-2 gap-x-6 gap-y-5 text-foreground text-sm">
                         <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-[#5c6bc0]">
+                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-primary">
                                 <Stethoscope className="w-8 h-8" strokeWidth={1.5} />
                             </div>
                             <span className="leading-snug">Melakukan pemeriksaan kesehatan secara rutin</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-[#5c6bc0]">
+                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-primary">
                                 <Apple className="w-8 h-8" strokeWidth={1.5} />
                             </div>
                             <span className="leading-snug">Mengonsumsi makanan dengan gizi seimbang</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-[#5c6bc0]">
+                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-primary">
                                 <Ban className="w-8 h-8" strokeWidth={1.5} />
                             </div>
                             <span className="leading-snug">Tidak merokok</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-[#5c6bc0]">
+                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-primary">
                                 <Dumbbell className="w-8 h-8" strokeWidth={1.5} />
                             </div>
                             <span className="leading-snug">Rutin berolahraga</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-[#5c6bc0]">
+                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-primary">
                                 <Wine className="w-8 h-8" strokeWidth={1.5} />
                             </div>
                             <span className="leading-snug">Tidak mengonsumsi minuman beralkohol</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-[#5c6bc0]">
+                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-primary">
                                 <Brain className="w-8 h-8" strokeWidth={1.5} />
                             </div>
                             <span className="leading-snug">Mengolah stress</span>
                         </div>
                         <div className="flex items-center gap-3">
-                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-[#5c6bc0]">
+                            <div className="flex-shrink-0 w-10 h-10 flex items-center justify-center text-primary">
                                 <Scale className="w-8 h-8" strokeWidth={1.5} />
                             </div>
                             <span className="leading-snug">Menjaga berat badan ideal</span>

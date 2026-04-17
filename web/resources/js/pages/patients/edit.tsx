@@ -48,8 +48,8 @@ export default function PatientsEdit({ patient }: Props) {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Edit Pasien</h1>
-            <p className="text-slate-600">{patient.nama} ({patient.no_rm})</p>
+            <h1 className="text-2xl font-bold text-foreground">Edit Pasien</h1>
+            <p className="text-muted-foreground">{patient.nama} ({patient.no_rm})</p>
           </div>
         </div>
 
@@ -126,7 +126,7 @@ export default function PatientsEdit({ patient }: Props) {
               </div>
 
               <div className="flex gap-4 pt-4">
-                <Button type="submit" disabled={processing} className="bg-slate-700 hover:bg-slate-800">
+                <Button type="submit" disabled={processing} className="bg-primary hover:bg-primary/90">
                   <Save className="mr-2 h-4 w-4" />
                   Simpan Perubahan
                 </Button>
@@ -141,7 +141,7 @@ export default function PatientsEdit({ patient }: Props) {
         </Card>
 
         {/* Footer */}
-        <footer className="mt-8 text-center text-slate-500 text-sm">
+        <footer className="mt-8 text-center text-muted-foreground text-sm">
             2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
         </footer>
       </div>

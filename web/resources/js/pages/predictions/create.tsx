@@ -43,11 +43,11 @@ function SelectField({
 }) {
     return (
         <div className="grid gap-1.5">
-            <Label className="text-slate-700">{label}</Label>
+            <Label className="text-foreground">{label}</Label>
             <select
                 value={value}
                 onChange={(e) => onChange(e.target.value)}
-                className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                className="rounded-lg border border-input bg-card px-3 py-2 text-sm"
                 required
             >
                 <option value="">Pilih...</option>
@@ -92,9 +92,9 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                         </Button>
                     </Link>
                     <div>
-                        <h1 className="text-2xl font-bold text-slate-800">Prediksi Angina Pektoris</h1>
-                        <p className="text-slate-500 text-sm mt-0.5">
-                            Pasien: <strong className="text-slate-700">{patient.nama}</strong> &middot; {patient.no_rm}
+                        <h1 className="text-2xl font-bold text-foreground">Prediksi Angina Pektoris</h1>
+                        <p className="text-muted-foreground text-sm mt-0.5">
+                            Pasien: <strong className="text-foreground">{patient.nama}</strong> &middot; {patient.no_rm}
                         </p>
                     </div>
                 </div>
@@ -114,10 +114,10 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
 
                 <form onSubmit={handleSubmit} className="space-y-6">
                     {/* Tekanan Darah */}
-                    <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                        <h2 className="font-semibold text-slate-800 mb-4">Data Klinis</h2>
+                    <div className="bg-card rounded-xl border border-border shadow-sm p-5">
+                        <h2 className="font-semibold text-foreground mb-4">Data Klinis</h2>
                         <div className="max-w-xs grid gap-1.5">
-                            <Label htmlFor="tekanan_darah" className="text-slate-700">Tekanan Darah Sistolik (mmHg)</Label>
+                            <Label htmlFor="tekanan_darah" className="text-foreground">Tekanan Darah Sistolik (mmHg)</Label>
                             <Input
                                 id="tekanan_darah"
                                 type="number"
@@ -133,8 +133,8 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                     </div>
 
                     {/* Faktor Risiko */}
-                    <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                        <h2 className="font-semibold text-slate-800 mb-4">Faktor Risiko</h2>
+                    <div className="bg-card rounded-xl border border-border shadow-sm p-5">
+                        <h2 className="font-semibold text-foreground mb-4">Faktor Risiko</h2>
                         <div className="grid gap-4 md:grid-cols-3">
                             <SelectField
                                 label="Riwayat Diabetes"
@@ -161,8 +161,8 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                     </div>
 
                     {/* Gejala */}
-                    <div className="bg-white rounded-xl border border-slate-100 shadow-sm p-5">
-                        <h2 className="font-semibold text-slate-800 mb-4">Gejala Klinis</h2>
+                    <div className="bg-card rounded-xl border border-border shadow-sm p-5">
+                        <h2 className="font-semibold text-foreground mb-4">Gejala Klinis</h2>
                         <div className="grid gap-4 md:grid-cols-2">
                             <SelectField
                                 label="Nyeri Dada Menjalar ke Lengan"

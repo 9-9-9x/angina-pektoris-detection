@@ -34,8 +34,8 @@ export default function PatientsCreate() {
             </Button>
           </Link>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Tambah Pasien</h1>
-            <p className="text-slate-600">Tambahkan data pasien baru</p>
+            <h1 className="text-2xl font-bold text-foreground">Tambah Pasien</h1>
+            <p className="text-muted-foreground">Tambahkan data pasien baru</p>
           </div>
         </div>
 
@@ -109,7 +109,7 @@ export default function PatientsCreate() {
               </div>
 
               <div className="flex gap-4 pt-4">
-                <Button type="submit" disabled={processing} className="bg-slate-700 hover:bg-slate-800">
+                <Button type="submit" disabled={processing} className="bg-primary hover:bg-primary/90">
                   <Save className="mr-2 h-4 w-4" />
                   Simpan
                 </Button>
@@ -124,7 +124,7 @@ export default function PatientsCreate() {
         </Card>
 
         {/* Footer */}
-        <footer className="mt-8 text-center text-slate-500 text-sm">
+        <footer className="mt-8 text-center text-muted-foreground text-sm">
             2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
         </footer>
       </div>

@@ -75,8 +75,8 @@ export default function PatientsShow({ patient }: Props) {
               </Button>
             </Link>
             <div>
-              <h1 className="text-2xl font-bold text-slate-800">{patient.nama}</h1>
-              <p className="text-slate-600">No. RM: {patient.no_rm}</p>
+              <h1 className="text-2xl font-bold text-foreground">{patient.nama}</h1>
+              <p className="text-muted-foreground">No. RM: {patient.no_rm}</p>
             </div>
           </div>
           <div className="flex gap-2">
@@ -110,33 +110,33 @@ export default function PatientsShow({ patient }: Props) {
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="flex items-center gap-3">
-                <User className="h-5 w-5 text-slate-400" />
+                <User className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-slate-500">Jenis Kelamin</p>
+                  <p className="text-sm text-muted-foreground">Jenis Kelamin</p>
                   <p className="font-medium">{patient.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</p>
                 </div>
               </div>
               <div className="flex items-center gap-3">
-                <Calendar className="h-5 w-5 text-slate-400" />
+                <Calendar className="h-5 w-5 text-muted-foreground" />
                 <div>
-                  <p className="text-sm text-slate-500">Umur</p>
+                  <p className="text-sm text-muted-foreground">Umur</p>
                   <p className="font-medium">{patient.umur} tahun</p>
                 </div>
               </div>
               {patient.alamat && (
                 <div className="flex items-center gap-3">
-                  <MapPin className="h-5 w-5 text-slate-400" />
+                  <MapPin className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="text-sm text-slate-500">Alamat</p>
+                    <p className="text-sm text-muted-foreground">Alamat</p>
                     <p className="font-medium">{patient.alamat}</p>
                   </div>
                 </div>
               )}
               {patient.telepon && (
                 <div className="flex items-center gap-3">
-                  <Phone className="h-5 w-5 text-slate-400" />
+                  <Phone className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="text-sm text-slate-500">Telepon</p>
+                    <p className="text-sm text-muted-foreground">Telepon</p>
                     <p className="font-medium">{patient.telepon}</p>
                   </div>
                 </div>
@@ -150,7 +150,7 @@ export default function PatientsShow({ patient }: Props) {
             </CardHeader>
             <CardContent>
               {patient.predictions.length === 0 ? (
-                <p className="text-center text-slate-500 py-4">
+                <p className="text-center text-muted-foreground py-4">
                   Belum ada riwayat prediksi
                 </p>
               ) : (
@@ -159,17 +159,17 @@ export default function PatientsShow({ patient }: Props) {
                     <Link
                       key={prediction.id}
                       href={predictionsRoute.show(prediction.id)}
-                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-slate-50"
+                      className="flex items-center justify-between p-3 rounded-lg border hover:bg-muted"
                     >
                       <div>
-                        <p className="text-sm text-slate-500">
+                        <p className="text-sm text-muted-foreground">
                           {new Date(prediction.created_at).toLocaleDateString('id-ID')}
                         </p>
                         <p className="font-medium">{prediction.prediction_result}</p>
                       </div>
                       <div className="text-right">
                         {getRiskBadge(prediction.risk_level)}
-                        <p className="text-sm text-slate-500 mt-1">
+                        <p className="text-sm text-muted-foreground mt-1">
                           {(prediction.probability_angina * 100).toFixed(2)}%
                         </p>
                       </div>
@@ -182,7 +182,7 @@ export default function PatientsShow({ patient }: Props) {
         </div>
 
         {/* Footer */}
-        <footer className="mt-8 text-center text-slate-500 text-sm">
+        <footer className="mt-8 text-center text-muted-foreground text-sm">
             2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
         </footer>
 

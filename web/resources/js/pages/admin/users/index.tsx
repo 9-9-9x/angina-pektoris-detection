@@ -105,8 +105,8 @@ export default function AdminUsersIndex({ users }: Props) {
                             </Button>
                         </Link>
                         <div>
-                            <h1 className="text-2xl font-bold text-slate-800">Manajemen Pengguna</h1>
-                            <p className="text-slate-600 mt-1">Kelola role dan hapus pengguna</p>
+                            <h1 className="text-2xl font-bold text-foreground">Manajemen Pengguna</h1>
+                            <p className="text-muted-foreground mt-1">Kelola role dan hapus pengguna</p>
                         </div>
                     </div>
                     <Button
@@ -119,8 +119,8 @@ export default function AdminUsersIndex({ users }: Props) {
                 </div>
 
                 {/* Users Table */}
-                <div className="bg-white rounded-xl shadow-md border border-slate-100 overflow-hidden">
-                    <div className="grid grid-cols-5 gap-4 p-4 bg-slate-50 text-slate-700 font-medium border-b border-slate-200">
+                <div className="bg-card rounded-xl shadow-md border border-border overflow-hidden">
+                    <div className="grid grid-cols-5 gap-4 p-4 bg-muted text-foreground font-medium border-b border-border">
                         <div>Nama</div>
                         <div>Email</div>
                         <div>Role</div>
@@ -131,21 +131,21 @@ export default function AdminUsersIndex({ users }: Props) {
                     <div className="divide-y divide-slate-200">
                         {users.data.length > 0 ? (
                             users.data.map((user) => (
-                                <div key={user.id} className="grid grid-cols-5 gap-4 p-4 items-center hover:bg-slate-50">
-                                    <div className="text-slate-800 font-medium">{user.name}</div>
-                                    <div className="text-slate-600">{user.email}</div>
+                                <div key={user.id} className="grid grid-cols-5 gap-4 p-4 items-center hover:bg-muted">
+                                    <div className="text-foreground font-medium">{user.name}</div>
+                                    <div className="text-muted-foreground">{user.email}</div>
                                     <div>
                                         <select
                                             defaultValue={user.role}
                                             onChange={(e) => changeRole(user.id, e.target.value as Role)}
-                                            className="rounded-lg border border-slate-300 bg-white px-2 py-1 text-sm"
+                                            className="rounded-lg border border-input bg-card px-2 py-1 text-sm"
                                         >
                                             <option value="patient">Pasien</option>
                                             <option value="doctor">Dokter</option>
                                             <option value="admin">Admin</option>
                                         </select>
                                     </div>
-                                    <div className="text-slate-600 text-sm">
+                                    <div className="text-muted-foreground text-sm">
                                         {new Date(user.created_at).toLocaleDateString('id-ID')}
                                     </div>
                                     <div className="flex justify-center">
@@ -181,8 +181,8 @@ export default function AdminUsersIndex({ users }: Props) {
                                 </div>
                             ))
                         ) : (
-                            <div className="text-center py-12 text-slate-500">
-                                <Users className="w-12 h-12 mx-auto mb-4 text-slate-300" />
+                            <div className="text-center py-12 text-muted-foreground">
+                                <Users className="w-12 h-12 mx-auto mb-4 text-border" />
                                 <p>Belum ada data pengguna</p>
                             </div>
                         )}
@@ -198,8 +198,8 @@ export default function AdminUsersIndex({ users }: Props) {
                                 href={`/admin/users?page=${page}`}
                                 className={`px-4 py-2 rounded-lg ${
                                     page === users.current_page
-                                        ? 'bg-slate-700 text-white'
-                                        : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-300'
+                                        ? 'bg-primary text-white'
+                                        : 'bg-background text-foreground hover:bg-muted border border-input'
                                 }`}
                             >
                                 {page}
@@ -209,7 +209,7 @@ export default function AdminUsersIndex({ users }: Props) {
                 )}
 
                 {/* Footer */}
-                <footer className="mt-8 text-center text-slate-500 text-sm">
+                <footer className="mt-8 text-center text-muted-foreground text-sm">
                     2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
                 </footer>
             </div>
@@ -217,40 +217,40 @@ export default function AdminUsersIndex({ users }: Props) {
             {/* Add User Modal */}
             {showAddModal && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+                    <div className="bg-card rounded-xl shadow-xl w-full max-w-md p-6">
                         <div className="flex items-center justify-between mb-5">
-                            <h2 className="text-lg font-bold text-slate-800">Tambah Pengguna</h2>
-                            <button onClick={() => { setShowAddModal(false); reset(); }} className="text-slate-400 hover:text-slate-600">
+                            <h2 className="text-lg font-bold text-foreground">Tambah Pengguna</h2>
+                            <button onClick={() => { setShowAddModal(false); reset(); }} className="text-muted-foreground hover:text-muted-foreground">
                                 <X className="w-5 h-5" />
                             </button>
                         </div>
 
                         <form onSubmit={submitAdd} className="space-y-4">
                             <div className="grid gap-1.5">
-                                <Label htmlFor="name" className="text-slate-700">Nama</Label>
+                                <Label htmlFor="name" className="text-foreground">Nama</Label>
                                 <Input id="name" value={data.name} onChange={e => setData('name', e.target.value)} placeholder="Nama lengkap" />
                                 {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
                             </div>
 
                             <div className="grid gap-1.5">
-                                <Label htmlFor="email" className="text-slate-700">Email</Label>
+                                <Label htmlFor="email" className="text-foreground">Email</Label>
                                 <Input id="email" type="email" value={data.email} onChange={e => setData('email', e.target.value)} placeholder="Alamat email" />
                                 {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
                             </div>
 
                             <div className="grid gap-1.5">
-                                <Label htmlFor="password" className="text-slate-700">Password</Label>
+                                <Label htmlFor="password" className="text-foreground">Password</Label>
                                 <Input id="password" type="password" value={data.password} onChange={e => setData('password', e.target.value)} placeholder="Minimal 8 karakter" />
                                 {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
                             </div>
 
                             <div className="grid gap-1.5">
-                                <Label htmlFor="role" className="text-slate-700">Role</Label>
+                                <Label htmlFor="role" className="text-foreground">Role</Label>
                                 <select
                                     id="role"
                                     value={data.role}
                                     onChange={e => setData('role', e.target.value as Role)}
-                                    className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                                    className="rounded-lg border border-input bg-card px-3 py-2 text-sm"
                                 >
                                     <option value="patient">Pasien</option>
                                     <option value="doctor">Dokter</option>
