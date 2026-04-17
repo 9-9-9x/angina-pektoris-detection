@@ -1,0 +1,25 @@
+[   32809ms] [ERROR] In HTML, %s cannot be a descendant of <%s>.
+This will cause a hydration error.%s <button> button 
+
+  <Inertia initialPage={{...}} initialComponent={function Login} resolveComponent={function resolveComponent} ...>
+    <Classification errors={{}} name="Laravel" auth={{...}} sidebarOpen={true} mlStatus={{status:"he...", ...}}>
+      <AppLayout>
+        <div className="min-h-scre...">
+          <AppHeader>
+            <header className="bg-white b...">
+              <div className="px-6 h-16 ...">
+                <InertiaLink>
+                <nav className="flex items...">
+                  <InertiaLink>
+                  <InertiaLink>
+                  <InertiaLink href="/logout" method="post" as="button">
+>                   <button type="button" ref={null} onClick={function onClick} data-loading={undefined}>
+                      <Button variant="ghost" className="flex items...">
+>                       <button
+>                         data-slot="button"
+>                         className={"justify-center whitespace-nowrap rounded-md text-sm font-medium transition-[col..."}
+>                       >
+          ...
+ @ http://localhost:8004/login:112
+[   32809ms] [ERROR] <%s> cannot contain a nested %s.
+See this log for the ancestor stack trace. button <button> @ http://localhost:8004/login:112

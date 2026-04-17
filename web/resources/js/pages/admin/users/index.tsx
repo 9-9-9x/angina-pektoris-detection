@@ -1,7 +1,9 @@
-import { Head, Link } from '@inertiajs/react';
-import { Users, Trash2, ArrowLeft } from 'lucide-react';
+import { Head, Link, useForm } from '@inertiajs/react';
+import { Users, Trash2, ArrowLeft, UserPlus, X } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import type { Role } from '@/types/auth';
 
@@ -24,6 +26,21 @@ interface Props {
 
 export default function AdminUsersIndex({ users }: Props) {
     const [deleteConfirmId, setDeleteConfirmId] = useState<number | null>(null);
+    const [showAddModal, setShowAddModal] = useState(false);
+
+    const { data, setData, post, processing, errors, reset } = useForm({
+        name: '',
+        email: '',
+        password: '',
+        role: 'patient' as Role,
+    });
+
+    const submitAdd = (e: React.FormEvent) => {
+        e.preventDefault();
+        post('/admin/users', {
+            onSuccess: () => { reset(); setShowAddModal(false); },
+        });
+    };
 
     const changeRole = (userId: number, role: Role) => {
         const form = document.createElement('form');
@@ -80,16 +97,25 @@ export default function AdminUsersIndex({ users }: Props) {
 
             <div className="w-full max-w-6xl">
                 {/* Header */}
-                <div className="flex items-center gap-4 mb-6">
-                    <Link href="/dashboard">
-                        <Button variant="ghost" size="icon">
-                            <ArrowLeft className="h-4 w-4" />
-                        </Button>
-                    </Link>
-                    <div>
-                        <h1 className="text-2xl font-bold text-slate-800">Manajemen Pengguna</h1>
-                        <p className="text-slate-600 mt-1">Kelola role dan hapus pengguna</p>
+                <div className="flex items-center justify-between mb-6">
+                    <div className="flex items-center gap-4">
+                        <Link href="/dashboard">
+                            <Button variant="ghost" size="icon">
+                                <ArrowLeft className="h-4 w-4" />
+                            </Button>
+                        </Link>
+                        <div>
+                            <h1 className="text-2xl font-bold text-slate-800">Manajemen Pengguna</h1>
+                            <p className="text-slate-600 mt-1">Kelola role dan hapus pengguna</p>
+                        </div>
                     </div>
+                    <Button
+                        onClick={() => setShowAddModal(true)}
+                        className="bg-[#4a6fa5] hover:bg-[#3d5d8a] text-white"
+                    >
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Tambah Pengguna
+                    </Button>
                 </div>
 
                 {/* Users Table */}
@@ -187,6 +213,64 @@ export default function AdminUsersIndex({ users }: Props) {
                     2026 Sistem Klasifikasi Angina Pektoris | All rights reserved
                 </footer>
             </div>
+
+            {/* Add User Modal */}
+            {showAddModal && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-xl shadow-xl w-full max-w-md p-6">
+                        <div className="flex items-center justify-between mb-5">
+                            <h2 className="text-lg font-bold text-slate-800">Tambah Pengguna</h2>
+                            <button onClick={() => { setShowAddModal(false); reset(); }} className="text-slate-400 hover:text-slate-600">
+                                <X className="w-5 h-5" />
+                            </button>
+                        </div>
+
+                        <form onSubmit={submitAdd} className="space-y-4">
+                            <div className="grid gap-1.5">
+                                <Label htmlFor="name" className="text-slate-700">Nama</Label>
+                                <Input id="name" value={data.name} onChange={e => setData('name', e.target.value)} placeholder="Nama lengkap" />
+                                {errors.name && <p className="text-red-500 text-xs">{errors.name}</p>}
+                            </div>
+
+                            <div className="grid gap-1.5">
+                                <Label htmlFor="email" className="text-slate-700">Email</Label>
+                                <Input id="email" type="email" value={data.email} onChange={e => setData('email', e.target.value)} placeholder="Alamat email" />
+                                {errors.email && <p className="text-red-500 text-xs">{errors.email}</p>}
+                            </div>
+
+                            <div className="grid gap-1.5">
+                                <Label htmlFor="password" className="text-slate-700">Password</Label>
+                                <Input id="password" type="password" value={data.password} onChange={e => setData('password', e.target.value)} placeholder="Minimal 8 karakter" />
+                                {errors.password && <p className="text-red-500 text-xs">{errors.password}</p>}
+                            </div>
+
+                            <div className="grid gap-1.5">
+                                <Label htmlFor="role" className="text-slate-700">Role</Label>
+                                <select
+                                    id="role"
+                                    value={data.role}
+                                    onChange={e => setData('role', e.target.value as Role)}
+                                    className="rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm"
+                                >
+                                    <option value="patient">Pasien</option>
+                                    <option value="doctor">Dokter</option>
+                                    <option value="admin">Admin</option>
+                                </select>
+                                {errors.role && <p className="text-red-500 text-xs">{errors.role}</p>}
+                            </div>
+
+                            <div className="flex justify-end gap-3 pt-2">
+                                <Button type="button" variant="ghost" onClick={() => { setShowAddModal(false); reset(); }}>
+                                    Batal
+                                </Button>
+                                <Button type="submit" disabled={processing} className="bg-[#4a6fa5] hover:bg-[#3d5d8a] text-white">
+                                    Tambah
+                                </Button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </AppLayout>
     );
 }

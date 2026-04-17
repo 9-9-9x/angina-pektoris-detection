@@ -21,30 +21,35 @@ class DatabaseSeeder extends Seeder
                 'email' => 'admin@rsud.go.id',
                 'password' => Hash::make('password'),
                 'role' => 'admin',
+                'email_verified_at' => now(),
             ],
             [
                 'name' => 'dr. Ahmad Susanto',
                 'email' => 'dr.ahmad@rsud.go.id',
                 'password' => Hash::make('password'),
                 'role' => 'doctor',
+                'email_verified_at' => now(),
             ],
             [
                 'name' => 'dr. Sarah Wijaya',
                 'email' => 'dr.sarah@rsud.go.id',
                 'password' => Hash::make('password'),
                 'role' => 'doctor',
+                'email_verified_at' => now(),
             ],
             [
                 'name' => 'dr. Budi Santoso',
                 'email' => 'dr.budi@rsud.go.id',
                 'password' => Hash::make('password'),
                 'role' => 'doctor',
+                'email_verified_at' => now(),
             ],
             [
                 'name' => 'Demo Pasien',
                 'email' => 'demo@example.com',
                 'password' => Hash::make('password'),
                 'role' => 'patient',
+                'email_verified_at' => now(),
             ],
         ];
 
@@ -53,13 +58,15 @@ class DatabaseSeeder extends Seeder
             $createdUsers[] = User::create($userData);
         }
 
+        $ahmad = User::where('email', 'dr.ahmad@rsud.go.id')->first();
         $demoUser = User::where('email', 'demo@example.com')->first();
 
-        // Seed patients and predictions for demo user
-        $this->seedPatientsAndPredictions($demoUser);
+        // Doctors get full patient data
+        $this->seedPatientsAndPredictions($ahmad);
+        $this->seedPatientsAndPredictions(User::where('email', 'dr.sarah@rsud.go.id')->first());
 
-        // Seed patients and predictions for dr. Ahmad
-        $this->seedPatientsAndPredictions(User::where('email', 'dr.ahmad@rsud.go.id')->first());
+        // Patient demo only gets their own single record
+        $this->seedPatientOwnRecord($demoUser);
 
         $this->command->info('Database seeded successfully!');
         $this->command->newLine();
@@ -361,7 +368,7 @@ class DatabaseSeeder extends Seeder
         foreach ($patients as $patientData) {
             $predictions = $patientData['predictions'];
             unset($patientData['predictions']);
-            
+
             $patient = Patient::create([
                 ...$patientData,
                 'no_rm' => Patient::generateNoRm(),
@@ -379,5 +386,38 @@ class DatabaseSeeder extends Seeder
                 ]);
             }
         }
+    }
+
+    private function seedPatientOwnRecord(User $user): void
+    {
+        $patient = Patient::create([
+            'nama' => $user->name,
+            'umur' => 35,
+            'jenis_kelamin' => 'L',
+            'no_rm' => Patient::generateNoRm(),
+            'user_id' => $user->id,
+        ]);
+
+        Prediction::create([
+            'patient_id' => $patient->id,
+            'user_id' => $user->id,
+            'usia' => 35,
+            'jenis_kelamin' => 'L',
+            'tekanan_darah' => 130,
+            'riwayat_dm' => 'Tidak',
+            'hipertensi' => 'Tidak',
+            'riwayat_pjk' => 'Tidak',
+            'nyeri_dada' => 'Ya',
+            'durasi_nyeri' => '10 Menit',
+            'sesak_napas' => 'Tidak',
+            'mual' => 'Tidak',
+            'muntah' => 'Tidak',
+            'keringat_dingin' => 'Tidak',
+            'prediction_result' => 'Bukan Angina Pektoris',
+            'probability_angina' => 0.18,
+            'risk_level' => 'LOW',
+            'confidence' => 'Tinggi',
+            'features_used' => [],
+        ]);
     }
 }

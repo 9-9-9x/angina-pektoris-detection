@@ -38,6 +38,7 @@ class Prediction extends Model
 
     protected $appends = [
         'risk_percentage',
+        'probability_non_angina',
         'risk_color',
         'risk_text',
         'hasil_klasifikasi',
@@ -59,7 +60,7 @@ class Prediction extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function verdictBy(): BelongsTo
+    public function verdictByUser(): BelongsTo
     {
         return $this->belongsTo(User::class, 'verdict_by');
     }
@@ -77,6 +78,11 @@ class Prediction extends Model
     public function getRiskPercentageAttribute(): float
     {
         return round($this->probability_angina * 100, 2);
+    }
+
+    public function getProbabilityNonAnginaAttribute(): float
+    {
+        return round(1 - $this->probability_angina, 4);
     }
 
     public function getRiskTextAttribute(): string

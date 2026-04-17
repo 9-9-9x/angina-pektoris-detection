@@ -22,7 +22,7 @@ class PredictionController extends Controller
     {
         $query = Prediction::with(['patient', 'user'])->latest();
 
-        if (auth()->user()->isPatient()) {
+        if (!auth()->user()->isDoctor() && !auth()->user()->isAdmin()) {
             $query->where('user_id', auth()->id());
         }
 
@@ -262,7 +262,7 @@ class PredictionController extends Controller
     {
         $this->authorize('view', $prediction);
 
-        $prediction->load(['patient', 'verdictBy']);
+        $prediction->load(['patient', 'verdictByUser']);
 
         return Inertia::render('predictions/show', [
             'prediction' => $prediction,
@@ -287,7 +287,7 @@ class PredictionController extends Controller
     {
         $query = Prediction::with('patient')->latest();
 
-        if (auth()->user()->isPatient()) {
+        if (!auth()->user()->isDoctor() && !auth()->user()->isAdmin()) {
             $query->where('user_id', auth()->id());
         }
 
@@ -325,7 +325,7 @@ class PredictionController extends Controller
         $query = Prediction::query();
         $patientQuery = Patient::query();
 
-        if ($user->isPatient()) {
+        if (!$user->isDoctor() && !$user->isAdmin()) {
             $query->where('user_id', $user->id);
             $patientQuery->where('user_id', $user->id);
         }
