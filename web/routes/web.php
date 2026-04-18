@@ -50,12 +50,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Classification form (GET)
     Route::get('/classify', [PredictionController::class, 'showClassifyForm'])
-        ->middleware('role:patient,doctor')
+        ->middleware('role:patient')
         ->name('classify');
 
     // Classification form submission (POST)
     Route::post('/classify', [PredictionController::class, 'classify'])
-        ->middleware('role:patient,doctor')
+        ->middleware('role:patient')
         ->name('classify.store');
 
     // Classification result
