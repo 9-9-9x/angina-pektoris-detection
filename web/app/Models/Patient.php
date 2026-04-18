@@ -40,19 +40,8 @@ class Patient extends Model
      */
     public static function generateNoRm(): string
     {
-        $prefix = 'RM';
-        $year = date('Y');
-        $lastPatient = self::where('no_rm', 'like', "$prefix$year%")
-            ->orderBy('no_rm', 'desc')
-            ->first();
-        
-        if ($lastPatient) {
-            $lastNumber = (int) substr($lastPatient->no_rm, -4);
-            $newNumber = $lastNumber + 1;
-        } else {
-            $newNumber = 1;
-        }
-        
-        return sprintf("%s%s%04d", $prefix, $year, $newNumber);
+        $lastId = self::max('id') ?? 0;
+
+        return (string) ($lastId + 1);
     }
 }

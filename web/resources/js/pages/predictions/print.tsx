@@ -127,7 +127,7 @@ export default function PredictionsPrint({ prediction }: { prediction: Predictio
                             <tbody>
                                 {[
                                     ['Nama Lengkap', prediction.patient.nama],
-                                    ['No. Rekam Medis', prediction.patient.no_rm],
+                                    ['No. Urut', prediction.patient.no_rm],
                                     ['Umur', `${prediction.usia} tahun`],
                                     ['Jenis Kelamin', prediction.patient.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'],
                                     ['Tekanan Darah', `${prediction.tekanan_darah} mmHg`],

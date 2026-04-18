@@ -74,7 +74,7 @@ export default function PredictionsIndex({ predictions }: Props) {
               <div className="relative w-64">
                 <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
                 <Input
-                  placeholder="Cari nama atau No. RM..."
+                  placeholder="Cari nama atau No. Urut..."
                   className="pl-8"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
@@ -89,7 +89,7 @@ export default function PredictionsIndex({ predictions }: Props) {
                   <tr className="border-b">
                     <th className="px-4 py-3 text-left font-medium">Tanggal</th>
                     <th className="px-4 py-3 text-left font-medium">Pasien</th>
-                    <th className="px-4 py-3 text-left font-medium">No. RM</th>
+                    <th className="px-4 py-3 text-left font-medium">No. Urut</th>
                     <th className="px-4 py-3 text-left font-medium">Hasil</th>
                     <th className="px-4 py-3 text-left font-medium">Risiko</th>
                     <th className="px-4 py-3 text-left font-medium">Probabilitas</th>

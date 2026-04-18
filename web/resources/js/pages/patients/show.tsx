@@ -76,7 +76,7 @@ export default function PatientsShow({ patient }: Props) {
             </Link>
             <div>
               <h1 className="text-2xl font-bold text-foreground">{patient.nama}</h1>
-              <p className="text-muted-foreground">No. RM: {patient.no_rm}</p>
+              <p className="text-muted-foreground">No. Urut: {patient.no_rm}</p>
             </div>
           </div>
           <div className="flex gap-2">

@@ -65,7 +65,7 @@ export default function PatientsIndex({ patients }: Props) {
                 {/* Patients Table */}
                 <div className="bg-card rounded-xl shadow-md border border-border overflow-hidden">
                     <div className="grid grid-cols-6 gap-4 p-4 bg-muted text-foreground font-medium border-b border-border">
-                        <div>No. RM</div>
+                        <div>No. Urut</div>
                         <div>Nama Pasien</div>
                         <div>Umur</div>
                         <div>Jenis Kelamin</div>

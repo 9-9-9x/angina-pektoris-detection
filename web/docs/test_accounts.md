@@ -19,3 +19,7 @@
 | Riwayat Klasifikasi | yes | yes | yes |
 | Pengaturan | yes | yes | yes |
 | Manajemen Pengguna | no | no | yes |
+
+## Notes
+- Pasien identifier menggunakan **No. Urut** (auto-increment ID: 1, 2, 3, dst)
+- Bukan No. RM (Nomor Rekam Medis) untuk menghindari bentrok dengan nomor RM rumah sakit asli
