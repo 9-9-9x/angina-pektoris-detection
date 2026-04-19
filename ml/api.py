@@ -64,48 +64,9 @@ def bin_usia(usia: int) -> int:
         return 3
 
 
-def bin_td(td: int) -> int:
-    """Bin blood pressure (systolic): 0=<120, 1=120-130, 2=>130"""
-    if td < 120:
-        return 0  # Normal
-    elif td < 130:
-        return 1  # Elevated
-    else:
-        return 2  # High
-
-
-def parse_duration_to_minutes(durasi_text: str) -> int:
-    """Convert duration text to minutes."""
-    try:
-        parts = str(durasi_text).strip().split()
-        if len(parts) != 2:
-            fallback = preprocessing_config.get("duration_median", 30) if preprocessing_config else 30
-            return int(fallback)
-        value = int(parts[0])
-        unit = parts[1].lower()
-
-        if unit in ["menit", "minute", "minutes"]:
-            return value
-        elif unit in ["jam", "hour", "hours"]:
-            return value * 60
-        elif unit in ["hari", "day", "days"]:
-            return value * 24 * 60
-        else:
-            fallback = preprocessing_config.get("duration_median", 30) if preprocessing_config else 30
-            return int(fallback)
-    except Exception:
-        fallback = preprocessing_config.get("duration_median", 30) if preprocessing_config else 30
-        return int(fallback)
-
-
-def bin_durasi(menit: int) -> int:
-    """Bin pain duration: 0=<5min, 1=5-10min, 2=>10min"""
-    if menit < 5:
-        return 0
-    elif menit <= 10:
-        return 1
-    else:
-        return 2
+def bin_durasi_from_form(durasi: str) -> int:
+    """Convert form duration choice to binary: 0=<15min, 1=>=15min"""
+    return 0 if durasi == "<15 menit" else 1
 
 
 # ============================================================================
@@ -128,14 +89,6 @@ class PatientData(BaseModel):
         description="Jenis kelamin: 'L' untuk Laki-laki, 'P' untuk Perempuan",
         example="L",
     )
-    tekanan_darah: int = Field(
-        ...,
-        ge=60,
-        le=300,
-        description="Tekanan darah sistolik dalam mmHg (60-300)",
-        alias="TD",
-        example=150,
-    )
     riwayat_dm: Literal["Ya", "Tidak"] = Field(
         ...,
         description="Riwayat Diabetes Mellitus: 'Ya' atau 'Tidak'",
@@ -154,17 +107,11 @@ class PatientData(BaseModel):
         alias="riwayat_PJK_terdahulu",
         example="Tidak",
     )
-    nyeri_menjalar: Literal["Ya", "Tidak"] = Field(
+    durasi_nyeri: Literal["<15 menit", ">15 menit"] = Field(
         ...,
-        description="Nyeri dada menjalar ke lengan: 'Ya' atau 'Tidak'",
-        alias="nyeri_dada_menjalar_ke_lengan",
-        example="Ya",
-    )
-    durasi_nyeri: str = Field(
-        ...,
-        description="Durasi nyeri dada (contoh: '30 menit', '2 jam', '1 hari')",
+        description="Durasi nyeri dada: '<15 menit' atau '>15 menit'",
         alias="durasi_nyeri",
-        example="10 menit",
+        example="<15 menit",
     )
     sesak_napas: Literal["Ya", "Tidak"] = Field(
         ...,
@@ -184,12 +131,6 @@ class PatientData(BaseModel):
         alias="muntah",
         example="Tidak",
     )
-    keringat_dingin: Literal["Ya", "Tidak"] = Field(
-        ...,
-        description="Mengalami keringat dingin: 'Ya' atau 'Tidak'",
-        alias="keringat_dingin",
-        example="Ya",
-    )
 
     class Config:
         populate_by_name = True
@@ -197,16 +138,13 @@ class PatientData(BaseModel):
             "example": {
                 "usia": 65,
                 "jenis_kelamin": "L",
-                "TD": 150,
                 "riwayat_DM": "Ya",
                 "HT": "Ya",
                 "riwayat_PJK_terdahulu": "Tidak",
-                "nyeri_dada_menjalar_ke_lengan": "Ya",
-                "durasi_nyeri": "10 menit",
+                "durasi_nyeri": "<15 menit",
                 "sesak_napas": "Ya",
                 "mual": "Tidak",
                 "muntah": "Tidak",
-                "keringat_dingin": "Ya",
             }
         }
 
@@ -409,26 +347,15 @@ def preprocess_patient_data(patient: PatientData) -> pd.DataFrame:
 
     features = {}
 
-    # Binning transformations
     features["Usia_Binned"] = bin_usia(patient.usia)
     features["Jenis_Kelamin_Encoded"] = gender_mapping[patient.jenis_kelamin]
-    features["TD_Binned"] = bin_td(patient.tekanan_darah)
-
-    # Duration parsing and binning
-    durasi_menit = parse_duration_to_minutes(patient.durasi_nyeri)
-    features["Durasi_Nyeri_Binned"] = bin_durasi(durasi_menit)
-
-    # Binary encoding
     features["Riwayat DM_Encoded"] = binary_mapping[patient.riwayat_dm]
     features["HT_Encoded"] = binary_mapping[patient.hipertensi]
     features["Riwayat PJK terdahulu_Encoded"] = binary_mapping[patient.riwayat_pjk]
-    features["Nyeri dada menjalar ke lengan_Encoded"] = binary_mapping[
-        patient.nyeri_menjalar
-    ]
+    features["Durasi_Nyeri_Binned"] = bin_durasi_from_form(patient.durasi_nyeri)
     features["Sesak napas_Encoded"] = binary_mapping[patient.sesak_napas]
     features["Mual_Encoded"] = binary_mapping[patient.mual]
     features["Muntah_Encoded"] = binary_mapping[patient.muntah]
-    features["Keringat dingin_Encoded"] = binary_mapping[patient.keringat_dingin]
 
     # Create DataFrame with correct column order
     X = pd.DataFrame([features])[feature_columns]
@@ -524,16 +451,13 @@ async def health_check():
     {
         "usia": 65,
         "jenis_kelamin": "L",
-        "TD": 150,
         "riwayat_DM": "Ya",
         "HT": "Ya",
         "riwayat_PJK_terdahulu": "Tidak",
-        "nyeri_dada_menjalar_ke_lengan": "Ya",
-        "durasi_nyeri": "10 menit",
+        "durasi_nyeri": "<15 menit",
         "sesak_napas": "Ya",
         "mual": "Tidak",
-        "muntah": "Tidak",
-        "keringat_dingin": "Ya"
+        "muntah": "Tidak"
     }
     ```
     """,

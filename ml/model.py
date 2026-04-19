@@ -20,7 +20,7 @@ import pandas as pd
 import numpy as np
 import pickle
 import warnings
-from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold, cross_val_score
+from sklearn.model_selection import train_test_split, GridSearchCV, StratifiedKFold, cross_val_score, LeaveOneOut
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import (
     accuracy_score, precision_score, recall_score, f1_score,
@@ -86,19 +86,8 @@ df_cleaned['Usia_Binned'] = df_cleaned['Usia'].apply(bin_usia)
 # --- Blood Pressure Binning (TD) ---
 # Notes: 0: <120/80 (Normal), 1: 120-129/80-89 (Elevated), 2: >140/90 (High)
 # Using unique labels to avoid pandas error, then remap
-def bin_td(td):
-    """Bin blood pressure (systolic) into categories."""
-    if td < 120:
-        return 0  # Normal
-    elif td < 130:
-        return 1  # Elevated
-    else:
-        return 2  # High (includes 130-139 and >=140)
-
-df_cleaned['TD_Binned'] = df_cleaned['TD'].apply(bin_td)
-
 # --- Pain Duration Binning (Durasi Nyeri) ---
-# Notes: 0: <5 menit, 1: 5-10 menit, 2: >10 menit
+# Notes: 0: <15 menit, 1: >=15 menit
 def parse_duration_to_minutes(durasi_text):
     """Convert text like '30 menit', '2 jam', '4 hari' to minutes."""
     try:
@@ -132,21 +121,16 @@ if df_cleaned['Durasi_Nyeri_Menit'].isnull().any():
     df_cleaned['Durasi_Nyeri_Menit'].fillna(duration_median, inplace=True)
 
 def bin_durasi(menit):
-    """Bin pain duration into categories."""
-    if menit < 5:
-        return 0  # < 5 minutes
-    elif menit <= 10:
-        return 1  # 5-10 minutes
-    else:
-        return 2  # > 10 minutes
+    """Bin pain duration: 0=<15 min, 1=>=15 min"""
+    return 0 if menit < 15 else 1
 
 df_cleaned['Durasi_Nyeri_Binned'] = df_cleaned['Durasi_Nyeri_Menit'].apply(bin_durasi)
 
 # --- Encode Binary Categorical Variables (Ya/Tidak) ---
 binary_mapping = {'Tidak': 0, 'Ya': 1}
 categorical_cols_to_encode = [
-    'Riwayat DM', 'HT', 'Riwayat PJK terdahulu', 'Nyeri dada menjalar ke lengan',
-    'Sesak napas', 'Mual', 'Muntah', 'Keringat dingin'
+    'Riwayat DM', 'HT', 'Riwayat PJK terdahulu',
+    'Sesak napas', 'Mual', 'Muntah'
 ]
 
 print("\n--- Encoding Categorical Variables ---")
@@ -173,22 +157,19 @@ df_cleaned['Label_Encoded'] = df_cleaned['Klasifikasi/Label'].map(label_mapping)
 print(f"\n--- After Preprocessing ---")
 print(f"Dataset shape: {df_cleaned.shape}")
 print("\nSample of processed data:")
-print(df_cleaned[['Usia', 'Usia_Binned', 'TD', 'TD_Binned', 'Durasi Nyeri', 'Durasi_Nyeri_Binned', 'Label_Encoded']].head())
+print(df_cleaned[['Usia', 'Usia_Binned', 'Durasi Nyeri', 'Durasi_Nyeri_Binned', 'Label_Encoded']].head())
 
 # --- Prepare Features (X) and Target (y) ---
 feature_columns = [
     'Usia_Binned',
     'Jenis_Kelamin_Encoded',
-    'TD_Binned',
     'Riwayat DM_Encoded',
     'HT_Encoded',
     'Riwayat PJK terdahulu_Encoded',
-    'Nyeri dada menjalar ke lengan_Encoded',
     'Durasi_Nyeri_Binned',
     'Sesak napas_Encoded',
     'Mual_Encoded',
     'Muntah_Encoded',
-    'Keringat dingin_Encoded'
 ]
 
 X = df_cleaned[feature_columns]
@@ -224,44 +205,28 @@ print(f"Training set size: {X_train.shape[0]} (Angina: {y_train.sum()}, Non-Angi
 print(f"Test set size: {X_test.shape[0]} (Angina: {y_test.sum()}, Non-Angina: {len(y_test) - y_test.sum()})")
 
 # --- Cross-Validation Setup ---
-# Using Stratified K-Fold to maintain class distribution in each fold
-cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
+cv = LeaveOneOut()
 
 # --- Hyperparameter Tuning with GridSearchCV ---
 print(f"\n--- Hyperparameter Tuning (GridSearchCV) ---")
 
-# Define parameter grid for optimization
 param_grid = {
-    'n_estimators': [50, 100, 200, 300],
-    'max_depth': [3, 5, 7, 10, None],
-    'min_samples_split': [2, 3, 5],
-    'min_samples_leaf': [1, 2, 3],
-    'max_features': ['sqrt', 'log2', None],
-    'class_weight': ['balanced', 'balanced_subsample', None]
+    'n_estimators': [100, 200, 300],
+    'max_depth': [3, 5, None],
+    'min_samples_leaf': [1, 2],
+    'max_features': ['sqrt', None],
+    'class_weight': ['balanced', None],
 }
-
-# Use a smaller grid for small datasets to avoid overfitting
-if len(X_train) < 30:
-    param_grid = {
-        'n_estimators': [100, 200],
-        'max_depth': [3, 5, 7, None],
-        'min_samples_split': [2, 3],
-        'min_samples_leaf': [1, 2],
-        'max_features': ['sqrt', None],
-        'class_weight': ['balanced', None]
-    }
 
 print(f"Parameter grid: {param_grid}")
 
-# Initialize base model
 rf_base = RandomForestClassifier(random_state=42)
 
-# GridSearch with cross-validation
 grid_search = GridSearchCV(
     estimator=rf_base,
     param_grid=param_grid,
     cv=cv,
-    scoring='f1',  # Focus on F1 for medical diagnosis (balance precision & recall)
+    scoring='accuracy',
     n_jobs=-1,
     verbose=1
 )
@@ -275,18 +240,9 @@ print(f"Best Cross-Validation F1 Score: {grid_search.best_score_:.4f}")
 # Use the best model
 rf_model = grid_search.best_estimator_
 
-# --- Cross-Validation Scores (detailed) ---
-print(f"\n--- Cross-Validation Performance ---")
-cv_metrics = {
-    'Accuracy': cross_val_score(rf_model, X_train, y_train, cv=cv, scoring='accuracy'),
-    'Precision': cross_val_score(rf_model, X_train, y_train, cv=cv, scoring='precision'),
-    'Recall': cross_val_score(rf_model, X_train, y_train, cv=cv, scoring='recall'),
-    'F1': cross_val_score(rf_model, X_train, y_train, cv=cv, scoring='f1'),
-    'ROC AUC': cross_val_score(rf_model, X_train, y_train, cv=cv, scoring='roc_auc')
-}
-
-for metric, scores in cv_metrics.items():
-    print(f"{metric}: {scores.mean():.4f} (+/- {scores.std() * 2:.4f})")
+# --- Leave-One-Out CV on full dataset (most reliable for 32 rows) ---
+loo_preds = cross_val_score(rf_model, X, y, cv=LeaveOneOut(), scoring='accuracy')
+print(f"\n--- Leave-One-Out CV Accuracy: {loo_preds.mean():.4f} ({int(loo_preds.sum())}/{len(loo_preds)} correct) ---")
 
 # --- Make Predictions ---
 y_pred = rf_model.predict(X_test)
@@ -431,16 +387,13 @@ def predict_angina(patient_data):
         Dictionary containing patient information with keys:
         - 'Usia': int (age in years)
         - 'Jenis Kelamin': str ('L' or 'P')
-        - 'TD': int (systolic blood pressure)
         - 'Riwayat DM': str ('Ya' or 'Tidak')
         - 'HT': str ('Ya' or 'Tidak')
         - 'Riwayat PJK terdahulu': str ('Ya' or 'Tidak')
-        - 'Nyeri dada menjalar ke lengan': str ('Ya' or 'Tidak')
         - 'Durasi Nyeri': str (e.g., '30 menit', '2 jam', '1 hari')
         - 'Sesak napas': str ('Ya' or 'Tidak')
         - 'Mual': str ('Ya' or 'Tidak')
         - 'Muntah': str ('Ya' or 'Tidak')
-        - 'Keringat dingin': str ('Ya' or 'Tidak')
     
     Returns:
     --------
@@ -450,7 +403,6 @@ def predict_angina(patient_data):
     features = {}
     features['Usia_Binned'] = bin_usia(patient_data['Usia'])
     features['Jenis_Kelamin_Encoded'] = gender_mapping.get(patient_data['Jenis Kelamin'], 0)
-    features['TD_Binned'] = bin_td(patient_data['TD'])
     features['Durasi_Nyeri_Binned'] = bin_durasi(parse_duration_to_minutes(patient_data['Durasi Nyeri']))
     
     for col in categorical_cols_to_encode:
@@ -475,16 +427,13 @@ print("\n--- Example Prediction Function Usage ---")
 example_patient = {
     'Usia': 65,
     'Jenis Kelamin': 'L',
-    'TD': 150,
     'Riwayat DM': 'Ya',
     'HT': 'Ya',
     'Riwayat PJK terdahulu': 'Tidak',
-    'Nyeri dada menjalar ke lengan': 'Ya',
-    'Durasi Nyeri': '10 menit',
+    'Durasi Nyeri': '20 menit',
     'Sesak napas': 'Ya',
     'Mual': 'Tidak',
     'Muntah': 'Tidak',
-    'Keringat dingin': 'Ya'
 }
 
 result = predict_angina(example_patient)
