@@ -1,0 +1,45 @@
+flowchart TD
+    A[Login] --> B[Halaman Home]
+    B --> C{Pilih Menu}
+
+    C -->|About| D
+    C -->|Data Pasien| E
+    C -->|Riwayat Klasifikasi| F
+    C -->|Pengaturan| G
+    C -->|Home| B
+    C -->|Logout| Z[Logout]
+
+    subgraph about[Tentang]
+        D[Halaman About]
+        D --> B
+    end
+
+    subgraph datapasien[Data Pasien]
+        E[Halaman Data Pasien] --> E1{Aksi}
+        E1 -->|Lihat Daftar| E2[Tabel Data Pasien]
+        E1 -->|Tambah Pasien| E3[Form Tambah Pasien]
+        E1 -->|Detail Pasien| E4[Detail Pasien dan Riwayat]
+        E2 --> E
+        E3 --> E
+        E4 --> E5{Aksi}
+        E5 -->|Edit| E6[Form Edit Pasien]
+        E5 -->|Kembali| E
+        E6 --> E
+    end
+
+    subgraph riwayat[Riwayat Klasifikasi]
+        F[Halaman Riwayat] --> F1[Tampilkan Semua Riwayat]
+        F1 --> F2{Pilih Prediksi}
+        F2 --> F3[Lihat Detail Prediksi]
+        F3 --> F4{Beri Verdict?}
+        F4 -->|Ya| F5[Input Verdict dan Catatan]
+        F5 --> F6[Simpan Verdict]
+        F6 --> F3
+        F4 -->|Tidak| F
+        F2 -->|Cetak| F7[Halaman Print]
+    end
+
+    subgraph pengaturan[Pengaturan]
+        G[Halaman Pengaturan] --> G1[Update Profil / Password / Tampilan]
+        G1 --> B
+    end

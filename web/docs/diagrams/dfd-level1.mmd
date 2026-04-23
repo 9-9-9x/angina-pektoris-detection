@@ -1,0 +1,51 @@
+flowchart TD
+    subgraph External["External Entities"]
+        P[Pasien]
+        D[Dokter]
+        A[Admin]
+        ML["ML Service Python FastAPI"]
+    end
+
+    subgraph Processes["Proses"]
+        P1["1.0 Manajemen Autentikasi"]
+        P2["2.0 Klasifikasi Angina Pektoris"]
+        P3["3.0 Manajemen Data Pasien"]
+        P4["4.0 Verdict Dokter"]
+        P5["5.0 Manajemen User"]
+        P6["6.0 Riwayat dan Laporan"]
+    end
+
+    subgraph Stores["Data Stores"]
+        DS1[("DS1 users")]
+        DS2[("DS2 patients")]
+        DS3[("DS3 predictions")]
+    end
+
+    P -->|"Login / Register"| P1
+    D -->|"Login"| P1
+    A -->|"Login"| P1
+    P1 -->|"User Data"| DS1
+
+    P -->|"Data Klinis"| P2
+    P2 -->|"Simpan Pasien"| DS2
+    P2 -->|"Data Klinis"| ML
+    ML -->|"Hasil Prediksi"| P2
+    P2 -->|"Simpan Prediksi"| DS3
+    P2 -->|"Hasil Prediksi"| P
+
+    D -->|"CRUD Pasien"| P3
+    A -->|"CRUD Pasien"| P3
+    P3 -->|"Data Pasien"| DS2
+
+    D -->|"Verdict dan Catatan"| P4
+    P4 -->|"Update Prediksi"| DS3
+    P4 -->|"Baca User"| DS1
+
+    A -->|"CRUD User"| P5
+    P5 -->|"Baca / Tulis"| DS1
+
+    P -->|"Lihat Riwayat"| P6
+    D -->|"Lihat Riwayat"| P6
+    A -->|"Lihat Riwayat"| P6
+    P6 -->|"Baca Prediksi"| DS3
+    P6 -->|"Baca Pasien"| DS2

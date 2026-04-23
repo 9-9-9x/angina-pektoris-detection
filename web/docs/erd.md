@@ -1,0 +1,65 @@
+# ERD (Entity Relationship Diagram)
+
+```mermaid
+erDiagram
+    users {
+        bigint id PK
+        string name
+        string email UK
+        string password
+        string role
+        timestamp email_verified_at
+        string two_factor_secret
+        string two_factor_recovery_codes
+        timestamp two_factor_confirmed_at
+        string remember_token
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    patients {
+        bigint id PK
+        string nama
+        string no_rm UK
+        integer umur
+        string jenis_kelamin
+        string alamat
+        string telepon
+        bigint user_id FK
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    predictions {
+        bigint id PK
+        bigint patient_id FK
+        bigint user_id FK
+        integer usia
+        string jenis_kelamin
+        integer tekanan_darah
+        string riwayat_dm
+        string hipertensi
+        string riwayat_pjk
+        string nyeri_dada
+        string durasi_nyeri
+        string sesak_napas
+        string mual
+        string muntah
+        string keringat_dingin
+        string prediction_result
+        string probability_angina
+        string risk_level
+        string confidence
+        string features_used
+        string doctor_verdict
+        string doctor_notes
+        bigint verdict_by FK
+        timestamp verdict_at
+        timestamp created_at
+        timestamp updated_at
+    }
+
+    users ||--o{ patients : "membuat"
+    patients ||--o{ predictions : "memiliki"
+    users ||--o{ predictions : "mengklasifikasikan"
+    users ||--o{ predictions : "memberi_verdict"

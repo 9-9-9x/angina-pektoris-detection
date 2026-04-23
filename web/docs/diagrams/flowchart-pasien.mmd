@@ -1,0 +1,40 @@
+flowchart TD
+    A[Login] --> B[Halaman Home]
+    B --> C{Pilih Menu}
+
+    C -->|About| D
+    C -->|Mulai Klasifikasi| E
+    C -->|Riwayat Klasifikasi| F
+    C -->|Pengaturan| G
+    C -->|Home| B
+    C -->|Logout| Z[Logout]
+
+    subgraph about[Tentang]
+        D[Halaman About]
+        D --> B
+    end
+
+    subgraph klasifikasi[Klasifikasi]
+        E[Form Klasifikasi] --> E1[Input Data Pasien]
+        E1 --> E2[Input Data Klinis]
+        E2 --> E3[Kirim Data Klasifikasi]
+        E3 --> E4{ML API Response}
+        E4 -->|Sukses| E5[Tampilkan Hasil Prediksi]
+        E4 -->|Gagal / Fallback| E5
+        E5 --> E6[Lihat Detail Hasil]
+        E6 --> E7{Cetak Hasil?}
+        E7 -->|Ya| E8[Halaman Print]
+        E7 -->|Tidak| B
+    end
+
+    subgraph riwayat[Riwayat]
+        F[Halaman Riwayat] --> F1[Tampilkan Riwayat Klasifikasi]
+        F1 --> F2{Lihat Detail?}
+        F2 -->|Ya| E6
+        F2 -->|Tidak| B
+    end
+
+    subgraph pengaturan[Pengaturan]
+        G[Halaman Pengaturan] --> G1[Update Profil / Password / Tampilan]
+        G1 --> B
+    end
