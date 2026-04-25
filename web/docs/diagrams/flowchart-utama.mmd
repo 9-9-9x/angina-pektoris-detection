@@ -1,0 +1,33 @@
+flowchart TD
+    START([Mulai]) --> LOGIN[/Input Login/]
+    LOGIN --> AUTH{Autentikasi Berhasil?}
+    AUTH -->|Tidak| LOGIN
+    AUTH -->|Ya| ROLE{Cek Role}
+
+    ROLE -->|Pasien| P
+    ROLE -->|Dokter| DR
+    ROLE -->|Admin| AD
+
+    subgraph pasien[Alur Pasien]
+        P[/Input Data Klinis/] --> P1[Proses Prediksi ML]
+        P1 --> P2[/Tampilkan Hasil Klasifikasi/]
+    end
+
+    subgraph dokter[Alur Dokter]
+        DR[Kelola Data Pasien] --> DR1[Beri Verdikt dan Catatan]
+    end
+
+    subgraph admin[Alur Admin]
+        AD[/Tampilkan Dashboard/] --> AD1[Kelola Data Pasien]
+        AD1 --> AD2[Kelola Akun Pengguna]
+    end
+
+    P2 --> U
+    DR1 --> U
+    AD2 --> U
+
+    U{Pilih Menu} -->|Riwayat| R[/Tampilkan Riwayat Klasifikasi/]
+    U -->|Pengaturan| S[Update Profil dan Tampilan]
+    U -->|Logout| E([Selesai])
+    R --> U
+    S --> U

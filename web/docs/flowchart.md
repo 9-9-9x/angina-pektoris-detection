@@ -1,6 +1,82 @@
-# Flowchart Sistem — Per User
+# Flowchart Sistem
 
-## Flowchart Pasien (Patient)
+## Flowchart Sistem Utama
+
+```mermaid
+flowchart TD
+    START([Mulai]) --> LOGIN[/Input Login/]
+    LOGIN --> AUTH{Autentikasi Berhasil?}
+    AUTH -->|Tidak| LOGIN
+    AUTH -->|Ya| ROLE{Cek Role}
+
+    ROLE -->|Pasien| P
+    ROLE -->|Dokter| DR
+    ROLE -->|Admin| AD
+
+    subgraph pasien[Alur Pasien]
+        P[/Input Data Klinis/] --> P1[Proses Prediksi ML]
+        P1 --> P2[/Tampilkan Hasil Klasifikasi/]
+    end
+
+    subgraph dokter[Alur Dokter]
+        DR[Kelola Data Pasien] --> DR1[Beri Verdikt dan Catatan]
+    end
+
+    subgraph admin[Alur Admin]
+        AD[/Tampilkan Dashboard/] --> AD1[Kelola Data Pasien]
+        AD1 --> AD2[Kelola Akun Pengguna]
+    end
+
+    P2 --> U
+    DR1 --> U
+    AD2 --> U
+
+    U{Pilih Menu} -->|Riwayat| R[/Tampilkan Riwayat Klasifikasi/]
+    U -->|Pengaturan| S[Update Profil dan Tampilan]
+    U -->|Logout| E([Selesai])
+    R --> U
+    S --> U
+```
+
+**Keterangan Simbol:**
+
+| Simbol | Bentuk | Keterangan |
+|--------|--------|------------|
+| `([...])` | Oval | Mulai / Selesai |
+| `[/.../]` | Jajar Genjang | Input / Output |
+| `[...]` | Kotak | Proses |
+| `{...}` | Diamond | Keputusan |
+| `[(...)]` | Silinder | Database |
+
+---
+
+## Flowchart Proses Klasifikasi
+
+```mermaid
+flowchart TD
+    START([Mulai]) --> PASIEN[/Input Data Pasien/]
+    PASIEN --> KLINIS[/Input Data Klinis/]
+    KLINIS --> VALID{Data Valid?}
+    VALID -->|Tidak| ERR[/Tampilkan Pesan Error/]
+    ERR --> KLINIS
+    VALID -->|Ya| KIRIM[Kirim Data ke ML API]
+    KIRIM --> RESP{Response Sukses?}
+    RESP -->|Ya| TERIMA[Terima Hasil Prediksi]
+    RESP -->|Tidak| MOCK[Fallback Prediksi Mock]
+    TERIMA --> DB[(Simpan ke Database)]
+    MOCK --> DB
+    DB --> HASIL[/Tampilkan Hasil Klasifikasi/]
+    HASIL --> CETAK{Cetak Laporan?}
+    CETAK -->|Ya| PRINT[Cetak Laporan]
+    CETAK -->|Tidak| END([Selesai])
+    PRINT --> END
+```
+
+---
+
+## Flowchart Detail — Per Role (Lampiran)
+
+### Flowchart Pasien (Patient)
 
 ```mermaid
 flowchart TD
@@ -45,7 +121,7 @@ flowchart TD
     end
 ```
 
-## Flowchart Dokter (Doctor)
+### Flowchart Dokter (Doctor)
 
 ```mermaid
 flowchart TD
@@ -95,7 +171,7 @@ flowchart TD
     end
 ```
 
-## Flowchart Admin
+### Flowchart Admin
 
 ```mermaid
 flowchart TD

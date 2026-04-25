@@ -1,0 +1,17 @@
+flowchart TD
+    START([Mulai]) --> PASIEN[/Input Data Pasien/]
+    PASIEN --> KLINIS[/Input Data Klinis/]
+    KLINIS --> VALID{Data Valid?}
+    VALID -->|Tidak| ERR[/Tampilkan Pesan Error/]
+    ERR --> KLINIS
+    VALID -->|Ya| KIRIM[Kirim Data ke ML API]
+    KIRIM --> RESP{Response Sukses?}
+    RESP -->|Ya| TERIMA[Terima Hasil Prediksi]
+    RESP -->|Tidak| MOCK[Fallback Prediksi Mock]
+    TERIMA --> DB[(Simpan ke Database)]
+    MOCK --> DB
+    DB --> HASIL[/Tampilkan Hasil Klasifikasi/]
+    HASIL --> CETAK{Cetak Laporan?}
+    CETAK -->|Ya| PRINT[Cetak Laporan]
+    CETAK -->|Tidak| END([Selesai])
+    PRINT --> END
