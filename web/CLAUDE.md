@@ -268,3 +268,14 @@ Wayfinder generates TypeScript functions for Laravel routes. Import from `@/acti
 - To run all tests in a file: `php artisan test --compact tests/Feature/ExampleTest.php`.
 - To filter on a particular test name: `php artisan test --compact --filter=testName` (recommended after making a change to a related file).
 </laravel-boost-guidelines>
+
+## Mermaid Diagram Skill
+
+When creating or updating system diagrams (flowcharts, DFD, ERD, PDM), follow the instructions in `~/.claude/skills/mermaid-diagrams/SKILL.md`. Key rules:
+- Use standard flowchart shapes: oval `([...])` for start/end, `[/.../]` for I/O, `{...}` for decisions, `[(...)]` for database, `[...]` for process
+- All nodes MUST have explicit IDs (e.g., `START([Mulai])`)
+- Produce both `.mmd` files (raw Mermaid for mermaid.live) and `.md` files (markdown with embedded Mermaid)
+- One diagram per `.mmd` file
+- Verify syntax before delivering (no `&`, `+`, commas in labels; no markdown in .mmd files)
+- Labels in Indonesian (Bahasa Indonesia)
+
