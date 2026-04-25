@@ -3,40 +3,37 @@
 ```mermaid
 erDiagram
     users {
-        bigint id PK
+        int id PK
         string name
         string email UK
         string password
         string role
-        timestamp email_verified_at
-        string two_factor_secret
-        string two_factor_recovery_codes
-        timestamp two_factor_confirmed_at
+        date email_verified_at
         string remember_token
-        timestamp created_at
-        timestamp updated_at
+        date created_at
+        date updated_at
     }
 
     patients {
-        bigint id PK
+        int id PK
         string nama
-        string no_rm UK
-        integer umur
+        string no_urut UK
+        int umur
         string jenis_kelamin
         string alamat
         string telepon
-        bigint user_id FK
-        timestamp created_at
-        timestamp updated_at
+        int user_id FK
+        date created_at
+        date updated_at
     }
 
     predictions {
-        bigint id PK
-        bigint patient_id FK
-        bigint user_id FK
-        integer usia
+        int id PK
+        int patient_id FK
+        int user_id FK
+        int usia
         string jenis_kelamin
-        integer tekanan_darah
+        int tekanan_darah
         string riwayat_dm
         string hipertensi
         string riwayat_pjk
@@ -53,13 +50,23 @@ erDiagram
         string features_used
         string doctor_verdict
         string doctor_notes
-        bigint verdict_by FK
-        timestamp verdict_at
-        timestamp created_at
-        timestamp updated_at
+        int verdict_by FK
+        date verdict_at
+        date created_at
+        date updated_at
     }
 
-    users ||--o{ patients : "membuat"
-    patients ||--o{ predictions : "memiliki"
-    users ||--o{ predictions : "mengklasifikasikan"
-    users ||--o{ predictions : "memberi_verdict"
+    users ||--o{ patients : membuat
+    patients ||--o{ predictions : memiliki
+    users ||--o{ predictions : mengklasifikasikan
+    users ||--o{ predictions : memberi_verdict
+```
+
+**Keterangan Relasi:**
+
+| Entitas | Relasi | Entitas | Keterangan |
+|---------|--------|---------|------------|
+| users | 1 ke N | patients | 1 user (pasien) memiliki banyak data pasien |
+| patients | 1 ke N | predictions | 1 pasien memiliki banyak riwayat prediksi |
+| users | 1 ke N | predictions | 1 user (pasien) melakukan banyak klasifikasi |
+| users | 1 ke N | predictions | 1 user (dokter) memberi verdict pada banyak prediksi |

@@ -1,8 +1,8 @@
 flowchart LR
-    P[Pasien] -->|"Data Klinis"| S(("Sistem Klasifikasi Angina Pektoris"))
+    P[Pasien] -->|"Data Klinis"| S((0.0 Sistem Klasifikasi Angina Pektoris))
     D[Dokter] -->|"Data Pasien dan Verdict"| S
     A[Admin] -->|"Data User"| S
     S -->|"Hasil Prediksi dan Riwayat"| P
     S -->|"Hasil Prediksi dan Riwayat Pasien"| D
     S -->|"Statistik dan Data User"| A
-    S <-->|"Data Prediksi"| ML["ML Service Python FastAPI"]
+    S <-->|"Data Prediksi"| ML[ML Service FastAPI]

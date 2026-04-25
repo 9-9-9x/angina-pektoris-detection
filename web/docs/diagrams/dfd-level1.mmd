@@ -1,51 +1,47 @@
-flowchart TD
-    subgraph External["External Entities"]
-        P[Pasien]
-        D[Dokter]
-        A[Admin]
-        ML["ML Service Python FastAPI"]
-    end
+flowchart LR
+    P[Pasien]
+    D[Dokter]
+    A[Admin]
+    ML[ML Service FastAPI]
 
-    subgraph Processes["Proses"]
-        P1["1.0 Manajemen Autentikasi"]
-        P2["2.0 Klasifikasi Angina Pektoris"]
-        P3["3.0 Manajemen Data Pasien"]
-        P4["4.0 Verdict Dokter"]
-        P5["5.0 Manajemen User"]
-        P6["6.0 Riwayat dan Laporan"]
-    end
+    P1((1.0 Autentikasi dan Registrasi))
+    P2((2.0 Klasifikasi Angina))
+    P3((3.0 Manajemen Data))
+    P4((4.0 Verdict dan Laporan))
 
-    subgraph Stores["Data Stores"]
-        DS1[("DS1 users")]
-        DS2[("DS2 patients")]
-        DS3[("DS3 predictions")]
-    end
+    DS1[(DS1 users)]
+    DS2[(DS2 patients)]
+    DS3[(DS3 predictions)]
 
-    P -->|"Login / Register"| P1
-    D -->|"Login"| P1
-    A -->|"Login"| P1
-    P1 -->|"User Data"| DS1
+    P -->|"Kredensial Login"| P1
+    D -->|"Kredensial Login"| P1
+    A -->|"Kredensial Login"| P1
+    P1 <-->|"Data User"| DS1
+    P1 -->|"Token Sesi"| P
+    P1 -->|"Token Sesi"| D
+    P1 -->|"Token Sesi"| A
 
     P -->|"Data Klinis"| P2
-    P2 -->|"Simpan Pasien"| DS2
-    P2 -->|"Data Klinis"| ML
+    P2 -->|"Request Prediksi"| ML
     ML -->|"Hasil Prediksi"| P2
-    P2 -->|"Simpan Prediksi"| DS3
+    P2 -->|"Data Pasien"| DS2
+    P2 -->|"Data Prediksi"| DS3
     P2 -->|"Hasil Prediksi"| P
 
-    D -->|"CRUD Pasien"| P3
-    A -->|"CRUD Pasien"| P3
-    P3 -->|"Data Pasien"| DS2
+    D -->|"Data Input Pasien"| P3
+    A -->|"Data Input User"| P3
+    P3 <-->|"Data Pasien"| DS2
+    P3 <-->|"Data User"| DS1
+    P3 -->|"Konfirmasi Data"| D
+    P3 -->|"Konfirmasi Data"| A
 
-    D -->|"Verdict dan Catatan"| P4
-    P4 -->|"Update Prediksi"| DS3
-    P4 -->|"Baca User"| DS1
-
-    A -->|"CRUD User"| P5
-    P5 -->|"Baca / Tulis"| DS1
-
-    P -->|"Lihat Riwayat"| P6
-    D -->|"Lihat Riwayat"| P6
-    A -->|"Lihat Riwayat"| P6
-    P6 -->|"Baca Prediksi"| DS3
-    P6 -->|"Baca Pasien"| DS2
+    D -->|"Data Verdict"| P4
+    P -->|"Parameter Pencarian"| P4
+    D -->|"Parameter Pencarian"| P4
+    A -->|"Parameter Pencarian"| P4
+    P4 -->|"Update Verdict"| DS3
+    DS3 -->|"Data Prediksi"| P4
+    DS2 -->|"Data Pasien"| P4
+    P4 -->|"Data Riwayat"| P
+    P4 -->|"Data Riwayat dan Laporan"| D
+    P4 -->|"Data Statistik"| A
