@@ -34,8 +34,19 @@ import seaborn as sns
 warnings.filterwarnings('ignore')
 
 # --- Load Data ---
-# Assumes 'Dataset Contoh.xlsx' is in the same directory as this script
-df = pd.read_excel("./Dataset Contoh.xlsx", sheet_name="Sheet1")
+df_raw = pd.read_csv("./datasetangina.csv")
+
+# Rename columns to internal names
+df_raw = df_raw.rename(columns={
+    'UMUR': 'Usia',
+    'JENIS KELAMIN': 'Jenis Kelamin',
+    'Riwayat HT': 'HT',
+    'Riwayat PJK Terdahulu': 'Riwayat PJK terdahulu',
+    'Sesak Napas': 'Sesak napas',
+})
+
+# Keep only labeled rows
+df = df_raw.dropna(subset=['Klasifikasi/Label']).reset_index(drop=True)
 
 print("=" * 60)
 print("ANGINA PEKTORIS DETECTION - OPTIMIZED RANDOM FOREST MODEL")
@@ -52,26 +63,21 @@ print("\n--- Class Distribution ---")
 print(df['Klasifikasi/Label'].value_counts())
 
 # --- Preprocessing ---
+df_cleaned = df.copy()
 
-# 1. Drop the 'No RM' column (identifier) and all empty/unnamed columns
-columns_to_drop = ['No RM'] + [col for col in df.columns if col.startswith('Unnamed:')]
-df_cleaned = df.drop(columns=columns_to_drop)
+print(f"\n--- After cleaning ---")
+print(f"Shape: {df_cleaned.shape}")
 
-print(f"\n--- After dropping unnecessary columns ---")
-print(f"Columns remaining for processing: {df_cleaned.columns.tolist()}")
-print(f"Shape after cleaning: {df_cleaned.shape}")
-
-# Check for missing values in remaining columns
+# Check for missing values
 print("\n--- Missing Values Check ---")
 missing_values = df_cleaned.isnull().sum()
 print(missing_values[missing_values > 0] if missing_values.sum() > 0 else "No missing values found")
 
-# 2. Apply transformations based on the classification notes
+# 2. Apply transformations
 
 # --- Age Binning (Usia) ---
 # Notes: 0: <20, 1: 20-40, 2: 40-60, 3: >60
 def bin_usia(usia):
-    """Bin age into categories based on medical guidelines."""
     if usia < 20:
         return 0
     elif usia < 40:
@@ -83,48 +89,13 @@ def bin_usia(usia):
 
 df_cleaned['Usia_Binned'] = df_cleaned['Usia'].apply(bin_usia)
 
-# --- Blood Pressure Binning (TD) ---
-# Notes: 0: <120/80 (Normal), 1: 120-129/80-89 (Elevated), 2: >140/90 (High)
-# Using unique labels to avoid pandas error, then remap
 # --- Pain Duration Binning (Durasi Nyeri) ---
-# Notes: 0: <15 menit, 1: >=15 menit
-def parse_duration_to_minutes(durasi_text):
-    """Convert text like '30 menit', '2 jam', '4 hari' to minutes."""
-    try:
-        parts = str(durasi_text).strip().split()
-        if len(parts) != 2:
-            return np.nan
-        value = int(parts[0])
-        unit = parts[1].lower()
-        
-        if unit in ['menit', 'minute', 'minutes']:
-            return value
-        elif unit in ['jam', 'hour', 'hours']:
-            return value * 60
-        elif unit in ['hari', 'day', 'days']:
-            return value * 24 * 60
-        else:
-            print(f"Warning: Unknown unit '{unit}' in '{durasi_text}'")
-            return np.nan
-    except Exception as e:
-        print(f"Warning: Could not parse duration '{durasi_text}': {e}")
-        return np.nan
+# Dataset uses '<15 Menit' / '>15 Menit' directly
+duration_mapping = {'<15 Menit': 0, '>15 Menit': 1}
+df_cleaned['Durasi_Nyeri_Binned'] = df_cleaned['Durasi Nyeri'].map(duration_mapping).fillna(0).astype(int)
+duration_median = 0  # kept for API compatibility
 
-df_cleaned['Durasi_Nyeri_Menit'] = df_cleaned['Durasi Nyeri'].apply(parse_duration_to_minutes)
-
-# Save median before filling NaN (needed for serving fallback)
-duration_median = df_cleaned['Durasi_Nyeri_Menit'].median()
-
-# Check for any parsing errors
-if df_cleaned['Durasi_Nyeri_Menit'].isnull().any():
-    print("\nWarning: Some duration values could not be parsed. Filling with median.")
-    df_cleaned['Durasi_Nyeri_Menit'].fillna(duration_median, inplace=True)
-
-def bin_durasi(menit):
-    """Bin pain duration: 0=<15 min, 1=>=15 min"""
-    return 0 if menit < 15 else 1
-
-df_cleaned['Durasi_Nyeri_Binned'] = df_cleaned['Durasi_Nyeri_Menit'].apply(bin_durasi)
+print(f"\nDuration unique values: {df_cleaned['Durasi Nyeri'].unique()}")
 
 # --- Encode Binary Categorical Variables (Ya/Tidak) ---
 binary_mapping = {'Tidak': 0, 'Ya': 1}
@@ -138,14 +109,13 @@ for col in categorical_cols_to_encode:
     unique_vals = df_cleaned[col].unique()
     print(f"{col}: {unique_vals}")
     df_cleaned[f'{col}_Encoded'] = df_cleaned[col].map(binary_mapping)
-    
-    # Check for unmapped values
+
     if df_cleaned[f'{col}_Encoded'].isnull().any():
         print(f"  Warning: Unmapped values in {col}, filling with 0 (Tidak)")
         df_cleaned[f'{col}_Encoded'].fillna(0, inplace=True)
 
 # --- Encode Gender (Jenis Kelamin) ---
-gender_mapping = {'L': 0, 'P': 1}  # Laki-laki: 0, Perempuan: 1
+gender_mapping = {'L': 0, 'P': 1}
 print(f"Jenis Kelamin: {df_cleaned['Jenis Kelamin'].unique()}")
 df_cleaned['Jenis_Kelamin_Encoded'] = df_cleaned['Jenis Kelamin'].map(gender_mapping)
 
@@ -205,7 +175,8 @@ print(f"Training set size: {X_train.shape[0]} (Angina: {y_train.sum()}, Non-Angi
 print(f"Test set size: {X_test.shape[0]} (Angina: {y_test.sum()}, Non-Angina: {len(y_test) - y_test.sum()})")
 
 # --- Cross-Validation Setup ---
-cv = LeaveOneOut()
+# Use StratifiedKFold for GridSearch (358 rows; LOO would be too slow)
+cv = StratifiedKFold(n_splits=5, shuffle=True, random_state=42)
 
 # --- Hyperparameter Tuning with GridSearchCV ---
 print(f"\n--- Hyperparameter Tuning (GridSearchCV) ---")
@@ -240,9 +211,10 @@ print(f"Best Cross-Validation F1 Score: {grid_search.best_score_:.4f}")
 # Use the best model
 rf_model = grid_search.best_estimator_
 
-# --- Leave-One-Out CV on full dataset (most reliable for 32 rows) ---
-loo_preds = cross_val_score(rf_model, X, y, cv=LeaveOneOut(), scoring='accuracy')
-print(f"\n--- Leave-One-Out CV Accuracy: {loo_preds.mean():.4f} ({int(loo_preds.sum())}/{len(loo_preds)} correct) ---")
+# --- Stratified 10-Fold CV on full dataset ---
+skf10 = StratifiedKFold(n_splits=10, shuffle=True, random_state=42)
+cv_preds = cross_val_score(rf_model, X, y, cv=skf10, scoring='accuracy')
+print(f"\n--- 10-Fold CV Accuracy: {cv_preds.mean():.4f} ± {cv_preds.std():.4f} ---")
 
 # --- Make Predictions ---
 y_pred = rf_model.predict(X_test)
@@ -365,6 +337,7 @@ model_data = {
         'binary_mapping': binary_mapping,
         'gender_mapping': gender_mapping,
         'label_mapping': label_mapping,
+        'duration_mapping': duration_mapping,
         'duration_median': duration_median,
     }
 }
@@ -403,7 +376,7 @@ def predict_angina(patient_data):
     features = {}
     features['Usia_Binned'] = bin_usia(patient_data['Usia'])
     features['Jenis_Kelamin_Encoded'] = gender_mapping.get(patient_data['Jenis Kelamin'], 0)
-    features['Durasi_Nyeri_Binned'] = bin_durasi(parse_duration_to_minutes(patient_data['Durasi Nyeri']))
+    features['Durasi_Nyeri_Binned'] = duration_mapping.get(patient_data['Durasi Nyeri'], 0)
     
     for col in categorical_cols_to_encode:
         features[f'{col}_Encoded'] = binary_mapping.get(patient_data[col], 0)
@@ -430,7 +403,7 @@ example_patient = {
     'Riwayat DM': 'Ya',
     'HT': 'Ya',
     'Riwayat PJK terdahulu': 'Tidak',
-    'Durasi Nyeri': '20 menit',
+    'Durasi Nyeri': '>15 Menit',
     'Sesak napas': 'Ya',
     'Mual': 'Tidak',
     'Muntah': 'Tidak',

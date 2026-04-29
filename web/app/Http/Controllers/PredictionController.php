@@ -128,42 +128,29 @@ class PredictionController extends Controller
     public function classify(Request $request)
     {
         $validated = $request->validate([
-            // Patient data
             'nama' => 'required|string|max:255',
             'umur' => 'required|integer|min:0|max:120',
             'jenis_kelamin' => 'required|in:L,P',
-
-            // Clinical data
             'nyeri_dada' => 'required|in:Ya,Tidak',
-            'durasi_nyeri' => 'required|string|max:50',
-            'durasi_unit' => 'required|in:Menit,Jam,Hari',
+            'durasi_nyeri' => 'required|in:<15 menit,>15 menit',
             'sesak_napas' => 'required|in:Ya,Tidak',
-            'keringat_dingin' => 'required|in:Ya,Tidak',
             'mual' => 'required|in:Ya,Tidak',
             'muntah' => 'required|in:Ya,Tidak',
-            'tekanan_darah' => 'required|integer|min:60|max:300',
             'hipertensi' => 'required|in:Ya,Tidak',
             'riwayat_dm' => 'required|in:Ya,Tidak',
             'riwayat_pjk' => 'required|in:Ya,Tidak',
         ]);
 
-        // Format duration with unit
-        $durasiLengkap = $validated['durasi_nyeri'].' '.$validated['durasi_unit'];
-
-        // Prepare data for ML API
         $mlData = [
             'umur' => $validated['umur'],
             'jenis_kelamin' => $validated['jenis_kelamin'],
-            'tekanan_darah' => $validated['tekanan_darah'],
             'riwayat_dm' => $validated['riwayat_dm'],
             'hipertensi' => $validated['hipertensi'],
             'riwayat_pjk' => $validated['riwayat_pjk'],
-            'nyeri_dada' => $validated['nyeri_dada'],
-            'durasi_nyeri' => $durasiLengkap,
+            'durasi_nyeri' => $validated['durasi_nyeri'],
             'sesak_napas' => $validated['sesak_napas'],
             'mual' => $validated['mual'],
             'muntah' => $validated['muntah'],
-            'keringat_dingin' => $validated['keringat_dingin'],
         ];
 
         // Call ML API, fall back to mock if unavailable
@@ -179,8 +166,7 @@ class PredictionController extends Controller
 
         $predictionData = $result['data'];
 
-        $prediction = DB::transaction(function () use ($validated, $mlData, $durasiLengkap, $predictionData) {
-            // Find or create patient to avoid duplicates
+        $prediction = DB::transaction(function () use ($validated, $mlData, $predictionData) {
             $patient = Patient::where('nama', $validated['nama'])
                 ->where('user_id', auth()->id())
                 ->first();
@@ -200,16 +186,14 @@ class PredictionController extends Controller
                 'user_id' => auth()->id(),
                 'usia' => $validated['umur'],
                 'jenis_kelamin' => $validated['jenis_kelamin'],
-                'tekanan_darah' => $validated['tekanan_darah'],
                 'riwayat_dm' => $validated['riwayat_dm'],
                 'hipertensi' => $validated['hipertensi'],
                 'riwayat_pjk' => $validated['riwayat_pjk'],
                 'nyeri_dada' => $validated['nyeri_dada'],
-                'durasi_nyeri' => $durasiLengkap,
+                'durasi_nyeri' => $validated['durasi_nyeri'],
                 'sesak_napas' => $validated['sesak_napas'],
                 'mual' => $validated['mual'],
                 'muntah' => $validated['muntah'],
-                'keringat_dingin' => $validated['keringat_dingin'],
                 'prediction_result' => $predictionData['prediction'],
                 'probability_angina' => $predictionData['probability_angina'],
                 'risk_level' => $predictionData['risk_level'],

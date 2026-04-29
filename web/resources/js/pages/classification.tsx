@@ -1,5 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
-import { Calendar, ChevronDown, Zap, X, ArrowRight, ArrowLeft, Check, CornerDownLeft } from 'lucide-react';
+import { Calendar, Zap, X, ArrowLeft, Check, CornerDownLeft } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -46,14 +46,6 @@ const STEPS: StepDef[] = [
         ],
     },
     {
-        key: 'tekanan_darah',
-        label: 'Tekanan Darah',
-        description: 'Masukkan tekanan darah sistolik',
-        type: 'number',
-        placeholder: 'Contoh: 120',
-        suffix: 'mmHg',
-    },
-    {
         key: 'nyeri_dada',
         label: 'Nyeri Dada',
         description: 'Apakah pasien mengalami nyeri dada?',
@@ -63,19 +55,17 @@ const STEPS: StepDef[] = [
         key: 'durasi_nyeri',
         label: 'Durasi Nyeri',
         description: 'Berapa lama nyeri berlangsung?',
-        type: 'duration',
+        type: 'choice',
+        options: [
+            { value: '<15 menit', label: '< 15 menit', shortcut: '1' },
+            { value: '>15 menit', label: '> 15 menit', shortcut: '2' },
+        ],
         skip: (data) => data.nyeri_dada === 'Tidak',
     },
     {
         key: 'sesak_napas',
         label: 'Sesak Napas',
         description: 'Apakah pasien mengalami sesak napas?',
-        type: 'yesno',
-    },
-    {
-        key: 'keringat_dingin',
-        label: 'Keringat Dingin',
-        description: 'Apakah pasien mengalami keringat dingin?',
         type: 'yesno',
     },
     {
@@ -131,8 +121,6 @@ function QuickModeModal({
     const [isConfirm, setIsConfirm] = useState(false);
     const [flash, setFlash] = useState<string | null>(null);
     const inputRef = useRef<HTMLInputElement>(null);
-    const [durasiValue, setDurasiValue] = useState(data.durasi_nyeri || '');
-    const [durasiUnit, setDurasiUnit] = useState(data.durasi_unit || 'Menit');
 
     // Get active steps (filter skipped)
     const activeSteps = STEPS.filter((s) => !s.skip || !s.skip(data));
@@ -145,8 +133,6 @@ function QuickModeModal({
         if (open) {
             setStepIndex(0);
             setIsConfirm(false);
-            setDurasiValue(data.durasi_nyeri || '');
-            setDurasiUnit(data.durasi_unit || 'Menit');
         }
     }, [open]);
 
@@ -182,8 +168,7 @@ function QuickModeModal({
         setData(key, value);
         // Handle nyeri_dada → reset durasi
         if (key === 'nyeri_dada' && value === 'Tidak') {
-            setData('durasi_nyeri', '0');
-            setData('durasi_unit', 'Menit');
+            setData('durasi_nyeri', '');
         }
         showFlash(label);
         setTimeout(goNext, 180);
@@ -247,25 +232,6 @@ function QuickModeModal({
                 return;
             }
 
-            // Duration step
-            if (currentStep.type === 'duration') {
-                if (e.key === 'Enter' && durasiValue) {
-                    e.preventDefault();
-                    setData('durasi_nyeri', durasiValue);
-                    setData('durasi_unit', durasiUnit);
-                    goNext();
-                } else if (e.key === 'Backspace' && !durasiValue) {
-                    e.preventDefault();
-                    goPrev();
-                }
-                // M/J/H to switch unit (only when not typing in input or input has value)
-                const k = e.key.toUpperCase();
-                if (k === 'M' && e.altKey) { e.preventDefault(); setDurasiUnit('Menit'); }
-                if (k === 'J' && e.altKey) { e.preventDefault(); setDurasiUnit('Jam'); }
-                if (k === 'H' && e.altKey) { e.preventDefault(); setDurasiUnit('Hari'); }
-                return;
-            }
-
             // Text / Number steps
             if (currentStep.type === 'text' || currentStep.type === 'number') {
                 if (e.key === 'Enter') {
@@ -284,7 +250,7 @@ function QuickModeModal({
 
         window.addEventListener('keydown', handler);
         return () => window.removeEventListener('keydown', handler);
-    }, [open, isConfirm, currentStep, stepIndex, data, durasiValue, durasiUnit, processing, goNext, goPrev, selectAndAdvance, onClose, onSubmit, setData]);
+    }, [open, isConfirm, currentStep, stepIndex, data, processing, goNext, goPrev, selectAndAdvance, onClose, onSubmit, setData]);
 
     if (!open) return null;
 
@@ -357,23 +323,18 @@ function QuickModeModal({
                                         <span className="font-medium text-foreground">{data.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
                                     </div>
                                     <div className="flex justify-between py-1.5 border-b border-border">
-                                        <span className="text-muted-foreground">TD</span>
-                                        <span className="font-medium text-foreground">{data.tekanan_darah} mmHg</span>
-                                    </div>
-                                    <div className="flex justify-between py-1.5 border-b border-border">
                                         <span className="text-muted-foreground">Nyeri Dada</span>
                                         <span className={`font-medium ${data.nyeri_dada === 'Ya' ? 'text-red-600' : 'text-emerald-600'}`}>{data.nyeri_dada}</span>
                                     </div>
                                     {data.nyeri_dada === 'Ya' && (
                                         <div className="flex justify-between py-1.5 border-b border-border">
                                             <span className="text-muted-foreground">Durasi</span>
-                                            <span className="font-medium text-foreground">{data.durasi_nyeri} {data.durasi_unit}</span>
+                                            <span className="font-medium text-foreground">{data.durasi_nyeri}</span>
                                         </div>
                                     )}
-                                    {['sesak_napas', 'keringat_dingin', 'mual', 'muntah', 'hipertensi', 'riwayat_dm', 'riwayat_pjk'].map((key) => {
+                                    {['sesak_napas', 'mual', 'muntah', 'hipertensi', 'riwayat_dm', 'riwayat_pjk'].map((key) => {
                                         const labels: Record<string, string> = {
                                             sesak_napas: 'Sesak Napas',
-                                            keringat_dingin: 'Keringat Dingin',
                                             mual: 'Mual',
                                             muntah: 'Muntah',
                                             hipertensi: 'Hipertensi',
@@ -525,50 +486,6 @@ function QuickModeModal({
                                         </div>
                                     )}
 
-                                    {/* Duration compound input */}
-                                    {currentStep.type === 'duration' && (
-                                        <div className="space-y-4">
-                                            <div className="flex items-end gap-3">
-                                                <input
-                                                    ref={inputRef}
-                                                    type="number"
-                                                    value={durasiValue}
-                                                    onChange={(e) => {
-                                                        setDurasiValue(e.target.value);
-                                                        setData('durasi_nyeri', e.target.value);
-                                                    }}
-                                                    placeholder="0"
-                                                    className="w-28 text-3xl font-bold text-foreground bg-transparent border-0 border-b-2 border-border focus:border-blue-500 focus:ring-0 outline-none pb-2 placeholder:text-border transition-colors text-center"
-                                                    autoFocus
-                                                />
-                                            </div>
-                                            <div className="flex gap-3">
-                                                {[
-                                                    { value: 'Menit', shortcut: 'M' },
-                                                    { value: 'Jam', shortcut: 'J' },
-                                                    { value: 'Hari', shortcut: 'H' },
-                                                ].map((unit) => (
-                                                    <button
-                                                        key={unit.value}
-                                                        onClick={() => {
-                                                            setDurasiUnit(unit.value);
-                                                            setData('durasi_unit', unit.value);
-                                                        }}
-                                                        className={`relative flex-1 rounded-lg border-2 py-3 text-center transition-all text-sm font-medium ${
-                                                            durasiUnit === unit.value
-                                                                ? 'border-blue-400 bg-blue-50 text-blue-700'
-                                                                : 'border-border bg-background text-muted-foreground hover:border-input'
-                                                        }`}
-                                                    >
-                                                        {unit.value}
-                                                        <span className="absolute top-1 right-1.5">
-                                                            <kbd className="text-[10px] text-muted-foreground font-mono">Alt+{unit.shortcut}</kbd>
-                                                        </span>
-                                                    </button>
-                                                ))}
-                                            </div>
-                                        </div>
-                                    )}
                                 </div>
 
                                 {/* Navigation + keyboard hints */}
@@ -585,7 +502,7 @@ function QuickModeModal({
                                     </button>
 
                                     <div className="flex items-center gap-4">
-                                        {(currentStep.type === 'text' || currentStep.type === 'number' || currentStep.type === 'duration') && (
+                                        {(currentStep.type === 'text' || currentStep.type === 'number') && (
                                             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                 <Kbd><CornerDownLeft className="w-3 h-3" /></Kbd> Lanjut
                                             </span>
@@ -625,20 +542,14 @@ export default function Classification() {
     const [quickMode, setQuickMode] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
-        // Patient data
         nama: '',
         umur: '',
         jenis_kelamin: '',
-
-        // Clinical data
         nyeri_dada: '',
         durasi_nyeri: '',
-        durasi_unit: 'Menit',
         sesak_napas: '',
-        keringat_dingin: '',
         mual: '',
         muntah: '',
-        tekanan_darah: '',
         hipertensi: '',
         riwayat_dm: '',
         riwayat_pjk: '',
@@ -773,7 +684,7 @@ export default function Classification() {
                                         setData((prev) => ({
                                             ...prev,
                                             nyeri_dada: val,
-                                            ...(val === 'Tidak' ? { durasi_nyeri: '0', durasi_unit: 'Menit' } : {}),
+                                            ...(val === 'Tidak' ? { durasi_nyeri: '' } : {}),
                                         }));
                                     }}
                                     options={[
@@ -789,27 +700,15 @@ export default function Classification() {
                             <div className="py-4 border-b border-input">
                                 <div className="flex items-center gap-4">
                                     <Label className="text-foreground w-36 shrink-0">Durasi Nyeri</Label>
-                                    <div className="flex items-center gap-4 flex-1">
-                                        <div className="relative w-32">
-                                            <Input
-                                                type="number"
-                                                value={data.durasi_nyeri}
-                                                onChange={(e) => setData('durasi_nyeri', e.target.value)}
-                                                className="bg-background border-input h-11 pr-8"
-                                            />
-                                            <ChevronDown className="absolute right-2 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                                        </div>
-                                        <RadioGroup
-                                            name="durasi_unit"
-                                            value={data.durasi_unit}
-                                            onChange={(val) => setData('durasi_unit', val)}
-                                            options={[
-                                                { value: 'Menit', label: 'Menit' },
-                                                { value: 'Jam', label: 'Jam' },
-                                                { value: 'Hari', label: 'Hari' },
-                                            ]}
-                                        />
-                                    </div>
+                                    <RadioGroup
+                                        name="durasi_nyeri"
+                                        value={data.durasi_nyeri}
+                                        onChange={(val) => setData('durasi_nyeri', val)}
+                                        options={[
+                                            { value: '<15 menit', label: '< 15 menit' },
+                                            { value: '>15 menit', label: '> 15 menit' },
+                                        ]}
+                                    />
                                 </div>
                             </div>
                         )}
@@ -822,22 +721,6 @@ export default function Classification() {
                                     name="sesak_napas"
                                     value={data.sesak_napas}
                                     onChange={(val) => setData('sesak_napas', val)}
-                                    options={[
-                                        { value: 'Ya', label: 'Ya' },
-                                        { value: 'Tidak', label: 'Tidak' },
-                                    ]}
-                                />
-                            </div>
-                        </div>
-
-                        {/* Keringat Dingin */}
-                        <div className="py-4 border-b border-input">
-                            <div className="flex items-center gap-4">
-                                <Label className="text-foreground w-36 shrink-0">Keringat Dingin</Label>
-                                <RadioGroup
-                                    name="keringat_dingin"
-                                    value={data.keringat_dingin}
-                                    onChange={(val) => setData('keringat_dingin', val)}
                                     options={[
                                         { value: 'Ya', label: 'Ya' },
                                         { value: 'Tidak', label: 'Tidak' },
@@ -875,23 +758,6 @@ export default function Classification() {
                                         { value: 'Tidak', label: 'Tidak' },
                                     ]}
                                 />
-                            </div>
-                        </div>
-
-                        {/* Tekanan Darah */}
-                        <div className="py-4 border-b border-input">
-                            <div className="flex items-center gap-4">
-                                <Label className="text-foreground w-36 shrink-0">Tekanan Darah</Label>
-                                <div className="flex items-center gap-3">
-                                    <Input
-                                        type="number"
-                                        value={data.tekanan_darah}
-                                        onChange={(e) => setData('tekanan_darah', e.target.value)}
-                                        className="bg-background border-input h-11 w-32 text-center"
-                                        placeholder="120"
-                                    />
-                                    <span className="text-muted-foreground">mmHg</span>
-                                </div>
                             </div>
                         </div>
 

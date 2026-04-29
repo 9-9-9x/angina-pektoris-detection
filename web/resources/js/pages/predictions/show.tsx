@@ -22,7 +22,6 @@ interface Prediction {
     risk_percentage: number;
     confidence: string;
     usia: number;
-    tekanan_darah: number;
     riwayat_dm: string;
     hipertensi: string;
     riwayat_pjk: string;
@@ -31,7 +30,6 @@ interface Prediction {
     sesak_napas: string;
     mual: string;
     muntah: string;
-    keringat_dingin: string;
     patient: Patient;
     doctor_verdict: string | null;
     doctor_notes: string | null;
@@ -171,7 +169,6 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                         <h2 className="font-semibold text-foreground mb-4">Data Klinis</h2>
                         <div className="grid grid-cols-2 gap-4">
                             <DataRow label="Usia" value={`${prediction.usia} tahun`} />
-                            <DataRow label="Tekanan Darah" value={`${prediction.tekanan_darah} mmHg`} />
                             <DataRow label="Riwayat Diabetes" value={formatYesNo(prediction.riwayat_dm)} />
                             <DataRow label="Hipertensi" value={formatYesNo(prediction.hipertensi)} />
                             <DataRow label="Riwayat PJK" value={formatYesNo(prediction.riwayat_pjk)} />
@@ -183,11 +180,10 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                     <div className="bg-card rounded-xl border border-border shadow-sm p-5">
                         <h2 className="font-semibold text-foreground mb-4">Gejala</h2>
                         <div className="grid grid-cols-2 gap-4">
-                            <DataRow label="Nyeri Menjalar" value={formatYesNo(prediction.nyeri_dada)} />
+                            <DataRow label="Nyeri Dada" value={formatYesNo(prediction.nyeri_dada)} />
                             <DataRow label="Sesak Napas" value={formatYesNo(prediction.sesak_napas)} />
                             <DataRow label="Mual" value={formatYesNo(prediction.mual)} />
                             <DataRow label="Muntah" value={formatYesNo(prediction.muntah)} />
-                            <DataRow label="Keringat Dingin" value={formatYesNo(prediction.keringat_dingin)} />
                         </div>
                     </div>
                 </div>
