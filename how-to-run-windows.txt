@@ -1,0 +1,28 @@
+1. Install Laragon & uv (python) & node.js (untuk npm)
+2. Nyalain semua (web, database) di laragon
+3. Download projectnya (misal nama folder setelah extract angina-project)
+4. Switch root laragon web ke folder angina-project atau pindahin ke C:\laragon\www
+5. Open web seharusnya sudah selesai
+
+6.1 Untuk setup laravelnya (jaga jaga kalau belum lengkap klik terminal, lalu "cd web")
+6.2 Sebelum serve, copy .env.example di folder web jadi .env lalu edit DBnya, misal:
+	DB_CONNECTION=mysql
+	DB_HOST=127.0.0.1
+	DB_PORT=3306
+	DB_DATABASE=angina
+	DB_USERNAME=root
+	DB_PASSWORD=
+6.3 Jalankan "php artisan optimize"
+6.4 Jalankan "php artisan migrate:fresh --seed", nanti ada prompt apa mau setup dbnya atau tidak? Y aja
+6.5 Jalankan "php artisan serve --port 8001"
+6.6 Jalankan "npm run dev" di terminal lain
+6.7 Done, should be hosted *note untuk 6.5 boleh pake serve atau langsung lewat laragon
+
+7.1 Untuk setup pythonnya.
+7.2 Pertama run "uv pip install .\.requirements.txt"
+7.3 Coba run "uv run .\.model.py"
+7.4 Setelah itu "uv venv" klik yes yes aja
+7.5 Jalankan ".\.venv/Scripts\activate"
+7.6 Last "uvicorn api:app --reload --port 8000"
+
+8. Done
