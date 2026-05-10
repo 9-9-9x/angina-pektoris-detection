@@ -26,7 +26,7 @@ export default function Home() {
                     </p>
 
                     <div className="flex gap-4 mb-10">
-                        {(role === 'patient' || role === 'doctor') && (
+                        {role === 'patient' && (
                             <>
                                 <Link href="/classify">
                                     <Button
