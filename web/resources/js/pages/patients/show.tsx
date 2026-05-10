@@ -1,5 +1,5 @@
 import { Head, Link, useForm } from '@inertiajs/react';
-import { ArrowLeft, Edit, Activity, User, MapPin, Phone, Trash2, Calendar } from 'lucide-react';
+import { ArrowLeft, User, MapPin, Phone, Trash2, Calendar } from 'lucide-react';
 import { useState } from 'react';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -80,18 +80,6 @@ export default function PatientsShow({ patient }: Props) {
             </div>
           </div>
           <div className="flex gap-2">
-            <Link href={predictionsRoute.create(patient.id)}>
-              <Button className="bg-blue-600 hover:bg-blue-700">
-                <Activity className="mr-2 h-4 w-4" />
-                Prediksi Baru
-              </Button>
-            </Link>
-            <Link href={patientsRoute.edit(patient.id)}>
-              <Button variant="outline">
-                <Edit className="mr-2 h-4 w-4" />
-                Edit
-              </Button>
-            </Link>
             <Button 
               variant="outline" 
               className="text-red-600 hover:text-red-700"

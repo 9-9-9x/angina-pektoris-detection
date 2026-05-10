@@ -102,15 +102,6 @@ export default function PatientsIndex({ patients }: Props) {
                                                 Detail
                                             </Button>
                                         </Link>
-                                        <Link href={`/patients/${patient.id}/predict`}>
-                                            <Button 
-                                                variant="secondary"
-                                                size="sm"
-                                                className="bg-green-100 hover:bg-green-200 text-green-700"
-                                            >
-                                                Klasifikasi
-                                            </Button>
-                                        </Link>
                                     </div>
                                 </div>
                             ))
