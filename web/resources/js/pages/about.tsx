@@ -13,7 +13,7 @@ function PPKButton() {
                         <span className="bg-primary text-primary-foreground px-5 py-2 hover:bg-primary/90 transition-colors">Detail</span>
                     </button>
                 </DialogTrigger>
-                <DialogContent className="max-w-5xl w-full h-[92vh] flex flex-col p-0 gap-0 overflow-hidden">
+                <DialogContent className="max-w-5xl w-full h-[92vh] flex flex-col p-0 gap-0 overflow-hidden [&>button:last-child]:hidden">
                     {/* header */}
                     <div className="flex items-center justify-between px-5 py-3.5 border-b bg-muted/40 shrink-0">
                         <div className="flex items-center gap-2.5">
