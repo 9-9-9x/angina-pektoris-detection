@@ -130,18 +130,22 @@ print("\nSample of processed data:")
 print(df_cleaned[['Usia', 'Usia_Binned', 'Durasi Nyeri', 'Durasi_Nyeri_Binned', 'Label_Encoded']].head())
 
 # --- Prepare Features (X) and Target (y) ---
+
+# seleksi atribut/variabel yang akan digunakan sebagai fitur input model
+# hanya kolom yang sudah di-encode/bin yang dipilih, kolom asli tidak dipakai langsung
 feature_columns = [
-    'Usia_Binned',
-    'Jenis_Kelamin_Encoded',
-    'Riwayat DM_Encoded',
-    'HT_Encoded',
-    'Riwayat PJK terdahulu_Encoded',
-    'Durasi_Nyeri_Binned',
-    'Sesak napas_Encoded',
-    'Mual_Encoded',
-    'Muntah_Encoded',
+    'Usia_Binned',           # usia pasien (sudah dikelompokkan per rentang)
+    'Jenis_Kelamin_Encoded', # jenis kelamin (l=0, p=1)
+    'Riwayat DM_Encoded',    # riwayat diabetes mellitus
+    'HT_Encoded',            # riwayat hipertensi
+    'Riwayat PJK terdahulu_Encoded', # riwayat penyakit jantung koroner sebelumnya
+    'Durasi_Nyeri_Binned',   # durasi nyeri dada (<15 menit=0, >15 menit=1)
+    'Sesak napas_Encoded',   # gejala sesak napas
+    'Mual_Encoded',          # gejala mual
+    'Muntah_Encoded',        # gejala muntah
 ]
 
+# x = fitur input, y = label target (0: bukan angina, 1: angina pektoris)
 X = df_cleaned[feature_columns]
 y = df_cleaned['Label_Encoded']
 
