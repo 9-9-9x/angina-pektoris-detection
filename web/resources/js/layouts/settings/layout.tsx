@@ -29,7 +29,7 @@ export default function SettingsLayout({ children }: PropsWithChildren) {
 
             <div className="bg-card rounded-xl shadow-md border border-border overflow-hidden">
                 <div className="flex flex-col lg:flex-row">
-                    <aside className="lg:w-52 border-b lg:border-b-0 lg:border-r border-border p-4">
+                    <aside className="lg:w-52 border-b lg:border-b-0 lg:border-r border-border p-4 bg-muted/40">
                         <nav className="flex flex-row flex-wrap lg:flex-col gap-1">
                             {sidebarNavItems.map((item, index) => (
                                 <Link

@@ -1,14 +1,55 @@
 import { Head } from '@inertiajs/react';
-import { Stethoscope, Ban, Wine, Scale, Dumbbell, Brain, Apple, ArrowRight } from 'lucide-react';
+import { Stethoscope, Ban, Wine, Scale, Dumbbell, Brain, Apple, ArrowRight, ExternalLink, FileText, X } from 'lucide-react';
 import AppLayout from '@/layouts/app-layout';
+import { Dialog, DialogContent, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 
 function PPKButton() {
     return (
         <div className="flex justify-end mt-6">
-            <div className="flex rounded-full overflow-hidden text-sm font-semibold shadow-sm">
-                <span className="bg-primary/20 text-primary px-6 py-2">PPK Angina Pektoris</span>
-                <span className="bg-primary/10 text-primary px-5 py-2">Detail</span>
-            </div>
+            <Dialog>
+                <DialogTrigger asChild>
+                    <button className="flex rounded-full overflow-hidden text-sm font-semibold shadow-sm hover:shadow-md transition-shadow cursor-pointer">
+                        <span className="bg-primary/20 text-primary px-6 py-2">PPK Angina Pektoris</span>
+                        <span className="bg-primary text-primary-foreground px-5 py-2 hover:bg-primary/90 transition-colors">Detail</span>
+                    </button>
+                </DialogTrigger>
+                <DialogContent className="max-w-5xl w-full h-[92vh] flex flex-col p-0 gap-0 overflow-hidden">
+                    {/* header */}
+                    <div className="flex items-center justify-between px-5 py-3.5 border-b bg-muted/40 shrink-0">
+                        <div className="flex items-center gap-2.5">
+                            <div className="w-8 h-8 rounded-md bg-primary/10 flex items-center justify-center">
+                                <FileText className="w-4 h-4 text-primary" />
+                            </div>
+                            <div>
+                                <p className="text-sm font-semibold text-foreground leading-none">PPK Angina Pektoris</p>
+                                <p className="text-xs text-muted-foreground mt-0.5">Panduan Praktik Klinis · 2023</p>
+                            </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <a
+                                href="/PPK-ANGINA-PECTORIS.pdf"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-3 py-1.5 rounded-md hover:bg-muted"
+                            >
+                                <ExternalLink className="w-3.5 h-3.5" />
+                                Buka di tab baru
+                            </a>
+                            <div className="w-px h-4 bg-border" />
+                            <DialogClose className="w-7 h-7 flex items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors">
+                                <X className="w-4 h-4" />
+                            </DialogClose>
+                        </div>
+                    </div>
+
+                    {/* pdf viewer */}
+                    <iframe
+                        src="/PPK-ANGINA-PECTORIS.pdf"
+                        className="flex-1 w-full"
+                        title="PPK Angina Pektoris"
+                    />
+                </DialogContent>
+            </Dialog>
         </div>
     );
 }
@@ -20,7 +61,7 @@ export default function About() {
             <div className="w-full space-y-5 py-4">
 
                 {/* Card 1: Apa itu Angina Pektoris? */}
-                <div className="bg-card rounded-2xl p-7 shadow-sm">
+                <div className="bg-primary/5 rounded-2xl p-7 shadow-sm border border-primary/10">
                     <h2 className="text-lg font-bold text-foreground mb-5">Apa itu Angina Pektoris?</h2>
                     <div className="flex flex-col md:flex-row items-center justify-center gap-4 md:gap-6 mb-5">
                         <div className="w-full md:w-auto flex justify-center">
@@ -52,7 +93,7 @@ export default function About() {
                 </div>
 
                 {/* Card 2: Gejala */}
-                <div className="bg-card rounded-2xl p-7 shadow-sm">
+                <div className="bg-primary/5 rounded-2xl p-7 shadow-sm border border-primary/10">
                     <h2 className="text-lg font-bold text-foreground mb-4">Apa sih gejala Angina Pektoris?</h2>
                     <p className="text-foreground mb-5 ml-2">Gejala utama pada Angina Pektoris berupa nyeri dada yang khas meliputi :</p>
                     <ol className="space-y-5 text-foreground ml-2">
@@ -85,7 +126,7 @@ export default function About() {
                 </div>
 
                 {/* Card 3: Faktor Risiko */}
-                <div className="bg-card rounded-2xl p-7 shadow-sm">
+                <div className="bg-primary/5 rounded-2xl p-7 shadow-sm border border-primary/10">
                     <div className="flex items-start gap-4 mb-6">
                         <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center">
                             <svg viewBox="0 0 80 80" className="w-16 h-16">
@@ -129,7 +170,7 @@ export default function About() {
                 </div>
 
                 {/* Card 4: Tips Pencegahan */}
-                <div className="bg-card rounded-2xl p-7 shadow-sm">
+                <div className="bg-primary/5 rounded-2xl p-7 shadow-sm border border-primary/10">
                     <h2 className="text-lg font-bold text-foreground mb-6">Tips Pencegahan dengan gaya hidup sehat</h2>
                     <div className="grid grid-cols-2 gap-x-6 gap-y-5 text-foreground text-sm">
                         <div className="flex items-center gap-3">
