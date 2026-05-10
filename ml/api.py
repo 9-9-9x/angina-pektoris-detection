@@ -65,8 +65,9 @@ def bin_usia(usia: int) -> int:
 
 
 def bin_durasi_from_form(durasi: str) -> int:
-    """Convert form duration choice to binary: 0=<15min, 1=>=15min"""
-    return 0 if durasi == "<15 menit" else 1
+    """Convert form duration choice: 0=<10min, 1=<15min, 2=>15min"""
+    mapping = {"<10 menit": 0, "<15 menit": 1, ">15 menit": 2}
+    return mapping.get(durasi, 0)
 
 
 # ============================================================================
@@ -107,9 +108,9 @@ class PatientData(BaseModel):
         alias="riwayat_PJK_terdahulu",
         example="Tidak",
     )
-    durasi_nyeri: Literal["<15 menit", ">15 menit"] = Field(
+    durasi_nyeri: Literal["<10 menit", "<15 menit", ">15 menit"] = Field(
         ...,
-        description="Durasi nyeri dada: '<15 menit' atau '>15 menit'",
+        description="Durasi nyeri dada: '<10 menit', '<15 menit', atau '>15 menit'",
         alias="durasi_nyeri",
         example="<15 menit",
     )

@@ -90,8 +90,8 @@ def bin_usia(usia):
 df_cleaned['Usia_Binned'] = df_cleaned['Usia'].apply(bin_usia)
 
 # --- Pain Duration Binning (Durasi Nyeri) ---
-# Dataset uses '<15 Menit' / '>15 Menit' directly
-duration_mapping = {'<15 Menit': 0, '>15 Menit': 1}
+# 0: <10 menit, 1: <15 menit, 2: >15 menit
+duration_mapping = {'<10 Menit': 0, '<15 Menit': 1, '>15 Menit': 2}
 df_cleaned['Durasi_Nyeri_Binned'] = df_cleaned['Durasi Nyeri'].map(duration_mapping).fillna(0).astype(int)
 duration_median = 0  # kept for API compatibility
 
@@ -139,7 +139,7 @@ feature_columns = [
     'Riwayat DM_Encoded',    # riwayat diabetes mellitus
     'HT_Encoded',            # riwayat hipertensi
     'Riwayat PJK terdahulu_Encoded', # riwayat penyakit jantung koroner sebelumnya
-    'Durasi_Nyeri_Binned',   # durasi nyeri dada (<15 menit=0, >15 menit=1)
+    'Durasi_Nyeri_Binned',   # durasi nyeri dada (<10 menit=0, <15 menit=1, >15 menit=2)
     'Sesak napas_Encoded',   # gejala sesak napas
     'Mual_Encoded',          # gejala mual
     'Muntah_Encoded',        # gejala muntah
