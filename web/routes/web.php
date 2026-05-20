@@ -43,9 +43,9 @@ Route::get('/about', [PredictionController::class, 'about'])
 // Protected routes - require authentication
 Route::middleware(['auth', 'verified'])->group(function () {
 
-    // Dashboard with stats (admin only)
+    // Dashboard with stats (doctor only)
     Route::get('/dashboard', [PredictionController::class, 'dashboard'])
-        ->middleware('role:admin')
+        ->middleware('role:doctor')
         ->name('dashboard');
 
     // Classification form (GET)

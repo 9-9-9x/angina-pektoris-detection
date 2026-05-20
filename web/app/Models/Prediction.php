@@ -30,6 +30,7 @@ class Prediction extends Model
         'risk_level',
         'confidence',
         'features_used',
+        'voting_details',
         'doctor_verdict',
         'doctor_notes',
         'verdict_by',
@@ -47,6 +48,7 @@ class Prediction extends Model
     protected $casts = [
         'probability_angina' => 'float',
         'features_used' => 'array',
+        'voting_details' => 'array',
         'verdict_at' => 'datetime',
     ];
 

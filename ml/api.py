@@ -31,7 +31,7 @@ Endpoints:
 import pickle
 import numpy as np
 import pandas as pd
-from typing import Dict, Any, Literal
+from typing import Dict, Any, Literal, Optional, List
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, HTTPException, status
@@ -46,6 +46,20 @@ model_data = None
 rf_model = None
 feature_columns = None
 preprocessing_config = None
+
+CLASS_NAMES = ['Bukan Angina Pektoris', 'Angina Pektoris']
+
+FEATURE_DISPLAY_NAMES = {
+    'Usia_Binned': 'Usia',
+    'Jenis_Kelamin_Encoded': 'Jenis Kelamin',
+    'Riwayat DM_Encoded': 'Riwayat DM',
+    'HT_Encoded': 'Hipertensi',
+    'Riwayat PJK terdahulu_Encoded': 'Riwayat PJK',
+    'Durasi_Nyeri_Binned': 'Durasi Nyeri',
+    'Sesak napas_Encoded': 'Sesak Napas',
+    'Mual_Encoded': 'Mual',
+    'Muntah_Encoded': 'Muntah',
+}
 
 # ============================================================================
 # PREPROCESSING FUNCTIONS (Must match training logic)
@@ -182,6 +196,9 @@ class PredictionResponse(BaseModel):
     )
     features_used: Dict[str, Any] = Field(
         ..., description="Fitur yang digunakan untuk prediksi (setelah preprocessing)"
+    )
+    voting_details: Optional[Dict[str, Any]] = Field(
+        None, description="Detail voting mayoritas dari setiap pohon keputusan"
     )
     disclaimer: str = Field(..., description="Peringatan penggunaan model")
 
@@ -331,6 +348,84 @@ app.add_middleware(
 # ============================================================================
 # HELPER FUNCTIONS
 # ============================================================================
+
+
+def serialize_tree_node(tree, node_id: int = 0) -> dict:
+    """serialize one sklearn decision tree node recursively (full tree, no depth limit)."""
+    from sklearn.tree._tree import TREE_LEAF
+
+    left_child = tree.children_left[node_id]
+    right_child = tree.children_right[node_id]
+
+    values = tree.value[node_id][0]
+    total = float(sum(values))
+    class_idx = int(np.argmax(values))
+    confidence = round(float(values[class_idx] / total) * 100, 1) if total > 0 else 0.0
+
+    node: Dict[str, Any] = {
+        "node_id": int(node_id),
+        "class": CLASS_NAMES[class_idx],
+        "class_code": class_idx,
+        "confidence": confidence,
+        "samples": int(tree.n_node_samples[node_id]),
+        "values": [int(v) for v in values],
+        "is_leaf": bool(left_child == TREE_LEAF),
+    }
+
+    if left_child != TREE_LEAF:
+        feature_idx = int(tree.feature[node_id])
+        threshold = float(tree.threshold[node_id])
+        feat_name = feature_columns[feature_idx] if feature_columns else f"feature_{feature_idx}"
+        display_name = FEATURE_DISPLAY_NAMES.get(feat_name, feat_name)
+
+        node["split_feature"] = display_name
+        node["threshold"] = round(threshold, 4)
+        node["left"] = serialize_tree_node(tree, int(left_child))
+        node["right"] = serialize_tree_node(tree, int(right_child))
+
+    return node
+
+
+def get_voting_details(X_processed: pd.DataFrame) -> Dict[str, Any]:
+    """compute per-tree votes + serialize first 3 trees for visualization."""
+    tree_votes: List[int] = []
+    for estimator in rf_model.estimators_:
+        tree_votes.append(int(estimator.predict(X_processed)[0]))
+
+    angina_votes = sum(tree_votes)
+    non_angina_votes = len(tree_votes) - angina_votes
+    total = len(tree_votes)
+    majority = CLASS_NAMES[1] if angina_votes > non_angina_votes else CLASS_NAMES[0]
+
+    sample_trees = []
+    for i in range(min(3, len(rf_model.estimators_))):
+        clf = rf_model.estimators_[i]
+        vote = int(clf.predict(X_processed)[0])
+        structure = serialize_tree_node(clf.tree_)
+
+        # nodes visited for this specific input
+        node_indicator = clf.decision_path(X_processed)
+        visited_nodes = [int(n) for n in node_indicator.indices]
+        leaf_node = int(clf.apply(X_processed)[0])
+
+        sample_trees.append({
+            "tree_id": i + 1,
+            "vote": vote,
+            "vote_label": CLASS_NAMES[vote],
+            "structure": structure,
+            "visited_nodes": visited_nodes,
+            "leaf_node": leaf_node,
+        })
+
+    return {
+        "total_trees": total,
+        "angina_votes": angina_votes,
+        "non_angina_votes": non_angina_votes,
+        "majority_class": majority,
+        "vote_percentage_angina": round(angina_votes / total * 100, 1),
+        "per_tree_votes": tree_votes,
+        "sample_trees": sample_trees,
+    }
 
 
 def preprocess_patient_data(patient: PatientData) -> pd.DataFrame:
@@ -501,6 +596,8 @@ async def predict(patient: PatientData):
             "Angina Pektoris" if prediction_class == 1 else "Bukan Angina Pektoris"
         )
 
+        voting = get_voting_details(X_processed)
+
         return PredictionResponse(
             prediction=prediction_label,
             prediction_code=int(prediction_class),
@@ -510,6 +607,7 @@ async def predict(patient: PatientData):
             risk_percentage=round(prob_angina * 100, 2),
             confidence=confidence,
             features_used=features_dict,
+            voting_details=voting,
             disclaimer=(
                 "⚠️ DISCLAIMER: This prediction is generated by a machine learning model "
                 "and is for research purposes only. It should NOT be used as the sole basis "

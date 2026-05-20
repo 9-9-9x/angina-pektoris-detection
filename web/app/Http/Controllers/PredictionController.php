@@ -22,7 +22,7 @@ class PredictionController extends Controller
     {
         $query = Prediction::with(['patient', 'user'])->latest();
 
-        if (!auth()->user()->isDoctor() && !auth()->user()->isAdmin()) {
+        if (! auth()->user()->isDoctor() && ! auth()->user()->isAdmin()) {
             $query->where('user_id', auth()->id());
         }
 
@@ -116,6 +116,7 @@ class PredictionController extends Controller
             'risk_level' => $predictionData['risk_level'],
             'confidence' => $predictionData['confidence'],
             'features_used' => $predictionData['features_used'] ?? $mlData,
+            'voting_details' => $predictionData['voting_details'] ?? null,
         ]);
 
         return redirect()->route('predictions.show', $prediction)
@@ -199,6 +200,7 @@ class PredictionController extends Controller
                 'risk_level' => $predictionData['risk_level'],
                 'confidence' => $predictionData['confidence'],
                 'features_used' => $predictionData['features_used'] ?? $mlData,
+                'voting_details' => $predictionData['voting_details'] ?? null,
             ]);
         });
 
@@ -239,6 +241,7 @@ class PredictionController extends Controller
                 'confidence' => $prediction->risk_percentage,
                 'risk_text' => $prediction->risk_text,
             ],
+            'voting_details' => $prediction->voting_details,
         ]);
     }
 
@@ -271,7 +274,7 @@ class PredictionController extends Controller
     {
         $query = Prediction::with('patient')->latest();
 
-        if (!auth()->user()->isDoctor() && !auth()->user()->isAdmin()) {
+        if (! auth()->user()->isDoctor() && ! auth()->user()->isAdmin()) {
             $query->where('user_id', auth()->id());
         }
 
@@ -309,7 +312,7 @@ class PredictionController extends Controller
         $query = Prediction::query();
         $patientQuery = Patient::query();
 
-        if (!$user->isDoctor() && !$user->isAdmin()) {
+        if (! $user->isDoctor() && ! $user->isAdmin()) {
             $query->where('user_id', $user->id);
             $patientQuery->where('user_id', $user->id);
         }
