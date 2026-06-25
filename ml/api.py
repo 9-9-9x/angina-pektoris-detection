@@ -398,7 +398,7 @@ def get_voting_details(X_processed: pd.DataFrame) -> Dict[str, Any]:
     majority = CLASS_NAMES[1] if angina_votes > non_angina_votes else CLASS_NAMES[0]
 
     sample_trees = []
-    for i in range(min(3, len(rf_model.estimators_))):
+    for i in range(min(5, len(rf_model.estimators_))):
         clf = rf_model.estimators_[i]
         vote = int(clf.predict(X_processed)[0])
         structure = serialize_tree_node(clf.tree_)

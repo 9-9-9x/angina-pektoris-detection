@@ -45,31 +45,31 @@ interface Props {
 
 const riskConfigs = {
     HIGH: {
-        bg: 'bg-red-50',
-        border: 'border-red-200',
-        iconBg: 'bg-red-100',
-        iconColor: 'text-red-500',
-        textColor: 'text-red-700',
+        bg: 'bg-red-500/10',
+        border: 'border-red-500/30',
+        iconBg: 'bg-red-500/15',
+        iconColor: 'text-red-400',
+        textColor: 'text-red-400',
         icon: AlertTriangle,
         label: 'Risiko Tinggi',
         desc: 'Terdeteksi kemungkinan besar Angina Pektoris',
     },
     MODERATE: {
-        bg: 'bg-yellow-50',
-        border: 'border-yellow-200',
-        iconBg: 'bg-yellow-100',
-        iconColor: 'text-yellow-500',
-        textColor: 'text-yellow-700',
+        bg: 'bg-yellow-500/10',
+        border: 'border-yellow-500/30',
+        iconBg: 'bg-yellow-500/15',
+        iconColor: 'text-yellow-400',
+        textColor: 'text-yellow-400',
         icon: Activity,
         label: 'Risiko Sedang',
         desc: 'Diperlukan pemeriksaan lanjutan',
     },
     LOW: {
-        bg: 'bg-green-50',
-        border: 'border-green-200',
-        iconBg: 'bg-green-100',
-        iconColor: 'text-green-500',
-        textColor: 'text-green-700',
+        bg: 'bg-green-500/10',
+        border: 'border-green-500/30',
+        iconBg: 'bg-green-500/15',
+        iconColor: 'text-green-400',
+        textColor: 'text-green-400',
         icon: CheckCircle,
         label: 'Risiko Rendah',
         desc: 'Kemungkinan Angina Pektoris rendah',
@@ -86,8 +86,8 @@ function DataRow({ label, value }: { label: string; value: React.ReactNode }) {
 }
 
 function formatYesNo(val: string) {
-    if (val === 'Ya') return <span className="text-red-600 font-semibold">Ya</span>;
-    if (val === 'Tidak') return <span className="text-green-600">Tidak</span>;
+    if (val === 'Ya') return <span className="text-red-400 font-semibold">Ya</span>;
+    if (val === 'Tidak') return <span className="text-green-400">Tidak</span>;
     return val;
 }
 
@@ -151,11 +151,11 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                 </div>
 
                 {/* Disclaimer */}
-                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 flex gap-3">
-                    <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 flex gap-3">
+                    <AlertTriangle className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
                     <div className="text-sm">
-                        <p className="font-semibold text-amber-800">Bukan Diagnosis Medis</p>
-                        <p className="text-amber-700 mt-0.5">
+                        <p className="font-semibold text-amber-300">Bukan Diagnosis Medis</p>
+                        <p className="text-amber-400 mt-0.5">
                             Hasil ini dihasilkan algoritma machine learning, hanya untuk tujuan riset.
                             Selalu konsultasikan dengan dokter spesialis jantung.
                         </p>
@@ -231,9 +231,9 @@ export default function PredictionsShow({ prediction, auth }: Props) {
 
                 {/* Existing Verdict */}
                 {prediction.doctor_verdict && (
-                    <div className="bg-green-50 rounded-xl border border-green-200 p-5">
-                        <h2 className="font-semibold text-green-800 mb-3">Verdict Dokter</h2>
-                        <span className="inline-block px-4 py-1.5 rounded-lg border border-green-400 text-green-700 font-semibold text-sm">
+                    <div className="bg-green-500/10 rounded-xl border border-green-500/30 p-5">
+                        <h2 className="font-semibold text-green-400 mb-3">Verdict Dokter</h2>
+                        <span className="inline-block px-4 py-1.5 rounded-lg border border-green-500/30 text-green-400 font-semibold text-sm">
                             {prediction.doctor_verdict}
                         </span>
                         {prediction.doctor_notes && (

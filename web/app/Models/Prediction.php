@@ -13,6 +13,10 @@ class Prediction extends Model
     protected $fillable = [
         'patient_id',
         'user_id',
+        'kode_unik',
+        'jam_skrining',
+        'tgl_skrining',
+        'untuk',
         'usia',
         'jenis_kelamin',
         'tekanan_darah',

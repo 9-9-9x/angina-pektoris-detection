@@ -1,5 +1,5 @@
 import { Head, Link } from '@inertiajs/react';
-import { User, AlertTriangle, Check, FileText, Home, Activity, CheckCircle, ChevronDown, ChevronUp, TreePine } from 'lucide-react';
+import { User, AlertTriangle, FileText, Home, Activity, CheckCircle, ChevronDown, ChevronUp, TreePine, Copy, KeyRound } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import AppLayout from '@/layouts/app-layout';
@@ -8,8 +8,11 @@ interface Patient {
     nama: string;
     umur: number;
     jenis_kelamin: string;
-    durasi_nyeri: string;
-    tekanan_darah: string;
+    durasi_nyeri?: string;
+    tekanan_darah?: string;
+    tgl_skrining?: string;
+    jam_skrining?: string;
+    untuk?: string;
 }
 
 interface Result {
@@ -54,6 +57,7 @@ interface VotingDetails {
 
 interface Props {
     prediction_id?: number;
+    kode_unik?: string;
     patient?: Patient;
     result?: Result;
     voting_details?: VotingDetails | null;
@@ -63,29 +67,29 @@ interface Props {
 
 const riskConfigs = {
     HIGH: {
-        bg: 'bg-red-50',
-        border: 'border-red-200',
-        iconBg: 'bg-red-100',
-        iconColor: 'text-red-500',
-        textColor: 'text-red-700',
+        bg: 'bg-red-500/10',
+        border: 'border-red-500/30',
+        iconBg: 'bg-red-500/15',
+        iconColor: 'text-red-400',
+        textColor: 'text-red-400',
         icon: AlertTriangle,
         label: 'Risiko Tinggi',
     },
     MODERATE: {
-        bg: 'bg-yellow-50',
-        border: 'border-yellow-200',
-        iconBg: 'bg-yellow-100',
-        iconColor: 'text-yellow-500',
-        textColor: 'text-yellow-700',
+        bg: 'bg-yellow-500/10',
+        border: 'border-yellow-500/30',
+        iconBg: 'bg-yellow-500/15',
+        iconColor: 'text-yellow-400',
+        textColor: 'text-yellow-400',
         icon: Activity,
         label: 'Risiko Sedang',
     },
     LOW: {
-        bg: 'bg-green-50',
-        border: 'border-green-200',
-        iconBg: 'bg-green-100',
-        iconColor: 'text-green-500',
-        textColor: 'text-green-700',
+        bg: 'bg-green-500/10',
+        border: 'border-green-500/30',
+        iconBg: 'bg-green-500/15',
+        iconColor: 'text-green-400',
+        textColor: 'text-green-400',
         icon: CheckCircle,
         label: 'Risiko Rendah',
     },
@@ -413,8 +417,15 @@ function TreesSection({ trees }: { trees: SampleTree[] }) {
 
 // ─── Main Page ────────────────────────────────────────────────────────────────
 
-export default function ClassificationResult({ prediction_id, patient, result, voting_details }: Props) {
-    const [saved, setSaved] = useState(false);
+export default function ClassificationResult({ prediction_id, kode_unik, patient, result, voting_details }: Props) {
+    const [copied, setCopied] = useState(false);
+
+    const copyKode = () => {
+        if (!kode_unik) return;
+        navigator.clipboard.writeText(kode_unik);
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+    };
 
     if (!patient || !result) {
         return (
@@ -461,19 +472,56 @@ export default function ClassificationResult({ prediction_id, patient, result, v
                             <span className="font-medium text-foreground">{patient.umur} Tahun</span>
                         </div>
                         <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Durasi Nyeri</span>
-                            <span className="font-medium text-foreground">{patient.durasi_nyeri}</span>
-                        </div>
-                        <div className="flex justify-between text-sm">
                             <span className="text-muted-foreground">Jenis Kelamin</span>
                             <span className="font-medium text-foreground">{patient.jenis_kelamin}</span>
                         </div>
-                        <div className="flex justify-between text-sm">
-                            <span className="text-muted-foreground">Tekanan Darah</span>
-                            <span className="font-medium text-foreground">{patient.tekanan_darah}</span>
-                        </div>
+                        {patient.tgl_skrining && (
+                            <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Tanggal Skrining</span>
+                                <span className="font-medium text-foreground">
+                                    {patient.tgl_skrining.includes('-')
+                                        ? patient.tgl_skrining.split('-').reverse().join('/')
+                                        : patient.tgl_skrining}
+                                </span>
+                            </div>
+                        )}
+                        {patient.jam_skrining && (
+                            <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Jam Skrining</span>
+                                <span className="font-medium text-foreground">{patient.jam_skrining}</span>
+                            </div>
+                        )}
+                        {patient.durasi_nyeri && (
+                            <div className="flex justify-between text-sm">
+                                <span className="text-muted-foreground">Durasi Nyeri</span>
+                                <span className="font-medium text-foreground">{patient.durasi_nyeri}</span>
+                            </div>
+                        )}
                     </div>
                 </div>
+
+                {/* Kode Unik */}
+                {kode_unik && (
+                    <div className="bg-blue-500/10 border-2 border-blue-500/30 rounded-xl p-5">
+                        <div className="flex items-center gap-3 mb-3">
+                            <KeyRound className="w-5 h-5 text-blue-400" />
+                            <p className="font-semibold text-blue-300">Kode Unik Skrining</p>
+                        </div>
+                        <p className="text-xs text-blue-400 mb-3">Simpan kode ini untuk melihat riwayat hasil skrining Anda kapan saja.</p>
+                        <div className="flex items-center gap-3">
+                            <span className="flex-1 font-mono text-2xl font-bold text-blue-300 tracking-widest bg-blue-500/10 border border-blue-500/30 rounded-lg px-4 py-2 text-center">
+                                {kode_unik}
+                            </span>
+                            <button
+                                onClick={copyKode}
+                                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium transition-colors"
+                            >
+                                <Copy className="w-4 h-4" />
+                                {copied ? 'Disalin!' : 'Salin'}
+                            </button>
+                        </div>
+                    </div>
+                )}
 
                 {/* Classification Result */}
                 <div className={`rounded-xl border-2 p-6 ${risk.bg} ${risk.border}`}>
@@ -500,11 +548,11 @@ export default function ClassificationResult({ prediction_id, patient, result, v
                 )}
 
                 {/* Disclaimer */}
-                <div className="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 flex gap-3">
-                    <AlertTriangle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <div className="rounded-lg border border-amber-500/30 bg-amber-500/10 px-4 py-3 flex gap-3">
+                    <AlertTriangle className="h-4 w-4 text-amber-400 mt-0.5 flex-shrink-0" />
                     <div className="text-sm">
-                        <p className="font-semibold text-amber-800">Bukan Diagnosis Medis</p>
-                        <p className="text-amber-700 mt-0.5">
+                        <p className="font-semibold text-amber-300">Bukan Diagnosis Medis</p>
+                        <p className="text-amber-400 mt-0.5">
                             Hasil ini dihasilkan algoritma machine learning, hanya untuk tujuan riset.
                             Selalu konsultasikan dengan dokter spesialis jantung.
                         </p>
@@ -513,13 +561,6 @@ export default function ClassificationResult({ prediction_id, patient, result, v
 
                 {/* Actions */}
                 <div className="flex gap-3 flex-wrap">
-                    <Button
-                        onClick={() => setSaved(true)}
-                        disabled={saved}
-                        className={`px-8 h-11 ${saved ? 'bg-emerald-600 hover:bg-emerald-600 text-white' : 'bg-primary hover:bg-primary/90 text-primary-foreground'}`}
-                    >
-                        {saved ? <><Check className="w-4 h-4 mr-2" />Tersimpan</> : 'Simpan'}
-                    </Button>
                     {prediction_id ? (
                         <Link href={`/predictions/${prediction_id}/print`} target="_blank">
                             <Button className="bg-primary hover:bg-primary/90 text-primary-foreground px-8 h-11">

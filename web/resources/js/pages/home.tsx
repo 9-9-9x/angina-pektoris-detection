@@ -6,7 +6,7 @@ import type { SharedData } from '@/types';
 
 export default function Home() {
     const { auth } = usePage<SharedData>().props;
-    const role = auth.user.role;
+    const role = auth.user?.role ?? null;
 
     return (
         <AppLayout>
@@ -26,54 +26,50 @@ export default function Home() {
                     </p>
 
                     <div className="flex gap-4 mb-10">
-                        {role === 'patient' && (
-                            <>
-                                <Link href="/classify">
-                                    <Button
-                                        size="lg"
-                                        className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-6 text-base rounded-md flex items-center gap-2"
-                                    >
-                                        <ClipboardList className="w-5 h-5" />
-                                        Mulai Klasifikasi Angina Pektoris
-                                    </Button>
-                                </Link>
+                        <Link href="/classify">
+                            <Button
+                                size="lg"
+                                className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-6 text-base rounded-md flex items-center gap-2"
+                            >
+                                <ClipboardList className="w-5 h-5" />
+                                Mulai Klasifikasi Angina Pektoris
+                            </Button>
+                        </Link>
 
-                                <Link href="/history">
-                                    <Button
-                                        variant="outline"
-                                        size="lg"
-                                        className="bg-card hover:bg-muted text-foreground border-input px-6 py-6 text-base rounded-md flex items-center gap-2"
-                                    >
-                                        <History className="w-5 h-5" />
-                                        Lihat Riwayat Klasifikasi
-                                    </Button>
-                                </Link>
-                            </>
+                        <Link href="/skrining">
+                            <Button
+                                variant="outline"
+                                size="lg"
+                                className="bg-card hover:bg-muted text-foreground border-input px-6 py-6 text-base rounded-md flex items-center gap-2"
+                            >
+                                <History className="w-5 h-5" />
+                                Cek Hasil Skrining
+                            </Button>
+                        </Link>
+
+                        {role === 'doctor' && (
+                            <Link href="/dashboard">
+                                <Button
+                                    size="lg"
+                                    className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-6 text-base rounded-md flex items-center gap-2"
+                                >
+                                    <LayoutDashboard className="w-5 h-5" />
+                                    Dashboard Dokter
+                                </Button>
+                            </Link>
                         )}
 
                         {role === 'admin' && (
-                            <>
-                                <Link href="/dashboard">
-                                    <Button
-                                        size="lg"
-                                        className="bg-primary hover:bg-primary/90 text-primary-foreground px-6 py-6 text-base rounded-md flex items-center gap-2"
-                                    >
-                                        <LayoutDashboard className="w-5 h-5" />
-                                        Lihat Dashboard
-                                    </Button>
-                                </Link>
-
-                                <Link href="/admin/users">
-                                    <Button
-                                        variant="outline"
-                                        size="lg"
-                                        className="bg-card hover:bg-muted text-foreground border-input px-6 py-6 text-base rounded-md flex items-center gap-2"
-                                    >
-                                        <UserCog className="w-5 h-5" />
-                                        Manajemen Pengguna
-                                    </Button>
-                                </Link>
-                            </>
+                            <Link href="/admin/users">
+                                <Button
+                                    variant="outline"
+                                    size="lg"
+                                    className="bg-card hover:bg-muted text-foreground border-input px-6 py-6 text-base rounded-md flex items-center gap-2"
+                                >
+                                    <UserCog className="w-5 h-5" />
+                                    Manajemen Pengguna
+                                </Button>
+                            </Link>
                         )}
                     </div>
                 </div>

@@ -5,17 +5,17 @@
 | WEB ROUTES - ANGINA PEKTORIS DETECTION APP
 |-----------------------------------------------------------------------------
 |
-| AUTH FLOW:
-|   - Root (/) redirects to login if not authenticated
-|   - Root (/) redirects to dashboard if authenticated
-|   - All patient/prediction routes require auth
+| PUBLIC FLOW:
+|   - Root (/) shows home page (no auth required)
+|   - /about, /classify, /classify/result → public
+|   - /skrining/{kode} → public lookup by kode unik
 |
-| ROUTES:
-|   /                    -> Redirect to login or dashboard
-|   /login               -> Login page (Fortify)
-|   /dashboard           -> Stats & recent predictions
-|   /patients/*          -> Patient CRUD
-|   /predictions/*       -> Prediction history & results
+| DOCTOR/ADMIN FLOW (login required):
+|   - /login → login page (Fortify, redirects to dashboard)
+|   - /dashboard → stats & search by kode unik
+|   - /history → riwayat (only acc'd predictions)
+|   - /patients/* → patient CRUD (doctor/admin only)
+|   - /predictions/* → prediction detail & print
 |
 |-----------------------------------------------------------------------------
 */
@@ -26,21 +26,26 @@ use App\Http\Controllers\PredictionVerdictController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 
-// Public routes - redirect to login if not authenticated
+// Public routes
 Route::get('/', function () {
-    if (auth()->check()) {
-        return Inertia::render('home');
-    }
-
-    return redirect('/login');
+    return Inertia::render('home');
 })->name('home');
 
-// About page - accessible when logged in
-Route::get('/about', [PredictionController::class, 'about'])
-    ->middleware(['auth', 'verified'])
-    ->name('about');
+Route::get('/about', [PredictionController::class, 'about'])->name('about');
 
-// Protected routes - require authentication
+Route::get('/classify', [PredictionController::class, 'showClassifyForm'])->name('classify');
+Route::post('/classify', [PredictionController::class, 'classify'])->name('classify.store');
+Route::get('/classify/result', [PredictionController::class, 'result'])->name('classify.result');
+
+// Public lookup by kode unik
+Route::get('/skrining', [PredictionController::class, 'showLookupForm'])->name('skrining.lookup');
+Route::get('/skrining/{kode}', [PredictionController::class, 'lookupByKode'])->name('skrining.show');
+
+// Public print (patients need this without login)
+Route::get('predictions/{prediction}/print', [PredictionController::class, 'print'])
+    ->name('predictions.print');
+
+// Protected routes - doctor/admin only
 Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard with stats (doctor only)
@@ -48,21 +53,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         ->middleware('role:doctor')
         ->name('dashboard');
 
-    // Classification form (GET)
-    Route::get('/classify', [PredictionController::class, 'showClassifyForm'])
-        ->middleware('role:patient')
-        ->name('classify');
-
-    // Classification form submission (POST)
-    Route::post('/classify', [PredictionController::class, 'classify'])
-        ->middleware('role:patient')
-        ->name('classify.store');
-
-    // Classification result
-    Route::get('/classify/result', [PredictionController::class, 'result'])
-        ->name('classify.result');
-
-    // Classification history
+    // Classification history (acc'd only)
     Route::get('/history', [PredictionController::class, 'history'])
         ->name('history');
 
@@ -83,8 +74,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('predictions/{prediction}', [PredictionController::class, 'show'])
         ->name('predictions.show');
 
-    Route::get('predictions/{prediction}/print', [PredictionController::class, 'print'])
-        ->name('predictions.print');
 
     // Doctor verdict on prediction
     Route::post('predictions/{prediction}/verdict', [PredictionVerdictController::class, 'store'])

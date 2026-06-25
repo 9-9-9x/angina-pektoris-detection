@@ -13,22 +13,26 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-    { title: 'Home', href: '/', icon: Home, roles: ['patient', 'doctor', 'admin'] },
-    { title: 'About', href: '/about', icon: Info, roles: ['patient', 'doctor', 'admin'] },
+    { title: 'Home', href: '/', icon: Home },
+    { title: 'About', href: '/about', icon: Info },
+    { title: 'Mulai Klasifikasi', href: '/classify', icon: ClipboardList },
     { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['doctor'] },
     { title: 'Data Pasien', href: '/patients', icon: Users, roles: ['doctor', 'admin'] },
-    { title: 'Mulai Klasifikasi', href: '/classify', icon: ClipboardList, roles: ['patient'] },
-    { title: 'Riwayat Klasifikasi', href: '/history', icon: History, roles: ['patient', 'doctor', 'admin'] },
-    { title: 'Pengaturan', href: '/settings/profile', icon: Settings, activePrefix: '/settings', roles: ['patient', 'doctor', 'admin'] },
+    { title: 'Riwayat Klasifikasi', href: '/history', icon: History, roles: ['doctor', 'admin'] },
+    { title: 'Pengaturan', href: '/settings/profile', icon: Settings, activePrefix: '/settings', roles: ['doctor', 'admin'] },
     { title: 'Manajemen Pengguna', href: '/admin/users', icon: UserCog, activePrefix: '/admin/users', roles: ['admin'] },
 ];
 
 export function AppSidebar() {
     const { url } = usePage<SharedData>();
     const { auth } = usePage<SharedData>().props;
-    const userRole = auth.user.role as Role;
+    const userRole = (auth.user?.role ?? null) as Role | null;
 
-    const visibleItems = navItems.filter((item) => !item.roles || item.roles.includes(userRole));
+    const visibleItems = navItems.filter((item) => {
+        if (!item.roles) return true;
+        if (!userRole) return false;
+        return item.roles.includes(userRole);
+    });
 
     return (
         <aside className="w-64 bg-card border-r border-border shadow-sm min-h-[calc(100vh-64px)]">

@@ -1,5 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
-import { Calendar, Zap, X, ArrowLeft, Check, CornerDownLeft } from 'lucide-react';
+import { CalendarDays, Clock, Zap, X, ArrowLeft, Check, CornerDownLeft } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,7 @@ interface StepDef {
     key: string;
     label: string;
     description: string;
-    type: 'text' | 'number' | 'yesno' | 'choice' | 'duration';
+    type: 'text' | 'number' | 'yesno' | 'choice' | 'duration' | 'date' | 'time';
     placeholder?: string;
     suffix?: string;
     options?: { value: string; label: string; shortcut: string }[];
@@ -21,11 +21,21 @@ interface StepDef {
 
 const STEPS: StepDef[] = [
     {
+        key: 'untuk',
+        label: 'Skrining untuk siapa?',
+        description: 'Pilih apakah skrining ini untuk diri sendiri atau orang lain',
+        type: 'choice',
+        options: [
+            { value: 'diri_sendiri', label: 'Diri Sendiri', shortcut: '1' },
+            { value: 'orang_lain', label: 'Orang Lain', shortcut: '2' },
+        ],
+    },
+    {
         key: 'nama',
-        label: 'Nama Pasien',
+        label: 'Nama Lengkap',
         description: 'Masukkan nama lengkap pasien',
         type: 'text',
-        placeholder: 'Ketik nama pasien...',
+        placeholder: 'Ketik nama lengkap...',
     },
     {
         key: 'umur',
@@ -44,6 +54,18 @@ const STEPS: StepDef[] = [
             { value: 'L', label: 'Laki-laki', shortcut: 'L' },
             { value: 'P', label: 'Perempuan', shortcut: 'P' },
         ],
+    },
+    {
+        key: 'tgl_skrining',
+        label: 'Tanggal Skrining',
+        description: 'Pilih tanggal pelaksanaan skrining',
+        type: 'date',
+    },
+    {
+        key: 'jam_skrining',
+        label: 'Jam Skrining',
+        description: 'Pilih jam pelaksanaan skrining',
+        type: 'time',
     },
     {
         key: 'nyeri_dada',
@@ -232,8 +254,8 @@ function QuickModeModal({
                 return;
             }
 
-            // Text / Number steps
-            if (currentStep.type === 'text' || currentStep.type === 'number') {
+            // Text / Number / Date / Time steps
+            if (['text', 'number', 'date', 'time'].includes(currentStep.type)) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     const val = (document.activeElement as HTMLInputElement)?.value || data[currentStep.key];
@@ -311,6 +333,10 @@ function QuickModeModal({
 
                                 <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm max-h-[280px] overflow-y-auto pr-2">
                                     <div className="flex justify-between py-1.5 border-b border-border">
+                                        <span className="text-muted-foreground">Untuk</span>
+                                        <span className="font-medium text-foreground">{data.untuk === 'diri_sendiri' ? 'Diri Sendiri' : 'Orang Lain'}</span>
+                                    </div>
+                                    <div className="flex justify-between py-1.5 border-b border-border">
                                         <span className="text-muted-foreground">Nama</span>
                                         <span className="font-medium text-foreground">{data.nama}</span>
                                     </div>
@@ -321,6 +347,14 @@ function QuickModeModal({
                                     <div className="flex justify-between py-1.5 border-b border-border">
                                         <span className="text-muted-foreground">Kelamin</span>
                                         <span className="font-medium text-foreground">{data.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
+                                    </div>
+                                    <div className="flex justify-between py-1.5 border-b border-border">
+                                        <span className="text-muted-foreground">Tgl Skrining</span>
+                                        <span className="font-medium text-foreground">{data.tgl_skrining}</span>
+                                    </div>
+                                    <div className="flex justify-between py-1.5 border-b border-border">
+                                        <span className="text-muted-foreground">Jam Skrining</span>
+                                        <span className="font-medium text-foreground">{data.jam_skrining}</span>
                                     </div>
                                     <div className="flex justify-between py-1.5 border-b border-border">
                                         <span className="text-muted-foreground">Nyeri Dada</span>
@@ -437,6 +471,56 @@ function QuickModeModal({
                                         </div>
                                     )}
 
+                                    {/* Date picker */}
+                                    {currentStep.type === 'date' && (
+                                        <div className="flex flex-col gap-3">
+                                            <div className="relative">
+                                                <input
+                                                    ref={inputRef}
+                                                    type="date"
+                                                    value={data[currentStep.key] || ''}
+                                                    onChange={(e) => { setData(currentStep.key, e.target.value); }}
+                                                    className="w-full h-14 rounded-xl border-2 border-border bg-background px-4 pr-12 text-foreground text-lg focus:border-blue-500 focus:ring-0 outline-none transition-colors [color-scheme:dark] cursor-pointer"
+                                                    autoFocus
+                                                />
+                                                <CalendarDays className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                                            </div>
+                                            {data[currentStep.key] && (
+                                                <button
+                                                    onClick={goNext}
+                                                    className="self-start flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
+                                                >
+                                                    <Check className="w-4 h-4" /> Lanjut
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+
+                                    {/* Time picker */}
+                                    {currentStep.type === 'time' && (
+                                        <div className="flex flex-col gap-3">
+                                            <div className="relative">
+                                                <input
+                                                    ref={inputRef}
+                                                    type="time"
+                                                    value={data[currentStep.key] || ''}
+                                                    onChange={(e) => { setData(currentStep.key, e.target.value); }}
+                                                    className="w-full h-14 rounded-xl border-2 border-border bg-background px-4 pr-12 text-foreground text-lg focus:border-blue-500 focus:ring-0 outline-none transition-colors [color-scheme:dark] cursor-pointer"
+                                                    autoFocus
+                                                />
+                                                <Clock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
+                                            </div>
+                                            {data[currentStep.key] && (
+                                                <button
+                                                    onClick={goNext}
+                                                    className="self-start flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
+                                                >
+                                                    <Check className="w-4 h-4" /> Lanjut
+                                                </button>
+                                            )}
+                                        </div>
+                                    )}
+
                                     {/* Yes/No selection */}
                                     {currentStep.type === 'yesno' && (
                                         <div className="flex gap-4">
@@ -502,7 +586,7 @@ function QuickModeModal({
                                     </button>
 
                                     <div className="flex items-center gap-4">
-                                        {(currentStep.type === 'text' || currentStep.type === 'number') && (
+                                        {(['text', 'number', 'date', 'time'] as const).includes(currentStep.type as 'text' | 'number' | 'date' | 'time') && (
                                             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                 <Kbd><CornerDownLeft className="w-3 h-3" /></Kbd> Lanjut
                                             </span>
@@ -542,9 +626,12 @@ export default function Classification() {
     const [quickMode, setQuickMode] = useState(false);
 
     const { data, setData, post, processing, errors, reset } = useForm({
+        untuk: '',
         nama: '',
         umur: '',
         jenis_kelamin: '',
+        tgl_skrining: '',
+        jam_skrining: '',
         nyeri_dada: '',
         durasi_nyeri: '',
         sesak_napas: '',
@@ -625,34 +712,101 @@ export default function Classification() {
                         </button>
                     </div>
 
+                    {Object.keys(errors).length > 0 && (
+                        <div className="mb-6 rounded-lg border border-red-500/30 bg-red-500/10 px-4 py-3 flex gap-3">
+                            <span className="text-red-400 mt-0.5 text-lg leading-none">⚠</span>
+                            <div className="text-sm">
+                                <p className="font-semibold text-red-300 mb-1">Form belum lengkap</p>
+                                <ul className="text-red-400 space-y-0.5 list-disc list-inside">
+                                    {Object.values(errors).map((msg, i) => (
+                                        <li key={i}>{msg}</li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit} className="space-y-0">
+                        {/* Untuk */}
+                        <div className="py-4 border-b border-input">
+                            <Label className="text-foreground w-36 shrink-0 mb-2 block">Skrining Untuk</Label>
+                            <RadioGroup
+                                name="untuk"
+                                value={data.untuk}
+                                onChange={(val) => setData('untuk', val)}
+                                options={[
+                                    { value: 'diri_sendiri', label: 'Diri Sendiri' },
+                                    { value: 'orang_lain', label: 'Orang Lain' },
+                                ]}
+                            />
+                            {errors.untuk && <p className="text-red-500 text-sm mt-1">{errors.untuk}</p>}
+                        </div>
+
                         {/* Nama Pasien */}
                         <div className="py-4 border-b border-input">
-                            <Label className="text-foreground mb-2 block">Nama Pasien</Label>
+                            <Label className="text-foreground mb-2 block">Nama Lengkap</Label>
                             <Input
                                 type="text"
                                 value={data.nama}
                                 onChange={(e) => setData('nama', e.target.value)}
                                 className="bg-background border-input h-11"
-                                placeholder="Masukkan nama pasien"
+                                placeholder="Masukkan nama lengkap"
                             />
                             {errors.nama && <p className="text-red-500 text-sm mt-1">{errors.nama}</p>}
                         </div>
 
+                        {/* Tanggal & Jam Skrining */}
+                        <div className="py-4 border-b border-input">
+                            <div className="flex items-center gap-6">
+                                <div className="flex-1">
+                                    <Label className="text-foreground mb-2 block">Tanggal Skrining</Label>
+                                    <input
+                                        type="date"
+                                        value={data.tgl_skrining}
+                                        onChange={(e) => setData('tgl_skrining', e.target.value)}
+                                        className="w-full h-11 rounded-md border border-input bg-background px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors [color-scheme:dark] cursor-pointer"
+                                    />
+                                    {errors.tgl_skrining && <p className="text-red-500 text-sm mt-1">{errors.tgl_skrining}</p>}
+                                </div>
+                                <div className="flex-1">
+                                    <Label className="text-foreground mb-2 block">Jam Skrining</Label>
+                                    <input
+                                        type="time"
+                                        value={data.jam_skrining}
+                                        onChange={(e) => setData('jam_skrining', e.target.value)}
+                                        className="w-full h-11 rounded-md border border-input bg-background px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors [color-scheme:dark] cursor-pointer"
+                                    />
+                                    {errors.jam_skrining && <p className="text-red-500 text-sm mt-1">{errors.jam_skrining}</p>}
+                                </div>
+                            </div>
+                        </div>
+
                         {/* Umur Pasien */}
                         <div className="py-4 border-b border-input">
+                            <Label className="text-foreground mb-2 block">Umur Pasien</Label>
                             <div className="flex items-center gap-4">
-                                <Label className="text-foreground w-36 shrink-0">Umur Pasien</Label>
-                                <div className="relative flex-1 max-w-xs">
-                                    <Input
-                                        type="number"
-                                        value={data.umur}
-                                        onChange={(e) => setData('umur', e.target.value)}
-                                        className="bg-background border-input h-11 pr-10"
-                                        placeholder="Umur"
+                                <div className="flex-1 max-w-xs">
+                                    <input
+                                        type="date"
+                                        max={new Date().toISOString().split('T')[0]}
+                                        onChange={(e) => {
+                                            if (!e.target.value) return;
+                                            const birth = new Date(e.target.value);
+                                            const today = new Date();
+                                            let age = today.getFullYear() - birth.getFullYear();
+                                            const m = today.getMonth() - birth.getMonth();
+                                            if (m < 0 || (m === 0 && today.getDate() < birth.getDate())) age--;
+                                            setData('umur', String(age));
+                                        }}
+                                        className="w-full h-11 rounded-md border border-input bg-background px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors [color-scheme:dark] cursor-pointer"
                                     />
-                                    <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
                                 </div>
+                                {data.umur && (
+                                    <div className="flex items-center gap-2 bg-primary/10 border border-primary/20 rounded-lg px-4 py-2">
+                                        <span className="text-2xl font-bold text-primary">{data.umur}</span>
+                                        <span className="text-sm text-muted-foreground">Tahun</span>
+                                    </div>
+                                )}
                             </div>
                             {errors.umur && <p className="text-red-500 text-sm mt-1">{errors.umur}</p>}
                         </div>
@@ -671,6 +825,7 @@ export default function Classification() {
                                     ]}
                                 />
                             </div>
+                            {errors.jenis_kelamin && <p className="text-red-500 text-sm mt-1">{errors.jenis_kelamin}</p>}
                         </div>
 
                         {/* Nyeri Dada */}
@@ -693,6 +848,7 @@ export default function Classification() {
                                     ]}
                                 />
                             </div>
+                            {errors.nyeri_dada && <p className="text-red-500 text-sm mt-1">{errors.nyeri_dada}</p>}
                         </div>
 
                         {/* Durasi Nyeri - only shown when nyeri_dada is Ya */}
@@ -710,6 +866,7 @@ export default function Classification() {
                                         ]}
                                     />
                                 </div>
+                                {errors.durasi_nyeri && <p className="text-red-500 text-sm mt-1">{errors.durasi_nyeri}</p>}
                             </div>
                         )}
 
@@ -727,6 +884,7 @@ export default function Classification() {
                                     ]}
                                 />
                             </div>
+                            {errors.sesak_napas && <p className="text-red-500 text-sm mt-1">{errors.sesak_napas}</p>}
                         </div>
 
                         {/* Mual */}
@@ -743,6 +901,7 @@ export default function Classification() {
                                     ]}
                                 />
                             </div>
+                            {errors.mual && <p className="text-red-500 text-sm mt-1">{errors.mual}</p>}
                         </div>
 
                         {/* Muntah */}
@@ -759,6 +918,7 @@ export default function Classification() {
                                     ]}
                                 />
                             </div>
+                            {errors.muntah && <p className="text-red-500 text-sm mt-1">{errors.muntah}</p>}
                         </div>
 
                         {/* Riwayat Hipertensi */}
@@ -775,6 +935,7 @@ export default function Classification() {
                                     ]}
                                 />
                             </div>
+                            {errors.hipertensi && <p className="text-red-500 text-sm mt-1">{errors.hipertensi}</p>}
                         </div>
 
                         {/* Riwayat DM */}
@@ -791,6 +952,7 @@ export default function Classification() {
                                     ]}
                                 />
                             </div>
+                            {errors.riwayat_dm && <p className="text-red-500 text-sm mt-1">{errors.riwayat_dm}</p>}
                         </div>
 
                         {/* Riwayat PJK Terdahulu */}
@@ -807,6 +969,7 @@ export default function Classification() {
                                     ]}
                                 />
                             </div>
+                            {errors.riwayat_pjk && <p className="text-red-500 text-sm mt-1">{errors.riwayat_pjk}</p>}
                         </div>
 
                         {/* Buttons */}

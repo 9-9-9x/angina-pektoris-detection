@@ -18,6 +18,7 @@ interface User { name: string; }
 interface Prediction {
     id: number;
     created_at: string;
+    kode_unik: string | null;
     prediction_result: string;
     probability_angina: number;
     probability_non_angina: number;
@@ -25,7 +26,7 @@ interface Prediction {
     risk_percentage: number;
     confidence: string;
     usia: number;
-    tekanan_darah: number;
+    tekanan_darah: number | null;
     riwayat_dm: string;
     hipertensi: string;
     riwayat_pjk: string;
@@ -34,9 +35,11 @@ interface Prediction {
     sesak_napas: string;
     mual: string;
     muntah: string;
-    keringat_dingin: string;
+    keringat_dingin: string | null;
+    jam_skrining: string | null;
+    tgl_skrining: string | null;
     patient: Patient;
-    user: User;
+    user: User | null;
 }
 
 export default function PredictionsPrint({ prediction }: { prediction: Prediction }) {
@@ -54,7 +57,7 @@ export default function PredictionsPrint({ prediction }: { prediction: Predictio
         ['Sesak Napas', prediction.sesak_napas],
         ['Mual', prediction.mual],
         ['Muntah', prediction.muntah],
-        ['Keringat Dingin', prediction.keringat_dingin],
+        ...(prediction.keringat_dingin ? [['Keringat Dingin', prediction.keringat_dingin] as [string, string]] : []),
     ];
 
     const p: React.CSSProperties = {
@@ -115,7 +118,7 @@ export default function PredictionsPrint({ prediction }: { prediction: Predictio
                 <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '10pt', color: '#333', marginBottom: '10px' }}>
                     <span>No. Dokumen: <strong>{noDoc}</strong></span>
                     <span>Tanggal: <strong>{tanggal}</strong> &nbsp;|&nbsp; Pukul: <strong>{waktu} WIB</strong></span>
-                    <span>Analis: <strong>{prediction.user.name}</strong></span>
+                    {prediction.kode_unik && <span>Kode: <strong>{prediction.kode_unik}</strong></span>}
                 </div>
 
                 {/* ── Top: Patient + Result side by side ── */}
@@ -130,8 +133,9 @@ export default function PredictionsPrint({ prediction }: { prediction: Predictio
                                     ['No. Urut', prediction.patient.no_rm],
                                     ['Umur', `${prediction.usia} tahun`],
                                     ['Jenis Kelamin', prediction.patient.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'],
-                                    ['Tekanan Darah', `${prediction.tekanan_darah} mmHg`],
-                                    ['Tanggal Lahir', prediction.patient.tanggal_lahir ?? '-'],
+                                    ...(prediction.tekanan_darah ? [['Tekanan Darah', `${prediction.tekanan_darah} mmHg`]] : []),
+                                    ...(prediction.tgl_skrining ? [['Tanggal Skrining', prediction.tgl_skrining]] : []),
+                                    ...(prediction.jam_skrining ? [['Jam Skrining', prediction.jam_skrining]] : []),
                                     ...(prediction.patient.alamat ? [['Alamat', prediction.patient.alamat]] : []),
                                 ].map(([l, v]) => (
                                     <tr key={l}>
@@ -197,18 +201,11 @@ export default function PredictionsPrint({ prediction }: { prediction: Predictio
                 </div>
 
                 {/* ── Signature ── */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', marginTop: '20px' }}>
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
                     <div style={{ textAlign: 'center', width: '180px', fontSize: '10.5pt' }}>
                         <div>Pasien / Wali</div>
                         <div style={{ marginTop: '36px', borderTop: '1px solid #111', paddingTop: '4px' }}>
                             ( {prediction.patient.nama} )
-                        </div>
-                    </div>
-                    <div style={{ textAlign: 'center', width: '180px', fontSize: '10.5pt' }}>
-                        <div>{tanggal}</div>
-                        <div style={{ marginTop: '2px' }}>Dokter / Analis</div>
-                        <div style={{ marginTop: '36px', borderTop: '1px solid #111', paddingTop: '4px' }}>
-                            ( {prediction.user.name} )
                         </div>
                     </div>
                 </div>

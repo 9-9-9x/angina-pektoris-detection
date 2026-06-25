@@ -1,0 +1,12 @@
+domains:
+    - web
+php_version: "8.5"
+framework: laravel
+framework_version: "12"
+services:
+    - mysql
+    - mailpit
+    - redis
+workers:
+    - queue
+    - vite
