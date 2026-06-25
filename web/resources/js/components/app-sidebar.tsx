@@ -10,12 +10,13 @@ interface NavItem {
     icon: React.ElementType;
     activePrefix?: string;
     roles?: Role[];
+    guestOnly?: boolean;
 }
 
 const navItems: NavItem[] = [
-    { title: 'Home', href: '/', icon: Home },
-    { title: 'About', href: '/about', icon: Info },
-    { title: 'Mulai Klasifikasi', href: '/classify', icon: ClipboardList },
+    { title: 'Home', href: '/', icon: Home, guestOnly: true },
+    { title: 'About', href: '/about', icon: Info, guestOnly: true },
+    { title: 'Mulai Klasifikasi', href: '/classify', icon: ClipboardList, guestOnly: true },
     { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['doctor'] },
     { title: 'Data Pasien', href: '/patients', icon: Users, roles: ['doctor', 'admin'] },
     { title: 'Riwayat Klasifikasi', href: '/history', icon: History, roles: ['doctor', 'admin'] },
@@ -29,6 +30,7 @@ export function AppSidebar() {
     const userRole = (auth.user?.role ?? null) as Role | null;
 
     const visibleItems = navItems.filter((item) => {
+        if (item.guestOnly) return !userRole;
         if (!item.roles) return true;
         if (!userRole) return false;
         return item.roles.includes(userRole);

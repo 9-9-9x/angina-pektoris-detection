@@ -28,6 +28,10 @@ use Inertia\Inertia;
 
 // Public routes
 Route::get('/', function () {
+    if (auth()->check() && in_array(auth()->user()->role, ['doctor', 'admin'])) {
+        return redirect('/dashboard');
+    }
+
     return Inertia::render('home');
 })->name('home');
 

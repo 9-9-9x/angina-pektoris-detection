@@ -22,20 +22,24 @@ export function AppHeader() {
 
                 {/* Top Navigation */}
                 <nav className="flex items-center gap-6">
-                    <Link
-                        href="/"
-                        className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                        <Home className="h-5 w-5" />
-                        <span>Home</span>
-                    </Link>
-                    <Link
-                        href="/about"
-                        className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
-                    >
-                        <Info className="h-5 w-5" />
-                        <span>About</span>
-                    </Link>
+                    {!auth.user?.role || !['doctor', 'admin'].includes(auth.user.role) ? (
+                        <>
+                            <Link
+                                href="/"
+                                className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+                            >
+                                <Home className="h-5 w-5" />
+                                <span>Home</span>
+                            </Link>
+                            <Link
+                                href="/about"
+                                className="flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
+                            >
+                                <Info className="h-5 w-5" />
+                                <span>About</span>
+                            </Link>
+                        </>
+                    ) : null}
 
                     {auth.user && (
                         <Link
