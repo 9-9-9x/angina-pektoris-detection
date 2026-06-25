@@ -38,8 +38,12 @@ interface Prediction {
     keringat_dingin: string | null;
     jam_skrining: string | null;
     tgl_skrining: string | null;
+    doctor_verdict: string | null;
+    doctor_notes: string | null;
+    verdict_at: string | null;
     patient: Patient;
     user: User | null;
+    verdict_by_user: User | null;
 }
 
 export default function PredictionsPrint({ prediction }: { prediction: Prediction }) {
@@ -47,6 +51,9 @@ export default function PredictionsPrint({ prediction }: { prediction: Predictio
     const tanggal = format(new Date(prediction.created_at), 'dd MMMM yyyy', { locale: id });
     const waktu = format(new Date(prediction.created_at), 'HH:mm', { locale: id });
     const noDoc = `AP-${String(prediction.id).padStart(5, '0')}`;
+
+    const hasVerdict = !!prediction.doctor_verdict;
+    const doctorName = prediction.verdict_by_user?.name ?? null;
 
     const clinical: [string, string][] = [
         ['Riwayat Diabetes Melitus', prediction.riwayat_dm],
@@ -194,18 +201,50 @@ export default function PredictionsPrint({ prediction }: { prediction: Predictio
                     </tbody>
                 </table>
 
+                {/* ── Verdict Dokter ── */}
+                {hasVerdict && (
+                    <>
+                        <div style={sec}>IV. Hasil Pemeriksaan Dokter</div>
+                        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '10.5pt' }}>
+                            <tbody>
+                                <tr>
+                                    <td style={label}>Verdict Dokter</td>
+                                    <td style={colon}>:</td>
+                                    <td style={{ ...val, fontWeight: 'bold' }}>{prediction.doctor_verdict}</td>
+                                </tr>
+                                {prediction.doctor_notes && (
+                                    <tr>
+                                        <td style={label}>Catatan</td>
+                                        <td style={colon}>:</td>
+                                        <td style={val}>{prediction.doctor_notes}</td>
+                                    </tr>
+                                )}
+                                {doctorName && (
+                                    <tr>
+                                        <td style={label}>Diperiksa oleh</td>
+                                        <td style={colon}>:</td>
+                                        <td style={val}>{doctorName}</td>
+                                    </tr>
+                                )}
+                            </tbody>
+                        </table>
+                    </>
+                )}
+
                 {/* ── Disclaimer ── */}
                 <div style={{ border: '1px solid #999', padding: '7px 12px', marginTop: '10px', fontSize: '9.5pt', color: '#333', lineHeight: '1.5' }}>
-                    <strong>Catatan Penting:</strong> Hasil ini dihasilkan sistem kecerdasan buatan (Random Forest) sebagai alat bantu
-                    diagnosis dan <strong>bukan diagnosis medis definitif</strong>. Selalu konsultasikan kepada dokter spesialis jantung.
+                    {hasVerdict
+                        ? <>Hasil ini sudah dilakukan pemeriksaan oleh Dokter Umum. Apabila ada keluhan lebih lanjut segera konsultasikan kembali ke Dokter Umum atau Dokter Spesialis Jantung.</>
+                        : <><strong>Catatan Penting:</strong> Hasil ini dihasilkan sistem kecerdasan buatan (Random Forest) sebagai alat bantu diagnosis dan <strong>bukan diagnosis medis definitif</strong>. Selalu konsultasikan kepada dokter spesialis jantung.</>
+                    }
                 </div>
 
                 {/* ── Signature ── */}
                 <div style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
                     <div style={{ textAlign: 'center', width: '180px', fontSize: '10.5pt' }}>
-                        <div>Pasien / Wali</div>
+                        <div>{hasVerdict ? 'Dokter Pemeriksa' : 'Pasien / Wali'}</div>
                         <div style={{ marginTop: '36px', borderTop: '1px solid #111', paddingTop: '4px' }}>
-                            ( {prediction.patient.nama} )
+                            ( {hasVerdict ? (doctorName ?? 'Dokter') : prediction.patient.nama} )
                         </div>
                     </div>
                 </div>
@@ -234,23 +273,10 @@ export default function PredictionsPrint({ prediction }: { prediction: Predictio
             </div>
 
             <style>{`
-                @page {
-                    size: A4 portrait;
-                    margin: 18mm 20mm;
-                }
-                html, body {
-                    margin: 0;
-                    padding: 0;
-                }
-                body {
-                    padding: 20px 28px;
-                    print-color-adjust: exact;
-                    -webkit-print-color-adjust: exact;
-                }
-                @media print {
-                    .no-print { display: none !important; }
-                    body { padding: 0; }
-                }
+                @page { size: A4 portrait; margin: 18mm 20mm; }
+                html, body { margin: 0; padding: 0; }
+                body { padding: 20px 28px; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+                @media print { .no-print { display: none !important; } body { padding: 0; } }
             `}</style>
         </>
     );

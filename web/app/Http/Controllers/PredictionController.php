@@ -319,7 +319,7 @@ class PredictionController extends Controller
 
     public function print(Prediction $prediction)
     {
-        $prediction->load(['patient', 'user']);
+        $prediction->load(['patient', 'user', 'verdictByUser']);
 
         return Inertia::render('predictions/print', [
             'prediction' => $prediction,
