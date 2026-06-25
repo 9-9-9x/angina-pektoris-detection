@@ -17,7 +17,7 @@ const navItems: NavItem[] = [
     { title: 'Home', href: '/', icon: Home, guestOnly: true },
     { title: 'About', href: '/about', icon: Info, guestOnly: true },
     { title: 'Mulai Klasifikasi', href: '/classify', icon: ClipboardList, guestOnly: true },
-    { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['doctor'] },
+    { title: 'Dashboard', href: '/dashboard', icon: LayoutDashboard, roles: ['doctor', 'admin'] },
     { title: 'Data Pasien', href: '/patients', icon: Users, roles: ['doctor', 'admin'] },
     { title: 'Riwayat Klasifikasi', href: '/history', icon: History, roles: ['doctor', 'admin'] },
     { title: 'Pengaturan', href: '/settings/profile', icon: Settings, activePrefix: '/settings', roles: ['doctor', 'admin'] },

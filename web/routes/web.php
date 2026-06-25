@@ -54,7 +54,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Dashboard with stats (doctor only)
     Route::get('/dashboard', [PredictionController::class, 'dashboard'])
-        ->middleware('role:doctor')
+        ->middleware('role:doctor,admin')
         ->name('dashboard');
 
     // Classification history (acc'd only)
@@ -81,7 +81,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // Doctor verdict on prediction
     Route::post('predictions/{prediction}/verdict', [PredictionVerdictController::class, 'store'])
-        ->middleware('role:doctor')
+        ->middleware('role:doctor,admin')
         ->name('predictions.verdict');
 
     // Admin user management

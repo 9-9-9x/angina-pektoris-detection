@@ -189,7 +189,7 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                 </div>
 
                 {/* Doctor Verdict Form */}
-                {auth.user.role === 'doctor' && !prediction.doctor_verdict && (
+                {['doctor', 'admin'].includes(auth.user.role) && !prediction.doctor_verdict && (
                     <div className="bg-card rounded-xl border border-[#4a6fa5]/30 shadow-sm p-5">
                         <h2 className="font-semibold text-foreground mb-1">Verdict Dokter</h2>
                         <p className="text-sm text-muted-foreground mb-4">Berikan verdict Anda untuk prediksi ini</p>
