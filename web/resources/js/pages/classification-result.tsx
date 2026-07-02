@@ -187,9 +187,11 @@ export default function ClassificationResult({ prediction_id, kode_unik, patient
                             <p className="text-xs text-muted-foreground mb-1 uppercase tracking-wider">Hasil Klasifikasi</p>
                             <p className={`text-xl font-bold ${risk.textColor}`}>{risk.label}</p>
                             <p className="text-muted-foreground text-sm mt-1">{result.prediction}</p>
-                            <p className={`text-4xl font-bold mt-3 ${risk.textColor}`}>{result.confidence}%</p>
+                            <div className="flex items-center gap-3 mt-3 justify-center md:justify-start">
+                                <p className={`text-4xl font-bold ${risk.textColor}`}>{result.confidence}%</p>
+                                <span className={`text-sm font-semibold px-2.5 py-1 rounded-full border ${risk.border} ${risk.textColor}`}>{riskCategory(result.confidence)}</span>
+                            </div>
                             <p className="text-xs text-muted-foreground mt-1">Probabilitas Angina Pektoris</p>
-                            <p className={`text-sm font-semibold mt-2 ${risk.textColor}`}>{riskCategory(result.confidence)}</p>
                         </div>
                     </div>
                 </div>

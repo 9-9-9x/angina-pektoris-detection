@@ -45,6 +45,12 @@ interface Props {
     auth: { user: { role: string } };
 }
 
+function riskCategory(percentage: number): string {
+    if (percentage <= 39) return 'Risiko Rendah';
+    if (percentage <= 69) return 'Risiko Sedang';
+    return 'Risiko Tinggi';
+}
+
 const riskConfigs = {
     HIGH: {
         bg: 'bg-red-500/10',
@@ -140,7 +146,10 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                         <div className="flex-1 text-center md:text-left">
                             <p className={`text-xl font-bold ${risk.textColor}`}>{risk.label}</p>
                             <p className="text-muted-foreground text-sm mt-1">{risk.desc}</p>
-                            <p className={`text-4xl font-bold mt-3 ${risk.textColor}`}>{prediction.risk_percentage}%</p>
+                            <div className="flex items-center gap-3 mt-3 justify-center md:justify-start">
+                                <p className={`text-4xl font-bold ${risk.textColor}`}>{prediction.risk_percentage}%</p>
+                                <span className={`text-sm font-semibold px-2.5 py-1 rounded-full border ${risk.border} ${risk.textColor}`}>{riskCategory(prediction.risk_percentage)}</span>
+                            </div>
                             <p className="text-xs text-muted-foreground mt-1">Probabilitas Angina Pektoris</p>
                         </div>
                         <div className="text-center">
