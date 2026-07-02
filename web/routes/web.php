@@ -78,10 +78,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('predictions/{prediction}', [PredictionController::class, 'show'])
         ->name('predictions.show');
 
-
     // Doctor verdict on prediction
     Route::post('predictions/{prediction}/verdict', [PredictionVerdictController::class, 'store'])
-        ->middleware('role:doctor,admin')
+        ->middleware('role:doctor')
         ->name('predictions.verdict');
 
     // Admin user management

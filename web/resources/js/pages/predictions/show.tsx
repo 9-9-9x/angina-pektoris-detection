@@ -1,6 +1,7 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Activity, AlertTriangle, CheckCircle, User, Calendar, Printer } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { TreesSection, VotingSection, type VotingDetails } from '@/components/decision-tree';
 import AppLayout from '@/layouts/app-layout';
 import patientsRoute from '@/routes/patients';
 import predictionsRoute from '@/routes/predictions';
@@ -36,6 +37,7 @@ interface Prediction {
     verdict_by: number | null;
     verdict_at: string | null;
     verdict_by_user?: { id: number; name: string } | null;
+    voting_details: VotingDetails | null;
 }
 
 interface Props {
@@ -162,6 +164,14 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                     </div>
                 </div>
 
+                {/* Voting Section */}
+                {prediction.voting_details && <VotingSection voting={prediction.voting_details} />}
+
+                {/* Tree Visualization */}
+                {prediction.voting_details?.sample_trees && prediction.voting_details.sample_trees.length > 0 && (
+                    <TreesSection trees={prediction.voting_details.sample_trees} />
+                )}
+
                 {/* Data Grid */}
                 <div className="grid md:grid-cols-2 gap-6">
                     {/* Clinical Data */}
@@ -189,7 +199,7 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                 </div>
 
                 {/* Doctor Verdict Form */}
-                {['doctor', 'admin'].includes(auth.user.role) && !prediction.doctor_verdict && (
+                {auth.user.role === 'doctor' && !prediction.doctor_verdict && (
                     <div className="bg-card rounded-xl border border-[#4a6fa5]/30 shadow-sm p-5">
                         <h2 className="font-semibold text-foreground mb-1">Verdict Dokter</h2>
                         <p className="text-sm text-muted-foreground mb-4">Berikan verdict Anda untuk prediksi ini</p>
@@ -226,6 +236,14 @@ export default function PredictionsShow({ prediction, auth }: Props) {
                                 Simpan Verdict
                             </Button>
                         </form>
+                    </div>
+                )}
+
+                {/* Waiting for doctor verdict (admin, view-only) */}
+                {auth.user.role === 'admin' && !prediction.doctor_verdict && (
+                    <div className="bg-muted rounded-xl border border-border p-5">
+                        <h2 className="font-semibold text-foreground mb-1">Verdict Dokter</h2>
+                        <p className="text-sm text-muted-foreground">Menunggu verdict dari dokter.</p>
                     </div>
                 )}
 

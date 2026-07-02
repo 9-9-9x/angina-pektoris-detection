@@ -1,5 +1,5 @@
 import { Head, useForm } from '@inertiajs/react';
-import { CalendarDays, Clock, Zap, X, ArrowLeft, Check, CornerDownLeft } from 'lucide-react';
+import { Zap, X, ArrowLeft, Check, CornerDownLeft } from 'lucide-react';
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -12,7 +12,7 @@ interface StepDef {
     key: string;
     label: string;
     description: string;
-    type: 'text' | 'number' | 'yesno' | 'choice' | 'duration' | 'date' | 'time';
+    type: 'text' | 'number' | 'yesno' | 'choice' | 'duration';
     placeholder?: string;
     suffix?: string;
     options?: { value: string; label: string; shortcut: string }[];
@@ -54,18 +54,6 @@ const STEPS: StepDef[] = [
             { value: 'L', label: 'Laki-laki', shortcut: 'L' },
             { value: 'P', label: 'Perempuan', shortcut: 'P' },
         ],
-    },
-    {
-        key: 'tgl_skrining',
-        label: 'Tanggal Skrining',
-        description: 'Pilih tanggal pelaksanaan skrining',
-        type: 'date',
-    },
-    {
-        key: 'jam_skrining',
-        label: 'Jam Skrining',
-        description: 'Pilih jam pelaksanaan skrining',
-        type: 'time',
     },
     {
         key: 'nyeri_dada',
@@ -254,8 +242,8 @@ function QuickModeModal({
                 return;
             }
 
-            // Text / Number / Date / Time steps
-            if (['text', 'number', 'date', 'time'].includes(currentStep.type)) {
+            // Text / Number steps
+            if (['text', 'number'].includes(currentStep.type)) {
                 if (e.key === 'Enter') {
                     e.preventDefault();
                     const val = (document.activeElement as HTMLInputElement)?.value || data[currentStep.key];
@@ -347,14 +335,6 @@ function QuickModeModal({
                                     <div className="flex justify-between py-1.5 border-b border-border">
                                         <span className="text-muted-foreground">Kelamin</span>
                                         <span className="font-medium text-foreground">{data.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
-                                    </div>
-                                    <div className="flex justify-between py-1.5 border-b border-border">
-                                        <span className="text-muted-foreground">Tgl Skrining</span>
-                                        <span className="font-medium text-foreground">{data.tgl_skrining}</span>
-                                    </div>
-                                    <div className="flex justify-between py-1.5 border-b border-border">
-                                        <span className="text-muted-foreground">Jam Skrining</span>
-                                        <span className="font-medium text-foreground">{data.jam_skrining}</span>
                                     </div>
                                     <div className="flex justify-between py-1.5 border-b border-border">
                                         <span className="text-muted-foreground">Nyeri Dada</span>
@@ -471,56 +451,6 @@ function QuickModeModal({
                                         </div>
                                     )}
 
-                                    {/* Date picker */}
-                                    {currentStep.type === 'date' && (
-                                        <div className="flex flex-col gap-3">
-                                            <div className="relative">
-                                                <input
-                                                    ref={inputRef}
-                                                    type="date"
-                                                    value={data[currentStep.key] || ''}
-                                                    onChange={(e) => { setData(currentStep.key, e.target.value); }}
-                                                    className="w-full h-14 rounded-xl border-2 border-border bg-background px-4 pr-12 text-foreground text-lg focus:border-blue-500 focus:ring-0 outline-none transition-colors [color-scheme:dark] cursor-pointer"
-                                                    autoFocus
-                                                />
-                                                <CalendarDays className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-                                            </div>
-                                            {data[currentStep.key] && (
-                                                <button
-                                                    onClick={goNext}
-                                                    className="self-start flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
-                                                >
-                                                    <Check className="w-4 h-4" /> Lanjut
-                                                </button>
-                                            )}
-                                        </div>
-                                    )}
-
-                                    {/* Time picker */}
-                                    {currentStep.type === 'time' && (
-                                        <div className="flex flex-col gap-3">
-                                            <div className="relative">
-                                                <input
-                                                    ref={inputRef}
-                                                    type="time"
-                                                    value={data[currentStep.key] || ''}
-                                                    onChange={(e) => { setData(currentStep.key, e.target.value); }}
-                                                    className="w-full h-14 rounded-xl border-2 border-border bg-background px-4 pr-12 text-foreground text-lg focus:border-blue-500 focus:ring-0 outline-none transition-colors [color-scheme:dark] cursor-pointer"
-                                                    autoFocus
-                                                />
-                                                <Clock className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-                                            </div>
-                                            {data[currentStep.key] && (
-                                                <button
-                                                    onClick={goNext}
-                                                    className="self-start flex items-center gap-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors"
-                                                >
-                                                    <Check className="w-4 h-4" /> Lanjut
-                                                </button>
-                                            )}
-                                        </div>
-                                    )}
-
                                     {/* Yes/No selection */}
                                     {currentStep.type === 'yesno' && (
                                         <div className="flex gap-4">
@@ -586,7 +516,7 @@ function QuickModeModal({
                                     </button>
 
                                     <div className="flex items-center gap-4">
-                                        {(['text', 'number', 'date', 'time'] as const).includes(currentStep.type as 'text' | 'number' | 'date' | 'time') && (
+                                        {(['text', 'number'] as const).includes(currentStep.type as 'text' | 'number') && (
                                             <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                                                 <Kbd><CornerDownLeft className="w-3 h-3" /></Kbd> Lanjut
                                             </span>
@@ -630,8 +560,6 @@ export default function Classification() {
         nama: '',
         umur: '',
         jenis_kelamin: '',
-        tgl_skrining: '',
-        jam_skrining: '',
         nyeri_dada: '',
         durasi_nyeri: '',
         sesak_napas: '',
@@ -753,32 +681,6 @@ export default function Classification() {
                                 placeholder="Masukkan nama lengkap"
                             />
                             {errors.nama && <p className="text-red-500 text-sm mt-1">{errors.nama}</p>}
-                        </div>
-
-                        {/* Tanggal & Jam Skrining */}
-                        <div className="py-4 border-b border-input">
-                            <div className="flex items-center gap-6">
-                                <div className="flex-1">
-                                    <Label className="text-foreground mb-2 block">Tanggal Skrining</Label>
-                                    <input
-                                        type="date"
-                                        value={data.tgl_skrining}
-                                        onChange={(e) => setData('tgl_skrining', e.target.value)}
-                                        className="w-full h-11 rounded-md border border-input bg-background px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors [color-scheme:dark] cursor-pointer"
-                                    />
-                                    {errors.tgl_skrining && <p className="text-red-500 text-sm mt-1">{errors.tgl_skrining}</p>}
-                                </div>
-                                <div className="flex-1">
-                                    <Label className="text-foreground mb-2 block">Jam Skrining</Label>
-                                    <input
-                                        type="time"
-                                        value={data.jam_skrining}
-                                        onChange={(e) => setData('jam_skrining', e.target.value)}
-                                        className="w-full h-11 rounded-md border border-input bg-background px-3 text-foreground text-sm focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent transition-colors [color-scheme:dark] cursor-pointer"
-                                    />
-                                    {errors.jam_skrining && <p className="text-red-500 text-sm mt-1">{errors.jam_skrining}</p>}
-                                </div>
-                            </div>
                         </div>
 
                         {/* Umur Pasien */}
