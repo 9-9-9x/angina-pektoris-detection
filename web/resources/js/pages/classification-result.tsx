@@ -9,7 +9,6 @@ interface Patient {
     umur: number;
     jenis_kelamin: string;
     durasi_nyeri?: string;
-    tekanan_darah?: string;
     tgl_skrining?: string;
     jam_skrining?: string;
     untuk?: string;

@@ -26,7 +26,6 @@ interface Prediction {
     risk_percentage: number;
     confidence: string;
     usia: number;
-    tekanan_darah: number | null;
     riwayat_dm: string;
     hipertensi: string;
     riwayat_pjk: string;
@@ -35,7 +34,6 @@ interface Prediction {
     sesak_napas: string;
     mual: string;
     muntah: string;
-    keringat_dingin: string | null;
     jam_skrining: string | null;
     tgl_skrining: string | null;
     doctor_verdict: string | null;
@@ -64,7 +62,6 @@ export default function PredictionsPrint({ prediction }: { prediction: Predictio
         ['Sesak Napas', prediction.sesak_napas],
         ['Mual', prediction.mual],
         ['Muntah', prediction.muntah],
-        ...(prediction.keringat_dingin ? [['Keringat Dingin', prediction.keringat_dingin] as [string, string]] : []),
     ];
 
     const p: React.CSSProperties = {
@@ -140,7 +137,6 @@ export default function PredictionsPrint({ prediction }: { prediction: Predictio
                                     ['No. Urut', prediction.patient.no_rm],
                                     ['Umur', `${prediction.usia} tahun`],
                                     ['Jenis Kelamin', prediction.patient.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan'],
-                                    ...(prediction.tekanan_darah ? [['Tekanan Darah', `${prediction.tekanan_darah} mmHg`]] : []),
                                     ...(prediction.tgl_skrining ? [['Tanggal Skrining', prediction.tgl_skrining]] : []),
                                     ...(prediction.jam_skrining ? [['Jam Skrining', prediction.jam_skrining]] : []),
                                     ...(prediction.patient.alamat ? [['Alamat', prediction.patient.alamat]] : []),

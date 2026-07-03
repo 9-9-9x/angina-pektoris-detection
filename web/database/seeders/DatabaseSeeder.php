@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use App\Models\User;
 use App\Models\Patient;
 use App\Models\Prediction;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -72,11 +72,11 @@ class DatabaseSeeder extends Seeder
         $this->command->newLine();
         $this->command->info('=== Akun yang tersedia ===');
         foreach ($createdUsers as $user) {
-            $role = match($user->role) {
-                'admin'   => 'Admin',
-                'doctor'  => 'Dokter',
+            $role = match ($user->role) {
+                'admin' => 'Admin',
+                'doctor' => 'Dokter',
                 'patient' => 'Pasien',
-                default   => $user->role,
+                default => $user->role,
             };
             $this->command->line("  [{$role}] {$user->name} | {$user->email} | password");
         }
@@ -93,7 +93,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'L',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 177,
                         'riwayat_dm' => 'Ya',
                         'hipertensi' => 'Ya',
                         'riwayat_pjk' => 'Ya',
@@ -102,7 +101,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Ya',
                         'mual' => 'Ya',
                         'muntah' => 'Tidak',
-                        'keringat_dingin' => 'Ya',
                         'prediction_result' => 'Angina Pektoris',
                         'probability_angina' => 0.92,
                         'risk_level' => 'HIGH',
@@ -116,7 +114,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'P',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 160,
                         'riwayat_dm' => 'Ya',
                         'hipertensi' => 'Ya',
                         'riwayat_pjk' => 'Tidak',
@@ -125,7 +122,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Ya',
                         'mual' => 'Tidak',
                         'muntah' => 'Tidak',
-                        'keringat_dingin' => 'Ya',
                         'prediction_result' => 'Angina Pektoris',
                         'probability_angina' => 0.85,
                         'risk_level' => 'HIGH',
@@ -139,7 +135,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'L',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 140,
                         'riwayat_dm' => 'Tidak',
                         'hipertensi' => 'Ya',
                         'riwayat_pjk' => 'Tidak',
@@ -148,7 +143,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Tidak',
                         'mual' => 'Tidak',
                         'muntah' => 'Tidak',
-                        'keringat_dingin' => 'Tidak',
                         'prediction_result' => 'Angina Pektoris',
                         'probability_angina' => 0.65,
                         'risk_level' => 'MODERATE',
@@ -162,7 +156,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'P',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 155,
                         'riwayat_dm' => 'Ya',
                         'hipertensi' => 'Ya',
                         'riwayat_pjk' => 'Ya',
@@ -171,7 +164,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Ya',
                         'mual' => 'Ya',
                         'muntah' => 'Ya',
-                        'keringat_dingin' => 'Ya',
                         'prediction_result' => 'Angina Pektoris',
                         'probability_angina' => 0.95,
                         'risk_level' => 'HIGH',
@@ -185,7 +177,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'P',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 165,
                         'riwayat_dm' => 'Tidak',
                         'hipertensi' => 'Ya',
                         'riwayat_pjk' => 'Tidak',
@@ -194,7 +185,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Ya',
                         'mual' => 'Ya',
                         'muntah' => 'Tidak',
-                        'keringat_dingin' => 'Tidak',
                         'prediction_result' => 'Angina Pektoris',
                         'probability_angina' => 0.72,
                         'risk_level' => 'HIGH',
@@ -208,7 +198,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'P',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 120,
                         'riwayat_dm' => 'Tidak',
                         'hipertensi' => 'Tidak',
                         'riwayat_pjk' => 'Tidak',
@@ -217,7 +206,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Tidak',
                         'mual' => 'Tidak',
                         'muntah' => 'Tidak',
-                        'keringat_dingin' => 'Tidak',
                         'prediction_result' => 'Bukan Angina Pektoris',
                         'probability_angina' => 0.12,
                         'risk_level' => 'LOW',
@@ -231,7 +219,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'L',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 150,
                         'riwayat_dm' => 'Ya',
                         'hipertensi' => 'Ya',
                         'riwayat_pjk' => 'Tidak',
@@ -240,7 +227,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Ya',
                         'mual' => 'Tidak',
                         'muntah' => 'Tidak',
-                        'keringat_dingin' => 'Ya',
                         'prediction_result' => 'Angina Pektoris',
                         'probability_angina' => 0.78,
                         'risk_level' => 'HIGH',
@@ -254,7 +240,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'P',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 130,
                         'riwayat_dm' => 'Tidak',
                         'hipertensi' => 'Tidak',
                         'riwayat_pjk' => 'Tidak',
@@ -263,7 +248,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Tidak',
                         'mual' => 'Tidak',
                         'muntah' => 'Tidak',
-                        'keringat_dingin' => 'Tidak',
                         'prediction_result' => 'Bukan Angina Pektoris',
                         'probability_angina' => 0.08,
                         'risk_level' => 'LOW',
@@ -277,7 +261,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'L',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 125,
                         'riwayat_dm' => 'Tidak',
                         'hipertensi' => 'Tidak',
                         'riwayat_pjk' => 'Tidak',
@@ -286,7 +269,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Tidak',
                         'mual' => 'Tidak',
                         'muntah' => 'Tidak',
-                        'keringat_dingin' => 'Tidak',
                         'prediction_result' => 'Bukan Angina Pektoris',
                         'probability_angina' => 0.25,
                         'risk_level' => 'LOW',
@@ -300,7 +282,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'L',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 170,
                         'riwayat_dm' => 'Ya',
                         'hipertensi' => 'Ya',
                         'riwayat_pjk' => 'Ya',
@@ -309,7 +290,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Ya',
                         'mual' => 'Ya',
                         'muntah' => 'Ya',
-                        'keringat_dingin' => 'Ya',
                         'prediction_result' => 'Angina Pektoris',
                         'probability_angina' => 0.98,
                         'risk_level' => 'HIGH',
@@ -323,7 +303,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'P',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 145,
                         'riwayat_dm' => 'Tidak',
                         'hipertensi' => 'Ya',
                         'riwayat_pjk' => 'Tidak',
@@ -332,7 +311,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Ya',
                         'mual' => 'Tidak',
                         'muntah' => 'Tidak',
-                        'keringat_dingin' => 'Tidak',
                         'prediction_result' => 'Angina Pektoris',
                         'probability_angina' => 0.58,
                         'risk_level' => 'MODERATE',
@@ -346,7 +324,6 @@ class DatabaseSeeder extends Seeder
                 'jenis_kelamin' => 'L',
                 'predictions' => [
                     [
-                        'tekanan_darah' => 180,
                         'riwayat_dm' => 'Ya',
                         'hipertensi' => 'Ya',
                         'riwayat_pjk' => 'Ya',
@@ -355,7 +332,6 @@ class DatabaseSeeder extends Seeder
                         'sesak_napas' => 'Ya',
                         'mual' => 'Ya',
                         'muntah' => 'Ya',
-                        'keringat_dingin' => 'Ya',
                         'prediction_result' => 'Angina Pektoris',
                         'probability_angina' => 0.96,
                         'risk_level' => 'HIGH',
@@ -403,7 +379,6 @@ class DatabaseSeeder extends Seeder
             'user_id' => $user->id,
             'usia' => 35,
             'jenis_kelamin' => 'L',
-            'tekanan_darah' => 130,
             'riwayat_dm' => 'Tidak',
             'hipertensi' => 'Tidak',
             'riwayat_pjk' => 'Tidak',
@@ -412,7 +387,6 @@ class DatabaseSeeder extends Seeder
             'sesak_napas' => 'Tidak',
             'mual' => 'Tidak',
             'muntah' => 'Tidak',
-            'keringat_dingin' => 'Tidak',
             'prediction_result' => 'Bukan Angina Pektoris',
             'probability_angina' => 0.18,
             'risk_level' => 'LOW',

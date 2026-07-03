@@ -1,7 +1,6 @@
 import { Head, Link, useForm } from '@inertiajs/react';
 import { ArrowLeft, Activity, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import AppLayout from '@/layouts/app-layout';
 import patientsRoute from '@/routes/patients';
@@ -62,7 +61,6 @@ function SelectField({
 
 export default function PredictionsCreate({ patient, mlStatus }: Props) {
     const { data, setData, post, processing, errors } = useForm({
-        tekanan_darah: '',
         riwayat_dm: '',
         hipertensi: '',
         riwayat_pjk: '',
@@ -71,7 +69,6 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
         sesak_napas: '',
         mual: '',
         muntah: '',
-        keringat_dingin: '',
     });
 
     const handleSubmit = (e: React.FormEvent) => {
@@ -113,25 +110,6 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                 )}
 
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    {/* Tekanan Darah */}
-                    <div className="bg-card rounded-xl border border-border shadow-sm p-5">
-                        <h2 className="font-semibold text-foreground mb-4">Data Klinis</h2>
-                        <div className="max-w-xs grid gap-1.5">
-                            <Label htmlFor="tekanan_darah" className="text-foreground">Tekanan Darah Sistolik (mmHg)</Label>
-                            <Input
-                                id="tekanan_darah"
-                                type="number"
-                                min="60"
-                                max="300"
-                                value={data.tekanan_darah}
-                                onChange={(e) => setData('tekanan_darah', e.target.value)}
-                                placeholder="Contoh: 150"
-                                required
-                            />
-                            {errors.tekanan_darah && <p className="text-xs text-red-500">{errors.tekanan_darah}</p>}
-                        </div>
-                    </div>
-
                     {/* Faktor Risiko */}
                     <div className="bg-card rounded-xl border border-border shadow-sm p-5">
                         <h2 className="font-semibold text-foreground mb-4">Faktor Risiko</h2>
@@ -198,13 +176,6 @@ export default function PredictionsCreate({ patient, mlStatus }: Props) {
                                 onChange={(v) => setData('muntah', v)}
                                 options={yesNoOptions}
                                 error={errors.muntah}
-                            />
-                            <SelectField
-                                label="Keringat Dingin"
-                                value={data.keringat_dingin}
-                                onChange={(v) => setData('keringat_dingin', v)}
-                                options={yesNoOptions}
-                                error={errors.keringat_dingin}
                             />
                         </div>
                     </div>

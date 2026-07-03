@@ -46,7 +46,6 @@ class PredictionController extends Controller
         $this->authorize('view', $patient);
 
         $validated = $request->validate([
-            'tekanan_darah' => 'required|integer|min:60|max:300',
             'riwayat_dm' => 'required|in:Ya,Tidak',
             'hipertensi' => 'required|in:Ya,Tidak',
             'riwayat_pjk' => 'required|in:Ya,Tidak',
@@ -55,13 +54,11 @@ class PredictionController extends Controller
             'sesak_napas' => 'required|in:Ya,Tidak',
             'mual' => 'required|in:Ya,Tidak',
             'muntah' => 'required|in:Ya,Tidak',
-            'keringat_dingin' => 'required|in:Ya,Tidak',
         ]);
 
         $mlData = [
             'umur' => $patient->umur,
             'jenis_kelamin' => $patient->jenis_kelamin,
-            'tekanan_darah' => $validated['tekanan_darah'],
             'riwayat_dm' => $validated['riwayat_dm'],
             'hipertensi' => $validated['hipertensi'],
             'riwayat_pjk' => $validated['riwayat_pjk'],
@@ -70,7 +67,6 @@ class PredictionController extends Controller
             'sesak_napas' => $validated['sesak_napas'],
             'mual' => $validated['mual'],
             'muntah' => $validated['muntah'],
-            'keringat_dingin' => $validated['keringat_dingin'],
         ];
 
         $result = $this->mlService->predict($mlData);
@@ -91,7 +87,6 @@ class PredictionController extends Controller
             'kode_unik' => $this->generateKodeUnik(),
             'usia' => $patient->umur,
             'jenis_kelamin' => $patient->jenis_kelamin,
-            'tekanan_darah' => $validated['tekanan_darah'],
             'riwayat_dm' => $validated['riwayat_dm'],
             'hipertensi' => $validated['hipertensi'],
             'riwayat_pjk' => $validated['riwayat_pjk'],
@@ -100,7 +95,6 @@ class PredictionController extends Controller
             'sesak_napas' => $validated['sesak_napas'],
             'mual' => $validated['mual'],
             'muntah' => $validated['muntah'],
-            'keringat_dingin' => $validated['keringat_dingin'],
             'prediction_result' => $predictionData['prediction'],
             'probability_angina' => $predictionData['probability_angina'],
             'risk_level' => $predictionData['risk_level'],
